@@ -1,0 +1,28 @@
+/*
+ * WGS84_Frame.cpp
+ *
+ *  Created on: 2013/06/10
+ *      Author: bun
+ */
+
+
+CWGS84_Frame::CWGS84_Frame()
+{
+	Latitude = 0.0;
+	Longitude = 0.0;
+	Geoidal_Hight = 0.0;
+
+}
+
+CWGS84_Frame::CWGS84_Frame(long double Lat, long double Longi, long double G_Hight)
+{
+	Latitude = Lat;
+	Longitude = Longi;
+	Geoidal_Hight = G_Hight;
+
+}
+
+CWGS84_Frame::~CWGS84_Frame()
+{
+	//Do Nothing
+}

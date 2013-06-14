@@ -1,0 +1,53 @@
+/*
+ * Matrix.cpp
+ *
+ *  Created on: 2013/06/13
+ *      Author: bun
+ */
+
+
+#include "Matrix.h"
+
+CMatrix::CMatrix()
+{
+	max_column = 0;
+	max_line = 0;
+
+	data = 0;
+}
+
+CMatrix::CMatrix(int col, int lin)
+{
+	max_column = col;
+	max_line = lin;
+
+	data = new double[max_column * max_line];
+
+}
+
+CMatrix::CMatrix(const CMatrix &mat)
+{
+	int i, size;
+
+	max_column = mat.max_column;
+	max_line = mat.max_line;
+
+	size = max_column * max_line;
+
+	data = new long double[size];
+	for(i = 0; i < size; i++)
+	{
+		data[i] = mat.data[i];
+	}
+
+}
+
+CMatrix::~CMatrix()
+{
+	max_column = 0;
+	max_line = 0;
+
+	delete [] data;
+	data = 0;
+}
+

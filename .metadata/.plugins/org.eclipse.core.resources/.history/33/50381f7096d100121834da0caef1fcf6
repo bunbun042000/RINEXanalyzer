@@ -1,0 +1,36 @@
+/*
+ * ECEF_Frame.cpp
+ *
+ *  Created on: 2013/06/10
+ *      Author: bun
+ */
+
+#include <math.h>
+#include "ECEF_Frame.h"
+
+CECEF_Frame::CECEF_Frame()
+{
+	x = 0.0;
+	y = 0.0;
+	z = 0.0;
+}
+CECEF_Frame::CECEF_Frame(long double x0, long double y0, long double z0)
+{
+	x = x0;
+	y = y0;
+	z = z0;
+}
+
+CECEF_Frame::~CECEF_Frame()
+{
+	// Do nothing
+}
+
+CECEF_Frame operator-(CECEF_Frame &f1, CECEF_Frame &f2)
+{
+	CECEF_Frame f(f1.x - f2.x, f1.y - f2.y, f1.z - f2.z);
+	return f;
+}
+
+
+

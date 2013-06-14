@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;RINEX2NMEA_StaticLib/CWGS84_Frame.h&apos; to &apos;WGS84_Frame.h&apos;" description="Rename resource &apos;CWGS84_Frame.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="CWGS84_Frame.h" name="WGS84_Frame.h" stamp="1370843907332" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;RINEX2NMEA_StaticLib/CMatrix.h&apos; to &apos;Matrix.h&apos;" description="Rename resource &apos;CMatrix.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="CMatrix.h" name="Matrix.h" stamp="1371106771353" updateReferences="true"/>
+</session>

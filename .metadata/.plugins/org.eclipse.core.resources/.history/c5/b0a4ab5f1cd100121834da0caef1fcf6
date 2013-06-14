@@ -1,0 +1,66 @@
+/*
+ * GPS_Time_Week.cpp
+ *
+ *  Created on: 2013/06/07
+ *      Author: bun
+ */
+#include "GPS_Time_Week.h"
+#include <time.h>
+#include <math.h>
+
+GPS_Time_Week::GPS_Time_Week()
+{
+  week = 0;
+  second = 0.0;
+}
+
+GPS_Time_Week::GPS_Time_Week(int w, double sec)
+{
+  week = w;
+  second = sec;
+}
+
+GPS_Time_Week::~GPS_Time_Week()
+{
+  // Do nothing
+}
+
+tm GPS_Time_Week::ToDate()
+{
+  time_t t;
+
+  t = (long) week * Seconds_in_Week + GPS_Week_Origin
+     +(long)((second>0.0)?second+0.5:second-0.5);
+  return *gmtime(&t);
+}
+
+void GPS_Time_Week::Set(struct tm tmbuf)
+{
+  time_t t;
+
+
+}
+
+time_t GPS_Time_Week::mktime2(struct tm tmbuf)
+{
+
+}
+
+uint64_t GPS_Time_Week::GetJulianDay(struct tm tmbuf)
+{
+  uint64_t y, m, a, b;
+
+  if (tmbuf.tm_mon<2)
+    {
+      y = tmbuf.tm_year + 1899;
+      m = tmbuf.tm_mon + 13;
+    }
+  else
+    {
+      y = tmbuf.tm_year + 1900;
+      m = tmbuf.tm_mon + 1;
+    }
+
+  a = floor()
+
+}

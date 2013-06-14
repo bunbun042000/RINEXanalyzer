@@ -1,0 +1,26 @@
+/*
+ * WGS84_Frame.h
+ *
+ *  Created on: 2013/06/10
+ *      Author: bun
+ */
+
+#ifndef WGS84_FRAME_H_
+#define WGS84_FRAME_H_
+#include "ECEF_Frame.h"
+
+class CWGS84_Frame
+{
+public:
+	CWGS84_Frame();
+	CWGS84_Frame(long double Lat, long double Longi, long double G_Hight);
+	CWGS84_Frame(CECEF_Frame ecef_frame);
+	~CWGS84_Frame();
+
+private:
+	long double Latitude;
+	long double Longitude;
+	long double Geoid_Hight;
+};
+
+#endif /* WGS84_FRAME_H_ */

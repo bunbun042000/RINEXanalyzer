@@ -1,0 +1,43 @@
+/*
+ * ENU_Frame.cpp
+ *
+ *  Created on: 2013/06/11
+ *      Author: bun
+ */
+
+#include "ENU_Frame.h"
+#include <cmath>
+
+CENU_Frame::CENU_Frame() : CWGS84_Frame()
+{
+	wgs84_origin = CWGS84_Frame();
+
+	e = 0.0L;
+	n = 0.0L;
+	u = 0.0L;
+
+}
+
+CENU_Frame::CENU_Frame(long double e, long double n, long double u, CWGS84_Frame wgs84_origin)
+{
+	long double s1, c1, s2, c2;
+	long double x0, y0, z0;
+
+	CECEF_Frame ecef_f;
+
+	s1 = sin(wgs84_origin.GetLongi());
+	c1 = cos(wgs84_origin.GetLongi());
+	s2 = sin(wgs84_origin.GetLat());
+	c2 = cos(wgs84_origin.GetLat());
+
+	x0 = -e * s1 - n * c1 * s2 + u * c1 * c2;
+	y0 = e * c1 - n * s1 * s2 + u *s1 * c2;
+	z0 = n * c2 + u * s2;
+
+	x0 += wgs84_origin.GetX();
+	y0 += wgs84_origin.GetY();
+	z0 += wgs84_origin.GetZ();
+
+	ecef_f = CECEF_Frame(x0, y0, z0);
+	this = CWGS84_Frame(ecef_f);
+}
