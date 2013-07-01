@@ -2,6 +2,19 @@
 <?scdStore version="2"?><scannerInfo id="org.eclipse.cdt.make.core.discoveredScannerInfo">
 <instance id="cdt.managedbuild.config.gnu.cygwin.lib.debug.548894481;cdt.managedbuild.config.gnu.cygwin.lib.debug.548894481.;cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.debug.1205668224;cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.1459917357">
 <collector id="org.eclipse.cdt.make.core.PerProjectSICollector">
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include\c++"/>
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include\c++\i686-pc-cygwin"/>
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include\c++\backward"/>
+<includePath path="C:\CYGWIN\usr\local\include"/>
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include"/>
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include-fixed"/>
+<includePath path="C:\CYGWIN\usr\include"/>
+<includePath path="C:\CYGWIN\usr\include\w32api"/>
+<includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\3.4.4\include\c++"/>
+<includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\3.4.4\include\c++\i686-pc-cygwin"/>
+<includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\3.4.4\include\c++\backward"/>
+<includePath path="C:\cygwin\usr\local\include"/>
+<includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\3.4.4\include"/>
 <includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\4.5.3\include\c++"/>
 <includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\4.5.3\include\c++\i686-pc-cygwin"/>
 <includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\4.5.3\include\c++\backward"/>
@@ -13,9 +26,13 @@
 <definedSymbol symbol="__cplusplus=1"/>
 <definedSymbol symbol="__STDC_HOSTED__=1"/>
 <definedSymbol symbol="__GNUC__=4"/>
+<definedSymbol symbol="__GNUC__=3"/>
 <definedSymbol symbol="__GNUC_MINOR__=5"/>
+<definedSymbol symbol="__GNUC_MINOR__=4"/>
 <definedSymbol symbol="__GNUC_PATCHLEVEL__=3"/>
+<definedSymbol symbol="__GNUC_PATCHLEVEL__=4"/>
 <definedSymbol symbol="__GNUG__=4"/>
+<definedSymbol symbol="__GNUG__=3"/>
 <definedSymbol symbol="__SIZE_TYPE__=unsigned int"/>
 <definedSymbol symbol="__PTRDIFF_TYPE__=int"/>
 <definedSymbol symbol="__WCHAR_TYPE__=short unsigned int"/>
@@ -62,6 +79,7 @@
 <definedSymbol symbol="__LONG_MAX__=2147483647L"/>
 <definedSymbol symbol="__LONG_LONG_MAX__=9223372036854775807LL"/>
 <definedSymbol symbol="__WCHAR_MAX__=65535"/>
+<definedSymbol symbol="__WCHAR_MAX__=65535U"/>
 <definedSymbol symbol="__WCHAR_MIN__=0"/>
 <definedSymbol symbol="__WINT_MAX__=4294967295U"/>
 <definedSymbol symbol="__WINT_MIN__=0U"/>
@@ -118,9 +136,13 @@
 <definedSymbol symbol="__FLT_MAX_EXP__=128"/>
 <definedSymbol symbol="__FLT_MAX_10_EXP__=38"/>
 <definedSymbol symbol="__FLT_MAX__=3.40282346638528859812e+38F"/>
+<definedSymbol symbol="__FLT_MAX__=3.40282347e+38F"/>
 <definedSymbol symbol="__FLT_MIN__=1.17549435082228750797e-38F"/>
+<definedSymbol symbol="__FLT_MIN__=1.17549435e-38F"/>
 <definedSymbol symbol="__FLT_EPSILON__=1.19209289550781250000e-7F"/>
+<definedSymbol symbol="__FLT_EPSILON__=1.19209290e-7F"/>
 <definedSymbol symbol="__FLT_DENORM_MIN__=1.40129846432481707092e-45F"/>
+<definedSymbol symbol="__FLT_DENORM_MIN__=1.40129846e-45F"/>
 <definedSymbol symbol="__FLT_HAS_DENORM__=1"/>
 <definedSymbol symbol="__FLT_HAS_INFINITY__=1"/>
 <definedSymbol symbol="__FLT_HAS_QUIET_NAN__=1"/>
@@ -131,9 +153,13 @@
 <definedSymbol symbol="__DBL_MAX_EXP__=1024"/>
 <definedSymbol symbol="__DBL_MAX_10_EXP__=308"/>
 <definedSymbol symbol="__DBL_MAX__=((double)1.79769313486231570815e+308L)"/>
+<definedSymbol symbol="__DBL_MAX__=1.7976931348623157e+308"/>
 <definedSymbol symbol="__DBL_MIN__=((double)2.22507385850720138309e-308L)"/>
+<definedSymbol symbol="__DBL_MIN__=2.2250738585072014e-308"/>
 <definedSymbol symbol="__DBL_EPSILON__=((double)2.22044604925031308085e-16L)"/>
+<definedSymbol symbol="__DBL_EPSILON__=2.2204460492503131e-16"/>
 <definedSymbol symbol="__DBL_DENORM_MIN__=((double)4.94065645841246544177e-324L)"/>
+<definedSymbol symbol="__DBL_DENORM_MIN__=4.9406564584124654e-324"/>
 <definedSymbol symbol="__DBL_HAS_DENORM__=1"/>
 <definedSymbol symbol="__DBL_HAS_INFINITY__=1"/>
 <definedSymbol symbol="__DBL_HAS_QUIET_NAN__=1"/>
@@ -175,6 +201,7 @@
 <definedSymbol symbol="__REGISTER_PREFIX__="/>
 <definedSymbol symbol="__USER_LABEL_PREFIX__=_"/>
 <definedSymbol symbol="__VERSION__=&quot;4.5.3&quot;"/>
+<definedSymbol symbol="__VERSION__=&quot;3.4.4 (cygming special, gdc 0.12, using dmd 0.125)&quot;"/>
 <definedSymbol symbol="__GNUC_GNU_INLINE__=1"/>
 <definedSymbol symbol="__NO_INLINE__=1"/>
 <definedSymbol symbol="__FINITE_MATH_ONLY__=0"/>
@@ -219,10 +246,20 @@
 <definedSymbol symbol="unix=1"/>
 <definedSymbol symbol="__unix__=1"/>
 <definedSymbol symbol="__unix=1"/>
+<definedSymbol symbol="__USING_SJLJ_EXCEPTIONS__=1"/>
+<definedSymbol symbol="__tune_i686__=1"/>
+<definedSymbol symbol="__tune_pentiumpro__=1"/>
 </collector>
 </instance>
 <instance id="cdt.managedbuild.config.gnu.cygwin.lib.debug.548894481;cdt.managedbuild.config.gnu.cygwin.lib.debug.548894481.;cdt.managedbuild.tool.gnu.c.compiler.cygwin.lib.debug.1593013559;cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.1621815237">
 <collector id="org.eclipse.cdt.make.core.PerProjectSICollector">
+<includePath path="C:\CYGWIN\usr\local\include"/>
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include"/>
+<includePath path="C:\CYGWIN\lib\gcc\i686-pc-cygwin\4.5.3\include-fixed"/>
+<includePath path="C:\CYGWIN\usr\include"/>
+<includePath path="C:\CYGWIN\usr\include\w32api"/>
+<includePath path="C:\cygwin\usr\local\include"/>
+<includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\3.4.4\include"/>
 <includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\4.5.3\include"/>
 <includePath path="C:\cygwin\lib\gcc\i686-pc-cygwin\4.5.3\include-fixed"/>
 <includePath path="C:\cygwin\usr\include"/>
@@ -230,8 +267,11 @@
 <definedSymbol symbol="__STDC__=1"/>
 <definedSymbol symbol="__STDC_HOSTED__=1"/>
 <definedSymbol symbol="__GNUC__=4"/>
+<definedSymbol symbol="__GNUC__=3"/>
 <definedSymbol symbol="__GNUC_MINOR__=5"/>
+<definedSymbol symbol="__GNUC_MINOR__=4"/>
 <definedSymbol symbol="__GNUC_PATCHLEVEL__=3"/>
+<definedSymbol symbol="__GNUC_PATCHLEVEL__=4"/>
 <definedSymbol symbol="__SIZE_TYPE__=unsigned int"/>
 <definedSymbol symbol="__PTRDIFF_TYPE__=int"/>
 <definedSymbol symbol="__WCHAR_TYPE__=short unsigned int"/>
@@ -274,6 +314,7 @@
 <definedSymbol symbol="__LONG_MAX__=2147483647L"/>
 <definedSymbol symbol="__LONG_LONG_MAX__=9223372036854775807LL"/>
 <definedSymbol symbol="__WCHAR_MAX__=65535"/>
+<definedSymbol symbol="__WCHAR_MAX__=65535U"/>
 <definedSymbol symbol="__WCHAR_MIN__=0"/>
 <definedSymbol symbol="__WINT_MAX__=4294967295U"/>
 <definedSymbol symbol="__WINT_MIN__=0U"/>
@@ -330,9 +371,13 @@
 <definedSymbol symbol="__FLT_MAX_EXP__=128"/>
 <definedSymbol symbol="__FLT_MAX_10_EXP__=38"/>
 <definedSymbol symbol="__FLT_MAX__=3.40282346638528859812e+38F"/>
+<definedSymbol symbol="__FLT_MAX__=3.40282347e+38F"/>
 <definedSymbol symbol="__FLT_MIN__=1.17549435082228750797e-38F"/>
+<definedSymbol symbol="__FLT_MIN__=1.17549435e-38F"/>
 <definedSymbol symbol="__FLT_EPSILON__=1.19209289550781250000e-7F"/>
+<definedSymbol symbol="__FLT_EPSILON__=1.19209290e-7F"/>
 <definedSymbol symbol="__FLT_DENORM_MIN__=1.40129846432481707092e-45F"/>
+<definedSymbol symbol="__FLT_DENORM_MIN__=1.40129846e-45F"/>
 <definedSymbol symbol="__FLT_HAS_DENORM__=1"/>
 <definedSymbol symbol="__FLT_HAS_INFINITY__=1"/>
 <definedSymbol symbol="__FLT_HAS_QUIET_NAN__=1"/>
@@ -343,9 +388,13 @@
 <definedSymbol symbol="__DBL_MAX_EXP__=1024"/>
 <definedSymbol symbol="__DBL_MAX_10_EXP__=308"/>
 <definedSymbol symbol="__DBL_MAX__=((double)1.79769313486231570815e+308L)"/>
+<definedSymbol symbol="__DBL_MAX__=1.7976931348623157e+308"/>
 <definedSymbol symbol="__DBL_MIN__=((double)2.22507385850720138309e-308L)"/>
+<definedSymbol symbol="__DBL_MIN__=2.2250738585072014e-308"/>
 <definedSymbol symbol="__DBL_EPSILON__=((double)2.22044604925031308085e-16L)"/>
+<definedSymbol symbol="__DBL_EPSILON__=2.2204460492503131e-16"/>
 <definedSymbol symbol="__DBL_DENORM_MIN__=((double)4.94065645841246544177e-324L)"/>
+<definedSymbol symbol="__DBL_DENORM_MIN__=4.9406564584124654e-324"/>
 <definedSymbol symbol="__DBL_HAS_DENORM__=1"/>
 <definedSymbol symbol="__DBL_HAS_INFINITY__=1"/>
 <definedSymbol symbol="__DBL_HAS_QUIET_NAN__=1"/>
@@ -387,6 +436,7 @@
 <definedSymbol symbol="__REGISTER_PREFIX__="/>
 <definedSymbol symbol="__USER_LABEL_PREFIX__=_"/>
 <definedSymbol symbol="__VERSION__=&quot;4.5.3&quot;"/>
+<definedSymbol symbol="__VERSION__=&quot;3.4.4 (cygming special, gdc 0.12, using dmd 0.125)&quot;"/>
 <definedSymbol symbol="__GNUC_GNU_INLINE__=1"/>
 <definedSymbol symbol="__NO_INLINE__=1"/>
 <definedSymbol symbol="__FINITE_MATH_ONLY__=0"/>
@@ -430,6 +480,9 @@
 <definedSymbol symbol="unix=1"/>
 <definedSymbol symbol="__unix__=1"/>
 <definedSymbol symbol="__unix=1"/>
+<definedSymbol symbol="__USING_SJLJ_EXCEPTIONS__=1"/>
+<definedSymbol symbol="__tune_i686__=1"/>
+<definedSymbol symbol="__tune_pentiumpro__=1"/>
 </collector>
 </instance>
 <instance id="cdt.managedbuild.config.gnu.cygwin.lib.release.1686036845;cdt.managedbuild.config.gnu.cygwin.lib.release.1686036845.;cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.lib.release.266330987;cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.219653239">

@@ -1,4 +1,0 @@
-INEX2NMEA.d RINEX2NMEA.o: ../RINEX2NMEA.cpp \
- C:\home\bun\Documents\work\workspace\RINEX2NMEA_StaticLib/GPS_Time_Week.h
-
-C:\home\bun\Documents\work\workspace\RINEX2NMEA_StaticLib/GPS_Time_Week.h:

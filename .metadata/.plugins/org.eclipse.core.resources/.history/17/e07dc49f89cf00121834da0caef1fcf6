@@ -1,3 +1,0 @@
-GPS_Time_Week.d GPS_Time_Week.o: ../GPS_Time_Week.cpp ../GPS_Time_Week.h
-
-../GPS_Time_Week.h:
