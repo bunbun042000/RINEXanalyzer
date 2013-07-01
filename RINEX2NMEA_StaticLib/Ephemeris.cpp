@@ -98,34 +98,33 @@ long double Ephemeris::GetData(Ephemeris_column col)
 
 }
 
-long double Ephemeris::GetClock(GPS_Time currentTime)
+long double Ephemeris::GetClock(GPS_Time currentTime, const long double psudorange)
 {
-	long double tk, tk0, tr = 0.0L;
-	tk0 = currentTime - time_of_clock;
-	tk = tk0;
+
+	long double Ek = CalculateEk(currentTime, psudorange);
+
+	long double tr = -2.0 * sqrt(WGS84_Frame::GMe) / WGS84_Frame::C_velocity / WGS84_Frame::C_velocity
+			* data[eccentricity] * data[sqrtA] * sin(Ek);
+
+	long double tk0 = currentTime - time_of_clock;
+	long double tk = tk0 -psudorange / WGS84_Frame::C_velocity;
 
 	long double dt = data[Af0] + data[Af1] * tk + data[Af2] * tk * tk;
 
 	return dt + tr - data[TGD];
 }
 
-ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime)
+ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime, const long double psudorange)
 {
 
+	long double e = data[eccentricity];
+
 	long double tk0 = currentTime - time_of_ephemeris;
-	long double tk = tk0;
+	long double tk = tk0 - psudorange / WGS84_Frame::C_velocity;
 
-	long double sqrt_A = data[sqrtA];
-	long double e = data[eccentricity]; // Eccentricity
-	long double n = sqrt(WGS84_Frame::GMe) / sqrt_A / sqrt_A / sqrt_A + data[d_n];
-	long double Mk = data[M0] + n * tk; // mean anomaly
-	long double Ek = Mk;
-	for (int i = 0; i < 10; i++)
-	{
-		Ek = Mk + e * sin(Ek); // Kepler equation;
-	}
+	long double Ek = CalculateEk(currentTime, psudorange);
 
-	long double rk = sqrt_A * sqrt_A * (1.0 - e * cos(Ek));
+	long double rk = data[sqrtA] * data[sqrtA] * (1.0 - e * cos(Ek));
 	long double vk = atan2((sqrt(1.0 - e * e) * sin(Ek)), (cos(Ek) - e));
 	long double pk = vk + data[omega];
 
@@ -158,3 +157,20 @@ ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime)
 	return sat_pos;
 }
 
+long double Ephemeris::CalculateEk(GPS_Time currentTime, const long double psudorange)
+{
+	long double tk0 = currentTime - time_of_ephemeris;
+	long double tk = tk0 - psudorange / WGS84_Frame::C_velocity;
+
+	long double sqrt_A = data[sqrtA];
+	long double e = data[eccentricity]; // Eccentricity
+	long double n = sqrt(WGS84_Frame::GMe) / sqrt_A / sqrt_A / sqrt_A + data[d_n];
+	long double Mk = data[M0] + n * tk; // mean anomaly
+	long double Ek = Mk;
+	for (int i = 0; i < 10; i++)
+	{
+		Ek = Mk + e * sin(Ek); // Kepler equation;
+	}
+
+	return Ek;
+}

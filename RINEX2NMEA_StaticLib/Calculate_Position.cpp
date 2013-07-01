@@ -73,8 +73,8 @@ Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephemeris, Matri
 	int i = 0;
 	for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
 	{
-		satellites.push_back((it->second).GetPosition(current));
-		clockdiff.SetData((it->second).GetClock(current), i, 0);
+		satellites.push_back((it->second).GetPosition(current, 0.0L));
+		clockdiff.SetData((it->second).GetClock(current, 0.0L), i, 0);
 		i++;
 	}
 

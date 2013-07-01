@@ -86,8 +86,8 @@ public:
 	void SetData(const long double dat, Ephemeris_column col);
 	long double GetData(Ephemeris_column col);
 
-	ECEF_Frame GetPosition(GPS_Time currentTime);
-	long double GetClock(GPS_Time currentTime);
+	ECEF_Frame GetPosition(GPS_Time currentTime, const long double psudorange);
+	long double GetClock(GPS_Time currentTime, const long double psudorange);
 
 
 private:
@@ -96,6 +96,8 @@ private:
 	GPS_Time transmission_time;
 	GPS_Time time_of_ephemeris;
 	int PRN;
+
+	long double CalculateEk(GPS_Time currentTime, const long double psudorange);
 
 };
 
