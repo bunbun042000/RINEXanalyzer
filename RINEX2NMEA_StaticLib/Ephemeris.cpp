@@ -1,0 +1,160 @@
+/*
+ * Ephemeris.cpp
+ *
+ *  Created on: 2013/06/20
+ *      Author: bun
+ */
+
+#include "Ephemeris.h"
+#include <iostream>
+
+Ephemeris::Ephemeris()
+{
+	// Do nothing
+	PRN = 0;
+	data.clear();
+}
+
+Ephemeris::Ephemeris(const int prn)
+{
+	PRN = prn;
+	data.clear();
+}
+
+Ephemeris::Ephemeris(const Ephemeris &rin)
+{
+	data = rin.data;
+	time_of_clock = rin.time_of_clock;
+	transmission_time = rin.transmission_time;
+	time_of_ephemeris = rin.time_of_ephemeris;
+	PRN = rin.PRN;
+}
+
+Ephemeris::~Ephemeris()
+{
+	data.clear();
+}
+
+void Ephemeris::SetData(const long double dat, Ephemeris_column col)
+{
+
+	if (col == TOC)
+	{
+		// Do nothing
+	}
+	else if (col == TOE)
+	{
+		time_of_ephemeris = GPS_Time(time_of_clock.GetWeek(), dat, time_of_clock.GetLeapSecond());
+	}
+	else if (col == TOT)
+	{
+		transmission_time = GPS_Time(time_of_clock.GetWeek(), dat, time_of_clock.GetLeapSecond());
+	}
+	else if (col == week)
+	{
+		long double t = (time_of_clock.GetWeek() - dat) * GPS_Time::Seconds_in_week;
+		t += time_of_clock.GetSecond();
+		time_of_clock = GPS_Time(dat, t, time_of_clock.GetLeapSecond());
+	}
+	else if (col == NONE1 || col == NONE2)
+	{
+		// Do nothing
+	}
+	else
+	{
+		data.insert(std::map<Ephemeris_column, long double>::value_type(col, dat));
+	}
+
+}
+
+long double Ephemeris::GetData(Ephemeris_column col)
+{
+
+	if (col == NONE1 || col == NONE2 || col == END)
+	{
+		return 0.0L;
+	}
+	else if (col == TOC)
+	{
+		return time_of_clock.GetSecond();
+	}
+	else if (col == TOE)
+	{
+		return time_of_ephemeris.GetSecond();
+	}
+	else if (col == TOT)
+	{
+		return transmission_time.GetSecond();
+	}
+	else if (col == week)
+	{
+		return time_of_clock.GetWeek();
+	}
+	else
+	{
+		return data[col];
+
+	}
+
+}
+
+long double Ephemeris::GetClock(GPS_Time currentTime)
+{
+	long double tk, tk0, tr = 0.0L;
+	tk0 = currentTime - time_of_clock;
+	tk = tk0;
+
+	long double dt = data[Af0] + data[Af1] * tk + data[Af2] * tk * tk;
+
+	return dt + tr - data[TGD];
+}
+
+ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime)
+{
+
+	long double tk0 = currentTime - time_of_ephemeris;
+	long double tk = tk0;
+
+	long double sqrt_A = data[sqrtA];
+	long double e = data[eccentricity]; // Eccentricity
+	long double n = sqrt(WGS84_Frame::GMe) / sqrt_A / sqrt_A / sqrt_A + data[d_n];
+	long double Mk = data[M0] + n * tk; // mean anomaly
+	long double Ek = Mk;
+	for (int i = 0; i < 10; i++)
+	{
+		Ek = Mk + e * sin(Ek); // Kepler equation;
+	}
+
+	long double rk = sqrt_A * sqrt_A * (1.0 - e * cos(Ek));
+	long double vk = atan2((sqrt(1.0 - e * e) * sin(Ek)), (cos(Ek) - e));
+	long double pk = vk + data[omega];
+
+	long double d_uk = data[Cus] * sin(2.0 * pk) + data[Cuc] * cos(2.0 * pk);
+	long double d_rk = data[Crs] * sin(2.0 * pk) + data[Crc] * cos(2.0 * pk);
+	long double d_ik = data[Cis] * sin(2.0 * pk) + data[Cic] * cos(2.0 * pk);
+	long double uk = pk + d_uk;
+	rk = rk + d_rk;
+	long double ik = data[i0] + d_ik + data[di] * tk;
+
+	long double xk = rk * cos(uk);
+	long double yk = rk * sin(uk);
+
+	// ascending node
+	long double Omegak = data[OMEGA0] + (data[OMEGA_dot] - WGS84_Frame::Omega_E) * tk0
+			- WGS84_Frame::Omega_E * time_of_ephemeris.GetSecond();
+
+	long double x = xk * cos(Omegak) - yk * sin(Omegak) * cos(ik);
+	long double y = xk * sin(Omegak) + yk * cos(Omegak) * cos(ik);
+	long double z = yk * sin(ik);
+
+
+	ECEF_Frame sat_pos = ECEF_Frame(x, y, z);
+
+//	std::cerr << "PRN = " << PRN << std::endl;
+//	std::cerr << "x   = " << std::fixed << sat_pos.GetX() << std::endl;
+//	std::cerr << "y   = " << std::fixed << sat_pos.GetY() << std::endl;
+//	std::cerr << "z   = " << std::fixed << sat_pos.GetZ() << std::endl;
+
+	return sat_pos;
+}
+

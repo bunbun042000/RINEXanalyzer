@@ -10,33 +10,44 @@
 
 #include <cmath>
 
-class CMatrix
+class Matrix
 {
-	friend CMatrix operator*(CMatrix &s, long double x);
-	friend CMatrix operator*(long double x, CMatrix &s);
+	friend Matrix operator*(Matrix &s, const long double x);
+	friend Matrix operator*(long double x, Matrix &s);
 
 public:
-	CMatrix();
-	CMatrix(int col, int lin);
-	CMatrix(const CMatrix &mat);
-	virtual ~CMatrix();
+	Matrix();
+	Matrix(int lin, int col);
+	Matrix(const Matrix &mat);
+	virtual ~Matrix();
 
-	CMatrix operator+(CMatrix &s);
-	CMatrix operator-(CMatrix &s);
-	CMatrix operator*(CMatrix &s);
+	Matrix operator+(Matrix &s);
+	Matrix operator-(Matrix &s);
+	Matrix operator*(Matrix &s2);
+	Matrix& operator=(const Matrix &s);
+	Matrix& operator+=(Matrix &s);
 
-	bool SetData(long double x, int column, int line);
-	bool SetLine(const long double *line, int lin, int max_col);
-	bool SetColumn(const long double *column, int col, int max_lin);
+	bool SetData(long double x, int row, int column);
+	bool SetLine(const long double *row_data, int row, int max_col);
+	bool SetColumn(const long double *column_data, int column, int max_lin);
+
+	bool SwapRow(int source, int dest);
+	void RowMultiplation(const long double x, const int row);
+	void RowAddition(const int row_a, const long double x, const int row_b);
+
+	Matrix Tranposed();
+
+	int Pivot(const int from_row);
 
 	bool IsValid()
 	{
 		return valid;
 	}
 
-	long double GetData(int column, int line)
+	long double GetData(int line, int column)
 	{
-		return data[line * max_column + column];
+		long double dat = data[row_index[line] * max_column + column_index[column]];
+		return dat;
 	};
 
 	int GetMaxColumn()
@@ -44,18 +55,24 @@ public:
 		return max_column;
 	};
 
-	int GetMaxLine()
+	int GetMaxRow()
 	{
-		return max_line;
+		return max_row;
 	};
 
 
 private:
 	int max_column;
-	int max_line;
+	int max_row;
 	long double *data;
 
+	int *column_index;
+	int *row_index;
+
 	bool valid;
+
+	void DeleteHeap();
+	bool InitHeap(int max_lin, int max_col, int *l_index, int *c_index, long double *s_data);
 
 };
 

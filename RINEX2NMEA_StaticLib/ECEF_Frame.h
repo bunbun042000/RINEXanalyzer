@@ -8,15 +8,26 @@
 #ifndef ECEF_FRAME_H_
 #define ECEF_FRAME_H_
 
-class CECEF_Frame
+#include "Matrix.h"
+
+class ECEF_Frame
 {
 public:
-	CECEF_Frame();
-	CECEF_Frame(long double x0, long double y0, long double z0);
-	CECEF_Frame(const CECEF_Frame &ecef_f);
-	virtual ~CECEF_Frame();
+	ECEF_Frame();
+	ECEF_Frame(long double x0, long double y0, long double z0);
+	ECEF_Frame(const ECEF_Frame &orig);
+	ECEF_Frame(Matrix &m);
+	virtual ~ECEF_Frame();
 
-	long double Distance(const CECEF_Frame &origin);
+	ECEF_Frame &operator=(const ECEF_Frame &orig)
+	{
+		x = orig.x;
+		y = orig.y;
+		z = orig.z;
+		return *this;
+	};
+
+	long double Distance(const ECEF_Frame &origin);
 	long double GetX()
 	{
 		return x;
@@ -28,6 +39,15 @@ public:
 	long double GetZ()
 	{
 		return z;
+	};
+
+	Matrix GetMatrix()
+	{
+		Matrix m = Matrix(3,1);
+		m.SetData(x, 0, 0);
+		m.SetData(y, 1, 0);
+		m.SetData(z, 2, 0);
+		return m;
 	};
 
 protected:

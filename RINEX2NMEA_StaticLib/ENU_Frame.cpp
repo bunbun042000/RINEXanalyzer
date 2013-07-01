@@ -7,11 +7,10 @@
 
 #include "ENU_Frame.h"
 #include <cmath>
-#include <iostream>
 
 CENU_Frame::CENU_Frame()
 {
-	origin = CWGS84_Frame();
+	origin = WGS84_Frame();
 
 	e = 0.0L;
 	n = 0.0L;
@@ -19,7 +18,7 @@ CENU_Frame::CENU_Frame()
 
 }
 
-CENU_Frame::CENU_Frame(long double e_enu, long double n_enu, long double u_enu, const CWGS84_Frame &wgs84_orig)
+CENU_Frame::CENU_Frame(long double e_enu, long double n_enu, long double u_enu, const WGS84_Frame &wgs84_orig)
 {
 	long double s1, c1, s2, c2;
 	long double x0, y0, z0;
@@ -44,22 +43,11 @@ CENU_Frame::CENU_Frame(long double e_enu, long double n_enu, long double u_enu, 
 	y0 += origin.GetY();
 	z0 += origin.GetZ();
 
-	position = CWGS84_Frame(CECEF_Frame(x0, y0, z0));
+	position = WGS84_Frame(ECEF_Frame(x0, y0, z0));
 
 }
 
-CENU_Frame::CENU_Frame(const CENU_Frame &enu_f)
-{
-	position = enu_f.position;
-	origin = enu_f.origin;
-
-	e = enu_f.e;
-	n = enu_f.n;
-	u = enu_f.u;
-
-}
-
-CENU_Frame::CENU_Frame(const CWGS84_Frame wgs84_f, const CWGS84_Frame wgs84_orig)
+CENU_Frame::CENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig)
 {
 	long double x1, y1, z1;
 	long double s1, s2, c1, c2;

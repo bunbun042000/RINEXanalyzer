@@ -9,59 +9,42 @@
 #include "Matrix.h"
 #include <iostream>
 
-CMatrix::CMatrix()
+Matrix::Matrix()
 {
-	max_column = 0;
-	max_line = 0;
-
 	data = 0;
-
-	valid = false;
-}
-CMatrix::CMatrix(int col, int lin)
-{
-	max_column = col;
-	max_line = lin;
-
-	data = new long double[max_column * max_line];
-
-	valid = true;
+	column_index = 0;
+	row_index = 0;
+	DeleteHeap();
+	InitHeap(0, 0, 0, 0, 0);
 }
 
-CMatrix::CMatrix(const CMatrix &mat)
+Matrix::Matrix(int row, int col)
 {
-	int i, size;
-
-	max_column = mat.max_column;
-	max_line = mat.max_line;
-
-	size = max_column * max_line;
-
-	data = new long double[size];
-	for(i = 0; i < size; i++)
-	{
-		data[i] = mat.data[i];
-	}
-
-	valid = mat.valid;
-
-}
-
-CMatrix::~CMatrix()
-{
-	max_column = 0;
-	max_line = 0;
-
-	if (data != 0)
-	{
-		delete [] data;
-	}
 	data = 0;
+	column_index = 0;
+	row_index = 0;
+	DeleteHeap();
+	InitHeap(row, col, 0, 0, 0);
 
-	valid = false;
 }
 
-bool CMatrix::SetData(long double x, int column, int line)
+Matrix::Matrix(const Matrix &mat)
+{
+	data = 0;
+	column_index = 0;
+	row_index = 0;
+	DeleteHeap();
+	InitHeap(mat.max_row, mat.max_column, mat.row_index, mat.column_index, mat.data);
+
+}
+
+Matrix::~Matrix()
+{
+	DeleteHeap();
+
+}
+
+bool Matrix::SetData(long double x, int row, int column)
 {
 	if (column > max_column)
 	{
@@ -72,7 +55,7 @@ bool CMatrix::SetData(long double x, int column, int line)
 		// Do nothing
 	}
 
-	if (line > max_line)
+	if (row > max_row)
 	{
 		return false;
 	}
@@ -81,13 +64,40 @@ bool CMatrix::SetData(long double x, int column, int line)
 		// Do nothing
 	}
 
-	data[line * max_column + column] = x;
+	if (data == 0)
+	{
+		return false;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (column_index == 0)
+	{
+		return false;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (row_index == 0)
+	{
+		return false;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	data[row_index[row] * max_column + column_index[column]] = x;
 	return true;
 
 }
 
 
-bool CMatrix::SetLine(const long double *line, int lin, int max_col)
+bool Matrix::SetLine(const long double *line, int lin, int max_col)
 {
 
 	int i;
@@ -101,7 +111,7 @@ bool CMatrix::SetLine(const long double *line, int lin, int max_col)
 		// Do nothing
 	}
 
-	if(lin > max_line)
+	if(lin > max_row)
 	{
 		return false;
 	}
@@ -112,17 +122,17 @@ bool CMatrix::SetLine(const long double *line, int lin, int max_col)
 
 	for (i = 0; i < max_column; i++)
 	{
-		SetData(line[i], i, lin);
+		SetData(line[i], lin, i);
 	}
 	return true;
 }
 
-bool CMatrix::SetColumn(const long double *column, int col, int max_lin)
+bool Matrix::SetColumn(const long double *column, int col, int m_row)
 {
 
 	int i;
 
-	if (max_line != max_lin)
+	if (max_row!= m_row)
 	{
 		return false;
 	}
@@ -140,21 +150,34 @@ bool CMatrix::SetColumn(const long double *column, int col, int max_lin)
 		// Do nothing
 	}
 
-	for (i = 0; i < max_line; i++)
+	for (i = 0; i < max_row; i++)
 	{
-		this->SetData(column[i], col, i);
-		std::cout << "data = " << std::fixed <<  this->GetData(col, i) << ", col = " << col << ", i = " << i << "\n";
+		this->SetData(column[i], i, col);
 	}
 	return true;
 
 }
 
-CMatrix CMatrix::operator+(CMatrix &s)
+bool Matrix::SwapRow(int source, int dest)
+{
+	if ((source < max_row) && (dest < max_row))
+	{
+		std::swap(row_index[source], row_index[dest]);
+		return true;
+	}
+	else
+	{
+		// Do nothing
+	}
+	return false;
+}
+
+Matrix Matrix::operator+(Matrix &s)
 {
 
-	CMatrix dest;
+	Matrix dest;
 
-	if ((max_column != s.max_column) || (max_line != s.max_line))
+	if ((max_column != s.max_column) || (max_row != s.max_row))
 	{
 		return dest;
 	}
@@ -163,28 +186,62 @@ CMatrix CMatrix::operator+(CMatrix &s)
 		// Do nothing
 	}
 
-	dest = CMatrix(this->max_column, this->max_line);
+	dest.InitHeap(this->max_column, this->max_row, 0, 0, 0);
 
-	int i, size;
+	int i, j;
 
-	size = dest.max_column * dest.max_line;
 
-	for(i = 0; i < size; i++)
+	for(i = 0; i < max_row; i++)
 	{
-			dest.data[i] = this->data[i] + s.data[i];
-			std::cout << "data = " << std::fixed <<  dest.data[i] << ", i = " << i << "\n";
+		for(j = 0; j < max_column; j++)
+		{
+			dest.SetData(GetData(i, j) + s.GetData(i, j), i, j);
+
+		}
 	}
 
 	return dest;
 
 }
 
-CMatrix CMatrix::operator-(CMatrix &s)
+
+Matrix& Matrix::operator+=(Matrix &s)
 {
 
-	CMatrix dest;
+	if ((max_column != s.max_column) || (max_row != s.max_row))
+	{
+		return *this;
+	}
+	else
+	{
+		// Do nothing
+	}
 
-	if ((max_column != s.max_column) || (max_line != s.max_line))
+
+	int i, j;
+	long double temp;
+
+
+	for(i = 0; i < max_row; i++)
+	{
+		for(j = 0; j < max_column; j++)
+		{
+			temp = GetData(i, j) + s.GetData(i, j);
+			SetData(temp, i, j);
+
+		}
+	}
+
+	return *this;
+}
+
+
+Matrix Matrix::operator-(Matrix &s)
+{
+
+	Matrix dest;
+
+	if ((max_column != s.max_column) || (max_row != s.max_row))
 	{
 		return dest;
 	}
@@ -193,13 +250,13 @@ CMatrix CMatrix::operator-(CMatrix &s)
 		// Do nothing
 	}
 
-	dest = CMatrix(s.max_column, s.max_line);
+	dest = Matrix(s.max_column, s.max_row);
 
 	int i, j;
 
-	for(i = 0; i < dest.max_column; i++)
+	for (i = 0; i < max_row; i++)
 	{
-		for(j = 0; j < dest.max_line; j++)
+		for (j = 0; j < max_column; j++)
 		{
 			dest.SetData(GetData(i, j) - s.GetData(i, j), i, j);
 		}
@@ -209,11 +266,12 @@ CMatrix CMatrix::operator-(CMatrix &s)
 
 }
 
-CMatrix CMatrix::operator*(CMatrix &s)
+Matrix Matrix::operator*(Matrix &s2)
 {
-	CMatrix dest;
 
-	if ((max_column != s.max_line) || (max_line != s.max_column))
+	Matrix dest;
+
+	if (max_column != s2.max_row)
 	{
 		return dest;
 	}
@@ -222,37 +280,225 @@ CMatrix CMatrix::operator*(CMatrix &s)
 		// Do nothing
 	}
 
-	dest = CMatrix(max_line, s.max_column);
+
+	dest = Matrix(max_row, s2.max_column);
+
 
 	int i, j, k;
+	long double temp;
 
-	for(i = 0; i < dest.max_column; i++)
+	for(i = 0; i < dest.max_row; i++)
 	{
-		for(j = 0; j < s.max_line; j++)
+		for(j = 0; j < dest.max_column; j++)
 		{
-			for (k = 0; j < max_column; k++)
+			temp = 0.0L;
+			for (k = 0; k < max_column; k++)
 			{
-				dest.SetData(GetData(k, j) * s.GetData(i, k), i, j);
+				temp += GetData(i, k) * s2.GetData(k, j);
+			}
+			dest.SetData(temp, i, j);
+		}
+	}
+
+	return dest;
+
+}
+
+Matrix& Matrix::operator=(const Matrix &s)
+{
+	InitHeap(s.max_row, s.max_column, s.row_index, s.column_index, s.data);
+	return *this;
+}
+
+void Matrix::RowMultiplation(const long double x, const int row)
+{
+	int i;
+
+	for (i = 0; i < max_column; i++)
+	{
+		SetData(x * GetData(row, i), row, i);
+	}
+}
+
+void Matrix::RowAddition(const int row_a, const long double x, const int row_b)
+{
+
+	int i;
+
+	for (i = 0; i < max_column; i++)
+	{
+		SetData(GetData(row_a, i) + x * GetData(row_b, i), row_a, i);
+	}
+}
+
+Matrix Matrix::Tranposed()
+{
+	Matrix dest = Matrix(max_column, max_row);
+	int i, j;
+
+	for (i = 0; i < max_row; i++)
+	{
+		for (j = 0; j < max_column; j++)
+		{
+			dest.SetData(GetData(i, j), j, i);
+		}
+	}
+
+	return dest;
+}
+
+int Matrix::Pivot(const int from_row)
+{
+	int i, m_row;
+	long double temp = 0.0L;
+
+	if (!(from_row < max_column))
+	{
+		return -1;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	for (i = from_row; i < max_row; i++)
+	{
+		m_row = i;
+		if (temp > fabs(GetData(i, from_row)))
+		{
+			temp = fabs(GetData(i, from_row));
+			m_row = i;
+		}
+	}
+
+	return m_row;
+
+}
+
+
+void Matrix::DeleteHeap()
+{
+	max_column = 0;
+	max_row = 0;
+
+	if (data != 0)
+	{
+		delete [] data;
+	}
+	else
+	{
+		// Do nothing
+	}
+	data = 0;
+
+	if (column_index != 0)
+	{
+		delete [] column_index;
+	}
+	else
+	{
+		// Do nothing
+	}
+	column_index = 0;
+
+	if (row_index != 0)
+	{
+		delete [] row_index;
+	}
+	else
+	{
+		// Do nothing
+	}
+	row_index = 0;
+
+	valid = false;
+}
+
+bool Matrix::InitHeap(int m_row, int m_column, int *l_index, int *c_index, long double *s_data)
+{
+	int i, size;
+
+	max_column = m_column;
+	max_row = m_row;
+
+	if (column_index != 0)
+	{
+		delete [] column_index;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	column_index = new int[m_column];
+
+	for (i = 0; i < max_column; i++)
+	{
+		column_index[i] = i;
+	}
+
+	if (row_index != 0)
+	{
+		delete [] row_index;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	row_index = new int[max_row];
+	for (i = 0; i < max_row; i++)
+	{
+		row_index[i] = i;
+	}
+
+
+	size = max_column * max_row;
+
+	if (data != 0)
+	{
+		delete [] data;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	data = new long double[size];
+
+	if ((s_data != 0) && (l_index != 0) && (c_index != 0)){
+		int i, j;
+
+		for (i = 0; i < max_row; i++)
+		{
+			for (j = 0; j < max_column; j++)
+			{
+				this->SetData(s_data[l_index[i] * max_column + c_index[j]], i ,j);
 			}
 		}
 	}
+	else
+	{
+		// Do nothing
+	}
 
-	return dest;
+	valid = true;
 
+	return valid;
 }
 
-CMatrix operator*(CMatrix &s, long double x)
+Matrix operator*(Matrix &s, const long double x)
 {
 
-	CMatrix dest(s.max_column, s.max_line);
+	Matrix dest(s.max_column, s.max_row);
 
 	int i, j;
 
-	for(i = 0; i < dest.max_column; i++)
+	for(i = 0; i < dest.max_row; i++)
 	{
-		for(j = 0; j < dest.max_line; j++)
+		for(j = 0; j < dest.max_column; j++)
 		{
-			dest.SetData(s.GetData(i, j), i, j);
+			dest.SetData(x * s.GetData(i, j), i, j);
 		}
 	}
 
@@ -260,9 +506,10 @@ CMatrix operator*(CMatrix &s, long double x)
 
 }
 
-CMatrix operator*(long double x, CMatrix &s)
+Matrix operator*(long double x, Matrix &s)
 {
 
 	return s * x;
 
 }
+

@@ -9,7 +9,7 @@
 #include "ECEF_Frame.h"
 #include <cmath>
 
-CWGS84_Frame::CWGS84_Frame() : CECEF_Frame()
+WGS84_Frame::WGS84_Frame() : ECEF_Frame()
 {
 	Latitude = 0.0;
 	Longitude = 0.0;
@@ -17,7 +17,7 @@ CWGS84_Frame::CWGS84_Frame() : CECEF_Frame()
 
 }
 
-CWGS84_Frame::CWGS84_Frame(long double Lat, long double Longi, long double G_Height) : CECEF_Frame()
+WGS84_Frame::WGS84_Frame(long double Lat, long double Longi, long double G_Height) : ECEF_Frame()
 {
 	Latitude = 0.0;
 	Longitude = 0.0;
@@ -27,14 +27,14 @@ CWGS84_Frame::CWGS84_Frame(long double Lat, long double Longi, long double G_Hei
 
 }
 
-CWGS84_Frame::CWGS84_Frame(const CWGS84_Frame &wgs84_f) : CECEF_Frame(wgs84_f)
+WGS84_Frame::WGS84_Frame(const WGS84_Frame &wgs84_f) : ECEF_Frame(wgs84_f)
 {
 	this->Latitude = wgs84_f.Latitude;
 	this->Longitude = wgs84_f.Longitude;
 	this->Geoidal_Height = wgs84_f.Geoidal_Height;
 }
 
-CWGS84_Frame::CWGS84_Frame(const CECEF_Frame &ecef_f) : CECEF_Frame(ecef_f)
+WGS84_Frame::WGS84_Frame(const ECEF_Frame &ecef_f) : ECEF_Frame(ecef_f)
 {
 	Latitude = 0.0;
 	Longitude = 0.0;
@@ -42,7 +42,7 @@ CWGS84_Frame::CWGS84_Frame(const CECEF_Frame &ecef_f) : CECEF_Frame(ecef_f)
 
 	long double a,b,e,f,n,h,p,t,sint,cost;
 
-	if (Distance(CECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
+	if (Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
 	{
 		Latitude = 0.0;
 		Longitude = 0.0;
@@ -69,12 +69,12 @@ CWGS84_Frame::CWGS84_Frame(const CECEF_Frame &ecef_f) : CECEF_Frame(ecef_f)
 
 }
 
-CWGS84_Frame::~CWGS84_Frame()
+WGS84_Frame::~WGS84_Frame()
 {
 	//Do Nothing
 }
 
-void CWGS84_Frame::Set(long double Lat, long double Longi, long double G_Height)
+void WGS84_Frame::Set(long double Lat, long double Longi, long double G_Height)
 {
 	long double a, b, e, f, n;
 

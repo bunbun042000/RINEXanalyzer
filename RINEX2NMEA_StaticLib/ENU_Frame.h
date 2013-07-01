@@ -15,17 +15,16 @@ class CENU_Frame
 
 public:
 	CENU_Frame();
-	CENU_Frame(const CENU_Frame &enu_f);
-	CENU_Frame(long double x_enu, long double y_enu, long double z_enu, const CWGS84_Frame &wgs84_orig);
-	CENU_Frame(const CWGS84_Frame wgs84_f, const CWGS84_Frame wgs84_orig);
+	CENU_Frame(long double x_enu, long double y_enu, long double z_enu, const WGS84_Frame &wgs84_orig);
+	CENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig);
 	virtual ~CENU_Frame();
 
-	CWGS84_Frame GetPosition()
+	WGS84_Frame GetPosition()
 	{
 		return position;
 	};
 
-	CWGS84_Frame GetOrigin()
+	WGS84_Frame GetOrigin()
 	{
 		return origin;
 	};
@@ -49,8 +48,8 @@ public:
 	long double GetAzimuth();
 
 protected:
-	CWGS84_Frame position;
-	CWGS84_Frame origin;
+	WGS84_Frame position;
+	WGS84_Frame origin;
 	long double e;
 	long double n;
 	long double u;

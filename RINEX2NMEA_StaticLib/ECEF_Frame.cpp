@@ -7,34 +7,42 @@
 
 #include <cmath>
 #include "ECEF_Frame.h"
-
-CECEF_Frame::CECEF_Frame()
+#include <iostream>
+ECEF_Frame::ECEF_Frame()
 {
 	x = 0.0;
 	y = 0.0;
 	z = 0.0;
 }
-CECEF_Frame::CECEF_Frame(long double x0, long double y0, long double z0)
+ECEF_Frame::ECEF_Frame(long double x0, long double y0, long double z0)
 {
 	x = x0;
 	y = y0;
 	z = z0;
 }
 
-CECEF_Frame::CECEF_Frame(const CECEF_Frame &ecef_f)
+ECEF_Frame::ECEF_Frame(const ECEF_Frame &orig)
 {
-	this->x = ecef_f.x;
-	this->y = ecef_f.y;
-	this->z = ecef_f.z;
+	x = orig.x;
+	y = orig.y;
+	z = orig.z;
 }
 
-CECEF_Frame::~CECEF_Frame()
+ECEF_Frame::ECEF_Frame(Matrix &m)
+{
+	x = m.GetData(0, 0);
+	y = m.GetData(1, 0);
+	z = m.GetData(2, 0);
+}
+
+ECEF_Frame::~ECEF_Frame()
 {
 	// Do nothing
 }
 
-long double CECEF_Frame::Distance(const CECEF_Frame &origin)
+
+long double ECEF_Frame::Distance(const ECEF_Frame &origin)
 {
-	return sqrt(pow((x - origin.x),2) + pow((y - origin.y), 2) + pow((z - origin.z), 2));
+	return sqrt((x - origin.x) * (x - origin.x) + (y - origin.y) * (y - origin.y) + (z - origin.z) * (z - origin.z));
 }
 

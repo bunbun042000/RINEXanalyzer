@@ -5,7 +5,7 @@
  *      Author: bun
  */
 #include <stdio.h>
-#include "GPS_Time_Week.h"
+#include "GPS_Time.h"
 
 int main(int argc, char **argv)
 {
