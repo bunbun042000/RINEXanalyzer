@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #include "Ephemeris.h"
+#include "IonoSphere.h"
 
 class RINEX_NavigationMessage
 {
@@ -28,20 +29,7 @@ public:
 	void SetFileName(std::string fname);
 
 	std::map<int, Ephemeris> GetEphemeris(GPS_Time current_gpst, const int IODE);
-
-	enum ION_alpha {
-		A0,
-		A1,
-		A2,
-		A3
-	};
-
-	enum ION_beta {
-		B0,
-		B1,
-		B2,
-		B3
-	};
+	std::map<int, long double> GetIonoDelayCorrection(ECEF_Frame userPosition, GPS_Time currentTime, const int IODE);
 
 	std::multimap <int, Ephemeris> ephem_map; // PRN and Ephemeris_Data
 
@@ -52,12 +40,7 @@ private:
 	static const long int Ephemeris_Default_Freshness = 7200L; // 2 hours
 
 	std::string filename;
-	int week;
-
-	std::map <int, Ephemeris> ephemeris_m;
-
-	std::map <ION_alpha, long double> Ionosphere_parameterA;
-	std::map <ION_beta, long double> Ionosphere_parameterB;
+	IonoSphere ion;
 
 	long double GetLongDouble(std::string str);
 	bool ReadHeader(std::ifstream &ifs, int &leap_sec);

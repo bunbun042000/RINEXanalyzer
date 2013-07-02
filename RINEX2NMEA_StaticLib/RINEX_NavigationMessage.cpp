@@ -12,17 +12,6 @@
 RINEX_NavigationMessage::RINEX_NavigationMessage(std::string fname = "")
 {
 	filename = fname;
-	week = -1;
-
-	Ionosphere_parameterA[A0] = 0.0L;
-	Ionosphere_parameterA[A1] = 0.0L;
-	Ionosphere_parameterA[A2] = 0.0L;
-	Ionosphere_parameterA[A3] = 0.0L;
-
-	Ionosphere_parameterB[B0] = 0.0L;
-	Ionosphere_parameterB[B1] = 0.0L;
-	Ionosphere_parameterB[B2] = 0.0L;
-	Ionosphere_parameterB[B3] = 0.0L;
 
 
 }
@@ -31,10 +20,7 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(const RINEX_NavigationMessage &
 {
 	filename = nRIN.filename;
 	ephem_map = nRIN.ephem_map;
-	week = nRIN.week;
-
-	Ionosphere_parameterA = nRIN.Ionosphere_parameterA;
-	Ionosphere_parameterB = nRIN.Ionosphere_parameterB;
+	ion = nRIN.ion;
 
 }
 
@@ -42,10 +28,6 @@ RINEX_NavigationMessage::~RINEX_NavigationMessage()
 {
 	filename = "";
 	ephem_map.clear();
-	week = -1;
-
-	Ionosphere_parameterA.clear();
-	Ionosphere_parameterB.clear();
 
 }
 
@@ -94,6 +76,8 @@ void RINEX_NavigationMessage::SetFileName(std::string fname)
 
 std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_gpst, const int IODE)
 {
+
+	std::map <int, Ephemeris> ephemeris_m;
 
 	if(ephem_map.empty())
 	{
@@ -180,6 +164,7 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 	return ephemeris_m;
 }
 
+
 long double RINEX_NavigationMessage::GetLongDouble(std::string str)
 {
 	unsigned int posD = str.find("D");
@@ -208,18 +193,18 @@ bool RINEX_NavigationMessage::ReadHeader(std::ifstream &ifs, int &leap_sec)
 	{
 		if (buf.find("ION ALPHA") != std::string::npos)
 		{
-			Ionosphere_parameterA[A0] = GetLongDouble(buf.substr(0, 14));
-			Ionosphere_parameterA[A1] = GetLongDouble(buf.substr(14, 12));
-			Ionosphere_parameterA[A2] = GetLongDouble(buf.substr(26, 12));
-			Ionosphere_parameterA[A3] = GetLongDouble(buf.substr(38, 12));
+			ion.SetData(GetLongDouble(buf.substr(0, 14)), IonoSphere::A0);
+			ion.SetData(GetLongDouble(buf.substr(14, 12)), IonoSphere::A1);
+			ion.SetData(GetLongDouble(buf.substr(26, 12)), IonoSphere::A2);
+			ion.SetData(GetLongDouble(buf.substr(38, 12)), IonoSphere::A3);
 			success = true;
 		}
 		else if (buf.find("ION BETA") != std::string::npos)
 		{
-			Ionosphere_parameterB[B0] = GetLongDouble(buf.substr(0, 14));
-			Ionosphere_parameterB[B1] = GetLongDouble(buf.substr(14, 12));
-			Ionosphere_parameterB[B2] = GetLongDouble(buf.substr(26, 12));
-			Ionosphere_parameterB[B3] = GetLongDouble(buf.substr(38, 12));
+			ion.SetData(GetLongDouble(buf.substr(0, 14)), IonoSphere::B0);
+			ion.SetData(GetLongDouble(buf.substr(14, 12)), IonoSphere::B1);
+			ion.SetData(GetLongDouble(buf.substr(26, 12)), IonoSphere::B2);
+			ion.SetData(GetLongDouble(buf.substr(38, 12)), IonoSphere::B3);
 			success = true;
 		}
 		else if (buf.find("LEAP SECONDS") != std::string::npos)

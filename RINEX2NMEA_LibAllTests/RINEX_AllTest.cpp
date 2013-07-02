@@ -336,7 +336,7 @@ TEST(ENU_Frame_Test, ENU2ECEF)
 {
 	WGS84_Frame wgs84_origin = WGS84_Frame(35.6580992222 / 180 * 3.1415926535898, 139.7413574722 / 180 * 3.1415926535898, 63.23233511);
 
-	CENU_Frame enu1 = CENU_Frame(200.0L, 100.0L, 300.0L, wgs84_origin);
+	ENU_Frame enu1 = ENU_Frame(200.0L, 100.0L, 300.0L, wgs84_origin);
 
 	ASSERT_NEAR(-3959610.981, (enu1.GetPosition()).GetX(), 1.0e-3);
 	ASSERT_NEAR(3352821.497, (enu1.GetPosition()).GetY(), 1.0e-3);
@@ -353,7 +353,7 @@ TEST(ENU_Frame_Test, ECEF2ENU)
 
 	WGS84_Frame f1 = WGS84_Frame(ECEF_Frame(-3959610.981, 3352821.497, 3697727.548));
 
-	CENU_Frame enu1 = CENU_Frame(f1, wgs84_origin);
+	ENU_Frame enu1 = ENU_Frame(f1, wgs84_origin);
 
 	ASSERT_NEAR(200.0L, enu1.GetE(), 1.0e-3);
 	ASSERT_NEAR(100.0L, enu1.GetN(), 1.0e-3);

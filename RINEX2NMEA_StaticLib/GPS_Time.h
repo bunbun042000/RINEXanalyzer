@@ -20,7 +20,6 @@ private:
   long double second;
   int leap_second;
 
-  static const long int Seconds_in_Day = 86400L;
   static const int Time_t_Base_Year = 1970;
   static const int GPS_Week_Origin = 315964800L;
   static const long double GPS_Epoch_JD = 2444244.5;
@@ -57,6 +56,7 @@ public:
 
   static const long int Seconds_in_Hour = 3600L;
   static const long int Seconds_in_week = 604800L;
+  static const long int Seconds_in_Day = 86400L;
 
 };
 

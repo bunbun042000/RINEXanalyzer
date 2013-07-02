@@ -10,14 +10,14 @@
 
 #include "WGS84_Frame.h"
 
-class CENU_Frame
+class ENU_Frame
 {
 
 public:
-	CENU_Frame();
-	CENU_Frame(long double x_enu, long double y_enu, long double z_enu, const WGS84_Frame &wgs84_orig);
-	CENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig);
-	virtual ~CENU_Frame();
+	ENU_Frame();
+	ENU_Frame(long double x_enu, long double y_enu, long double z_enu, const WGS84_Frame &wgs84_orig);
+	ENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig);
+	virtual ~ENU_Frame();
 
 	WGS84_Frame GetPosition()
 	{

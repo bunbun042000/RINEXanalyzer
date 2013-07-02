@@ -87,7 +87,7 @@ TEST(Calculate_Position, TEST1)
 
 TEST(RINEX_NavigationMessage, Read)
 {
-	std::string filename = "/cygdrive/c/home/bun/Documents/work/workspace/CalculatePosition_AllTests/05311710.13n";
+	std::string filename = "05311710.13n";
 	RINEX_NavigationMessage nav_message(filename);
 
 	nav_message.Read();
@@ -194,7 +194,7 @@ TEST(RINEX_NavigationMessage, Read)
 
 TEST(RINEX_NavigationMessage, CalculateSatellitePosition)
 {
-	std::string filename = "/cygdrive/c/home/bun/Documents/work/workspace/CalculatePosition_AllTests/mtka3180.05n";
+	std::string filename = "mtka3180.05n";
 	RINEX_NavigationMessage nav_message(filename);
 
 	nav_message.Read();
@@ -242,11 +242,16 @@ TEST(RINEX_NavigationMessage, CalculateSatellitePosition)
 
 	ECEF_Frame position = cal.GetPosition();
 //	ASSERT_DOUBLE_EQ(-3947846.647, position.GetX());
-	ASSERT_DOUBLE_EQ(-3947847.5773508437, position.GetX());
+//	ASSERT_DOUBLE_EQ(-3947847.5773508437, position.GetX());
 //	ASSERT_DOUBLE_EQ(3364338.022, position.GetY());
-	ASSERT_DOUBLE_EQ(3364337.0398937939, position.GetY());
+//	ASSERT_DOUBLE_EQ(3364337.0398937939, position.GetY());
 //	ASSERT_DOUBLE_EQ(3699406.626, position.GetZ());
-	ASSERT_DOUBLE_EQ(3699406.4078218928, position.GetZ());
+//	ASSERT_DOUBLE_EQ(3699406.4078218928, position.GetZ());
+
+// relative effect collection
+	ASSERT_DOUBLE_EQ(-3947841.2121078535, position.GetX());
+	ASSERT_DOUBLE_EQ(3364334.5810319413, position.GetY());
+	ASSERT_DOUBLE_EQ(3699408.8296222701, position.GetZ());
 
 }
 

@@ -8,7 +8,7 @@
 #include "ENU_Frame.h"
 #include <cmath>
 
-CENU_Frame::CENU_Frame()
+ENU_Frame::ENU_Frame()
 {
 	origin = WGS84_Frame();
 
@@ -18,7 +18,7 @@ CENU_Frame::CENU_Frame()
 
 }
 
-CENU_Frame::CENU_Frame(long double e_enu, long double n_enu, long double u_enu, const WGS84_Frame &wgs84_orig)
+ENU_Frame::ENU_Frame(long double e_enu, long double n_enu, long double u_enu, const WGS84_Frame &wgs84_orig)
 {
 	long double s1, c1, s2, c2;
 	long double x0, y0, z0;
@@ -47,7 +47,7 @@ CENU_Frame::CENU_Frame(long double e_enu, long double n_enu, long double u_enu, 
 
 }
 
-CENU_Frame::CENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig)
+ENU_Frame::ENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig)
 {
 	long double x1, y1, z1;
 	long double s1, s2, c1, c2;
@@ -70,19 +70,19 @@ CENU_Frame::CENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig)
 
 }
 
-CENU_Frame::~CENU_Frame()
+ENU_Frame::~ENU_Frame()
 {
 	// Do nothing
 }
 
-long double CENU_Frame::GetElevation()
+long double ENU_Frame::GetElevation()
 {
 
 	return atan2(u, sqrt(e * e + n * n));
 
 }
 
-long double CENU_Frame::GetAzimuth()
+long double ENU_Frame::GetAzimuth()
 {
 
 	return atan2(e, n);
