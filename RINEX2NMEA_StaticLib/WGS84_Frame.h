@@ -34,10 +34,12 @@ public:
 	{
 		return Latitude;
 	};
+
 	long double GetLongi()
 	{
 		return Longitude;
 	};
+
 	long double GetG_Height()
 	{
 		return Geoidal_Height;
@@ -47,14 +49,17 @@ public:
 	{
 		return rad / GPS_Pi * 180.0L;
 	};
+
 	static long double Deg2Rad(long double deg)
 	{
 		return deg / 180.0L * GPS_Pi;
 	};
+
 	static long double Rad2Sc(long double rad)
 	{
 		return rad / GPS_Pi;
 	};
+
 	static long double Sc2Rad(long double sc)
 	{
 		return GPS_Pi * sc;

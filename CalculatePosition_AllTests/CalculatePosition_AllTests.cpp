@@ -62,7 +62,7 @@ TEST(Calculate_Position, TEST1)
 
 
 	std::vector<ECEF_Frame> sat;
-	Matrix range = Matrix(5, 1);
+	std::vector<long double> range;
 	sat.push_back(ECEF_Frame(-13897607.6294L, -10930188.6233L, 19676689.6804L));
 	sat.push_back(ECEF_Frame(-17800899.1998L, 15689920.8120L, 11943543.3888L));
 	sat.push_back(ECEF_Frame(-1510958.2282L, 26280096.7818L, -3117646.1949L));
@@ -70,11 +70,11 @@ TEST(Calculate_Position, TEST1)
 	sat.push_back(ECEF_Frame(-170032.6981L, 17261822.6784L, 20555984.4061L));
 
 
-	range.SetData(23634878.5219L, 0, 0);
-	range.SetData(20292688.3557L, 1, 0);
-	range.SetData(24032055.0372L, 2, 0);
-	range.SetData(24383229.3740L, 3, 0);
-	range.SetData(22170992.8178L, 4, 0);
+	range.push_back(23634878.5219L);
+	range.push_back(20292688.3557L);
+	range.push_back(24032055.0372L);
+	range.push_back(24383229.3740L);
+	range.push_back(22170992.8178L);
 
 	Calculate_Position cal(sat, range, 5);
 
@@ -93,7 +93,6 @@ TEST(RINEX_NavigationMessage, Read)
 	nav_message.Read();
 
 	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(GPS_Time(1745, 388800, 0), -1); // 2013-06-20 12:00:00
-
 
 	std::map<int, Ephemeris>::iterator it = ephem_map.begin();
 	ASSERT_EQ(1, it->first);
@@ -201,57 +200,25 @@ TEST(RINEX_NavigationMessage, CalculateSatellitePosition)
 
 	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(GPS_Time(1349, 86400.0, 0), -1); // 2005-11-14 00:00:00
 
+	std::map<int, long double> range;
+	range.insert(std::pair<int, long double>(5, 23545777.534L));		// PRN 5
+	range.insert(std::pair<int, long double>(14, 20299789.570L));		// PRN 14
+	range.insert(std::pair<int, long double>(16, 24027782.537L));		// PRN 16
+	range.insert(std::pair<int, long double>(22, 24367716.061L));		// PRN 22
+	range.insert(std::pair<int, long double>(25, 22169926.127L));		// PRN 25
 
-	Matrix range = Matrix(5, 1);
-
-	std::map <int, Ephemeris> cal_ephem;
-
-	for (std::map <int, Ephemeris>::iterator it = ephem_map.begin(); it != ephem_map.end(); it++)
-	{
-		if (it->first == 5)
-		{
-			cal_ephem.insert(std::pair<int, Ephemeris>(it->first, it->second));
-		}
-		else if (it->first == 14)
-		{
-			cal_ephem.insert(std::pair<int, Ephemeris>(it->first, it->second));
-		}
-		else if (it->first == 16)
-		{
-			cal_ephem.insert(std::pair<int, Ephemeris>(it->first, it->second));
-		}
-		else if (it->first == 22)
-		{
-			cal_ephem.insert(std::pair<int, Ephemeris>(it->first, it->second));
-		}
-		else if (it->first == 25)
-		{
-			cal_ephem.insert(std::pair<int, Ephemeris>(it->first, it->second));
-		}
-
-	}
-
-
-	range.SetData(23545777.534L, 0, 0);		// PRN 5
-	range.SetData(20299789.570L, 1, 0);		// PRN 14
-	range.SetData(24027782.537L, 2, 0);		// PRN 16
-	range.SetData(24367716.061L, 3, 0);		// PRN 22
-	range.SetData(22169926.127L, 4, 0);		// PRN 25
-
-	Calculate_Position cal(cal_ephem, range, GPS_Time(1349, 86400.0, 0));
+	Calculate_Position cal(ephem_map, range, GPS_Time(1349, 86400.0, 0), nav_message.GetIon());
 
 	ECEF_Frame position = cal.GetPosition();
-//	ASSERT_DOUBLE_EQ(-3947846.647, position.GetX());
-//	ASSERT_DOUBLE_EQ(-3947847.5773508437, position.GetX());
-//	ASSERT_DOUBLE_EQ(3364338.022, position.GetY());
-//	ASSERT_DOUBLE_EQ(3364337.0398937939, position.GetY());
-//	ASSERT_DOUBLE_EQ(3699406.626, position.GetZ());
-//	ASSERT_DOUBLE_EQ(3699406.4078218928, position.GetZ());
 
 // relative effect collection
-	ASSERT_DOUBLE_EQ(-3947841.2121078535, position.GetX());
-	ASSERT_DOUBLE_EQ(3364334.5810319413, position.GetY());
-	ASSERT_DOUBLE_EQ(3699408.8296222701, position.GetZ());
+//	ASSERT_DOUBLE_EQ(-3947762.4862546385, position.GetX());
+//	ASSERT_DOUBLE_EQ(3364401.3024154068, position.GetY());
+//	ASSERT_DOUBLE_EQ(3699431.9924437893, position.GetZ());
+
+	ASSERT_DOUBLE_EQ(-3947763.5293039996, position.GetX());
+	ASSERT_DOUBLE_EQ(3364400.4363894789, position.GetY());
+	ASSERT_DOUBLE_EQ(3699431.7444107099, position.GetZ());
 
 }
 

@@ -23,15 +23,20 @@ public:
 	RINEX_NavigationMessage();
 	RINEX_NavigationMessage(std::string fname);
 	RINEX_NavigationMessage(const RINEX_NavigationMessage &pRIN);
-	~RINEX_NavigationMessage();
+	virtual ~RINEX_NavigationMessage();
 
 	bool Read();
 	void SetFileName(std::string fname);
+	IonoSphere GetIon()
+	{
+		return ion;
+	}
 
 	std::map<int, Ephemeris> GetEphemeris(GPS_Time current_gpst, const int IODE);
 	std::map<int, long double> GetIonoDelayCorrection(ECEF_Frame userPosition, GPS_Time currentTime, const int IODE);
 
 	std::multimap <int, Ephemeris> ephem_map; // PRN and Ephemeris_Data
+
 
 private:
 	static const int RINEX_NAV_FIELDS_LINE = 4;
@@ -39,8 +44,9 @@ private:
 	static const int RINEX_TOP_FIELD_WIDTH = 22;
 	static const long int Ephemeris_Default_Freshness = 7200L; // 2 hours
 
-	std::string filename;
 	IonoSphere ion;
+
+	std::string filename;
 
 	long double GetLongDouble(std::string str);
 	bool ReadHeader(std::ifstream &ifs, int &leap_sec);

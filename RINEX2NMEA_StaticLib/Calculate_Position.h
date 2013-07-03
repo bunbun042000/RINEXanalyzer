@@ -8,20 +8,22 @@
 #ifndef CALCULATE_POSITION_H_
 #define CALCULATE_POSITION_H_
 
-#include "ECEF_Frame.h"
-#include "Gaussian_Elimination.h"
-#include "Ephemeris.h"
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include "ECEF_Frame.h"
+#include "Gaussian_Elimination.h"
+#include "Ephemeris.h"
+#include "IonoSphere.h"
+#include "TropoSphere.h"
 
 class Calculate_Position
 {
 public:
 	Calculate_Position();
 	Calculate_Position(const Calculate_Position &cal);
-	Calculate_Position(std::vector<ECEF_Frame> sats, Matrix dist, const int n_sats);
-	Calculate_Position(std::map<int, Ephemeris> ephemeris, Matrix dist, GPS_Time currentTime);
+	Calculate_Position(std::vector<ECEF_Frame> sats, std::vector<long double> dist, const int n_sats);
+	Calculate_Position(std::map<int, Ephemeris> ephemeris, std::map<int, long double>dist, GPS_Time currentTime, IonoSphere ion);
 	virtual ~Calculate_Position();
 
 	ECEF_Frame GetPosition();
@@ -51,12 +53,20 @@ public:
 
 private:
 	int number_of_satellites;
+	std::map<int, Ephemeris> ephemeris;
+	std::map<int, long double> psudodistance;
 	std::vector<ECEF_Frame> satellites;
-	Matrix distance;
-	Matrix clockdiff;
+	std::vector<long double> distance;
+	std::vector<long double> original_distance;
+	std::vector<long double> clockdiff;
+	std::vector<int> valid_PRN;
 	bool from_ephemeris;
 	bool valid;
 	GPS_Time current;
+	GPS_Time modifiedCurrent;
+	IonoSphere ionosphere;
+
+	void GetCurrentSatellites(ECEF_Frame position, long double clockdiff);
 
 	const static long double max_diff = 1.0e8;
 	const static long double min_diff = 1.0e-5;

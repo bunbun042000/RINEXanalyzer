@@ -63,6 +63,13 @@ long double GPS_Time::operator-(const GPS_Time gpst)
 	return (week - gpst.week) * Days_in_Week * Seconds_in_Day + second - gpst.second;
 }
 
+GPS_Time &GPS_Time::operator=(const GPS_Time gpst)
+{
+	week = gpst.week;
+	second = gpst.second;
+	leap_second = gpst.leap_second;
+	return *this;
+}
 
 long double GPS_Time::GetJulianDay(tm tmbuf)
 {

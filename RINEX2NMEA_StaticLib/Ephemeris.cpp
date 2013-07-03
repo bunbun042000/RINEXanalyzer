@@ -107,7 +107,7 @@ long double Ephemeris::GetClock(GPS_Time currentTime, const long double psudoran
 			* data[eccentricity] * data[sqrtA] * sin(Ek);
 
 	long double tk0 = currentTime - time_of_clock;
-	long double tk = tk0 -psudorange / WGS84_Frame::C_velocity;
+	long double tk = tk0 - psudorange / WGS84_Frame::C_velocity;
 
 	long double dt = data[Af0] + data[Af1] * tk + data[Af2] * tk * tk;
 

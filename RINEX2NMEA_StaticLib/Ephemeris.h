@@ -20,7 +20,7 @@ public:
 	Ephemeris();
 	Ephemeris(const Ephemeris &rin);
 	Ephemeris(const int prn);
-	~Ephemeris();
+	virtual ~Ephemeris();
 
 	enum Ephemeris_column {
 		TOC,

@@ -33,11 +33,12 @@ public:
   GPS_Time(int w, long double sec, int leap_second);
   GPS_Time(tm tmbuf, long double sec, int leap_seconds);
   GPS_Time(const GPS_Time &gpst);
-  ~GPS_Time();
+  virtual ~GPS_Time();
 
   tm ToDate();
 
   long double operator-(const GPS_Time gpst);
+  GPS_Time &operator=(const GPS_Time gpst);
 
   int GetWeek()
   {

@@ -27,17 +27,19 @@ Calculate_Position::Calculate_Position(const Calculate_Position &cal)
 	current = cal.current;
 	clockdiff = cal.clockdiff;
 	from_ephemeris = cal.from_ephemeris;
+	ionosphere = cal.ionosphere;
+	modifiedCurrent = cal.modifiedCurrent;
 
 }
 
-Calculate_Position::Calculate_Position(std::vector<ECEF_Frame> sats, Matrix dist, const int n_sats)
+Calculate_Position::Calculate_Position(std::vector<ECEF_Frame> sats, std::vector<long double> dist, const int n_sats)
 {
 
 	valid = false;
 
-	if ((n_sats != 0) && (dist.GetMaxRow() == n_sats))
+	if (sats.size() == dist.size())
 	{
-		number_of_satellites = n_sats;
+		number_of_satellites = sats.size();
 	}
 	else
 	{
@@ -53,34 +55,18 @@ Calculate_Position::Calculate_Position(std::vector<ECEF_Frame> sats, Matrix dist
 
 }
 
-Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephemeris, Matrix dist, GPS_Time currentTime)
+Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<int, long double> dist, GPS_Time currentTime, IonoSphere ion)
 {
 
-	number_of_satellites = ephemeris.size();
-
-	if((number_of_satellites != 0) && (dist.GetMaxRow() == number_of_satellites))
-	{
-		// Do nothing
-	}
-	else
-	{
-		return;
-	}
-
-	clockdiff = Matrix(number_of_satellites, 1);
 	current = currentTime;
 
-	int i = 0;
-	for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
-	{
-		satellites.push_back((it->second).GetPosition(current, 0.0L));
-		clockdiff.SetData((it->second).GetClock(current, 0.0L), i, 0);
-		i++;
-	}
+	ephemeris = ephem;
+	psudodistance = dist;
+	GetCurrentSatellites(ECEF_Frame(0.0L, 0.0L, 0.0L), 0.0L);
 
+	ionosphere = ion;
 	from_ephemeris = true;
 
-	distance = dist;
 	valid = true;
 }
 
@@ -115,6 +101,15 @@ ECEF_Frame Calculate_Position::GetPosition()
 
 	while(diff > min_diff)
 	{
+		if (from_ephemeris)
+		{
+			GetCurrentSatellites(ans, receiver_clockdiff);
+		}
+		else
+		{
+			// Do nothing
+		}
+
 		// Create Observation matrix
 		for (i = 0; i < number_of_satellites; i++)
 		{
@@ -126,11 +121,25 @@ ECEF_Frame Calculate_Position::GetPosition()
 
 			if(from_ephemeris)
 			{
-				dr.SetData(distance.GetData(i, 0) + clockdiff.GetData(i, 0) * WGS84_Frame::C_velocity - r - receiver_clockdiff, i, 0);
+				dr.SetData(original_distance[i] + clockdiff[i] * WGS84_Frame::C_velocity - r - receiver_clockdiff, i, 0);
 			}
 			else
 			{
-				dr.SetData((distance.GetData(i, 0) - r), i, 0);
+				dr.SetData((distance[i] - r), i, 0);
+			}
+
+			if (j > 3 && from_ephemeris)
+			{
+				long double atomospheric_delay = TropoSphere::GetTropoSphereCollection(satellites[i], ans);
+				if (ionosphere.IsValid())
+				{
+					atomospheric_delay += ionosphere.GetIonoSphereDelayCorrection(satellites[i], ans, modifiedCurrent);
+				}
+				else
+				{
+					// Do nothing
+				}
+				dr.SetData(dr.GetData(i, 0) + atomospheric_delay, i, 0);
 			}
 		}
 
@@ -167,4 +176,42 @@ ECEF_Frame Calculate_Position::GetPosition()
 	}
 
 	return ans;
+}
+
+void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, long double clock_diff)
+{
+	int i = 0;
+
+	modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - clock_diff / WGS84_Frame::C_velocity, current.GetLeapSecond());
+
+	std::map<int, long double>::iterator current_dist_it = psudodistance.begin();
+	for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
+	{
+		for (std::map<int, long double>::iterator dist_it = current_dist_it; dist_it != psudodistance.end(); dist_it++)
+		{
+			if (dist_it->first == it->first)
+			{
+				original_distance.push_back(dist_it->second);
+				long double r = dist_it->second - clock_diff;
+				long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
+				r = dist_it->second - clock_diff + satellite_clock * WGS84_Frame::C_velocity;
+				satellite_clock = (it->second).GetClock(modifiedCurrent, r);
+				ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
+				satellites.push_back(satellite_position);
+				clockdiff.push_back(satellite_clock);
+				distance.push_back(satellite_position.Distance(position));
+				current_dist_it = dist_it;
+				i++;
+				break;
+			}
+		}
+	}
+
+
+	number_of_satellites = i;
+
+	from_ephemeris = true;
+
+	valid = true;
+
 }

@@ -256,7 +256,7 @@ TEST(GPS_Time_Test, ToGPSTime1)
 {
 	GPS_Time gpstime;
 
-	struct tm tbuf;
+	tm tbuf;
 	tbuf.tm_year = 119;
 	tbuf.tm_mon = 3;
 	tbuf.tm_mday = 7;
@@ -276,7 +276,7 @@ TEST(GPS_Time_Test, ToGPSTime2)
 {
 	GPS_Time gpstime;
 
-	struct tm tbuf;
+	tm tbuf;
 	tbuf.tm_year = 80;
 	tbuf.tm_mon = 0;
 	tbuf.tm_mday = 6;

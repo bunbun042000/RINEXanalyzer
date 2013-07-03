@@ -133,6 +133,15 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 						}
 					}
 
+					if ((its->second).GetData(Ephemeris::health) != 0.0L)
+					{
+						continue;
+					}
+					else
+					{
+						// Do nothing
+					}
+
 					candidator = its;
 					exist = true;
 				}
