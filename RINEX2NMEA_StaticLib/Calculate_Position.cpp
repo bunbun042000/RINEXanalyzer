@@ -28,7 +28,6 @@ Calculate_Position::Calculate_Position(const Calculate_Position &cal)
 	clockdiff = cal.clockdiff;
 	from_ephemeris = cal.from_ephemeris;
 	ionosphere = cal.ionosphere;
-	modifiedCurrent = cal.modifiedCurrent;
 
 }
 
@@ -107,7 +106,7 @@ ECEF_Frame Calculate_Position::GetPosition()
 		}
 		else
 		{
-			// Do nothing
+
 		}
 
 		// Create Observation matrix
@@ -133,7 +132,7 @@ ECEF_Frame Calculate_Position::GetPosition()
 				long double atomospheric_delay = TropoSphere::GetTropoSphereCollection(satellites[i], ans);
 				if (ionosphere.IsValid())
 				{
-					atomospheric_delay += ionosphere.GetIonoSphereDelayCorrection(satellites[i], ans, modifiedCurrent);
+					atomospheric_delay += ionosphere.GetIonoSphereDelayCorrection(satellites[i], ans, current);
 				}
 				else
 				{

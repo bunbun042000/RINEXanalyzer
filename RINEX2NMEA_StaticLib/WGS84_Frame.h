@@ -24,9 +24,9 @@ public:
 	virtual ~WGS84_Frame();
 
 	static const long double GPS_Pi = 3.1415926535898; // From IS-GPS-200G(05 Sep. 2012) p.154
-	static const long double C_velocity = 2.99792458e8; // From IS-GPS-200G(05 Sep. 2012) p.126
-	static const long double GMe = 3986004.418e8; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-3
-	static const long double Omega_E = 7292115e-11; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-4
+	static const long double C_velocity = 2.99792458e+8; // From IS-GPS-200G(05 Sep. 2012) p.126
+	static const long double GMe = 3.986005e+14; // From IS-GPS-200G(05 Sep. 2012) p.93
+	static const long double Omega_E = 7.2921151467e-5; // From IS-GPS-200G(05 Sep. 2012) p.100
 	static const long double R_Earth = 6378137.0; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-5
 	static const long double F_Earth = 298.257223563; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-5
 

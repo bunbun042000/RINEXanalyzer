@@ -24,14 +24,14 @@ GPS_Time::GPS_Time(int w = 0, long double sec = 0.0L, int leap_sec = 0)
 
 GPS_Time::GPS_Time(tm tmbuf, long double sec = 0.0L, int leap_sec = 0)
 {
- long double days;
+	long double days;
 
- leap_second = leap_sec;
+	leap_second = leap_sec;
 
- days = GetJulianDay(tmbuf) - GPS_Epoch_JD;
+	days = GetJulianDay(tmbuf) - GPS_Epoch_JD;
 
- week = (int)(days / Days_in_Week);
- second = (days - week * Days_in_Week) * Seconds_in_Day + tmbuf.tm_hour * Seconds_in_Hour +
+	week = (int)(days / Days_in_Week);
+	second = (days - week * Days_in_Week) * Seconds_in_Day + tmbuf.tm_hour * Seconds_in_Hour +
      tmbuf.tm_min * Seconds_in_Minute + tmbuf.tm_sec + sec;
  }
 
@@ -58,7 +58,7 @@ tm GPS_Time::ToDate()
 
 
 
-long double GPS_Time::operator-(const GPS_Time gpst)
+long double GPS_Time::operator-(const GPS_Time &gpst) const
 {
 	return (week - gpst.week) * Days_in_Week * Seconds_in_Day + second - gpst.second;
 }
@@ -69,6 +69,36 @@ GPS_Time &GPS_Time::operator=(const GPS_Time gpst)
 	second = gpst.second;
 	leap_second = gpst.leap_second;
 	return *this;
+}
+
+bool GPS_Time::operator>(const GPS_Time &gpst) const
+{
+	return ((week - gpst.week) * Days_in_Week * Seconds_in_Day + second - gpst.second) > 0.0L;
+}
+
+bool GPS_Time::operator<(const GPS_Time &gpst) const
+{
+	return gpst > *this;
+}
+
+bool GPS_Time::operator>=(const GPS_Time &gpst) const
+{
+	return !(*this < gpst);
+}
+
+bool GPS_Time::operator<=(const GPS_Time &gpst) const
+{
+	return !((*this) > gpst);
+}
+
+bool GPS_Time::operator==(const GPS_Time &gpst) const
+{
+	return ((week == gpst.week) && (second == gpst.second));
+}
+
+bool GPS_Time::operator!=(const GPS_Time &gpst) const
+{
+	return !((*this) == gpst);
 }
 
 long double GPS_Time::GetJulianDay(tm tmbuf)
@@ -92,3 +122,4 @@ long double GPS_Time::GetJulianDay(tm tmbuf)
   return (long double)(floor(365.25L * y) + floor(30.6001 * (m + 1)) + tmbuf.tm_mday + 1720994.5L + b);
 
 }
+

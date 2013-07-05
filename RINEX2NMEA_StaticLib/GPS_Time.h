@@ -11,10 +11,49 @@
 #include <time.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <math.h>
+#include <cmath>
+#include <iostream>
 
 
 class GPS_Time {
+public:
+  GPS_Time();
+  GPS_Time(int w, long double sec, int leap_second);
+  GPS_Time(tm tmbuf, long double sec, int leap_seconds);
+  GPS_Time(const GPS_Time &gpst);
+  virtual ~GPS_Time();
+
+  tm ToDate();
+
+  long double operator-(const GPS_Time &gpst) const;
+  GPS_Time &operator=(const GPS_Time gpst);
+
+  bool operator>(const GPS_Time &gpst) const;
+  bool operator<(const GPS_Time &gpst) const;
+  bool operator>=(const GPS_Time &gpst) const;
+  bool operator<=(const GPS_Time &gpst) const;
+  bool operator==(const GPS_Time &gpst) const;
+  bool operator!=(const GPS_Time &gpst) const;
+
+  int GetWeek() const
+  {
+    return week;
+  };
+
+  long double GetSecond() const
+  {
+    return second;
+  };
+
+  int GetLeapSecond() const
+  {
+	  return leap_second;
+  };
+
+  static const long int Seconds_in_Hour = 3600L;
+  static const long int Seconds_in_week = 604800L;
+  static const long int Seconds_in_Day = 86400L;
+
 private:
   int week;
   long double second;
@@ -28,36 +67,6 @@ private:
 
   long double GetJulianDay(tm tmbuf);
 
-public:
-  GPS_Time();
-  GPS_Time(int w, long double sec, int leap_second);
-  GPS_Time(tm tmbuf, long double sec, int leap_seconds);
-  GPS_Time(const GPS_Time &gpst);
-  virtual ~GPS_Time();
-
-  tm ToDate();
-
-  long double operator-(const GPS_Time gpst);
-  GPS_Time &operator=(const GPS_Time gpst);
-
-  int GetWeek()
-  {
-    return week;
-  };
-
-  long double GetSecond()
-  {
-    return second;
-  };
-
-  int GetLeapSecond()
-  {
-	  return leap_second;
-  };
-
-  static const long int Seconds_in_Hour = 3600L;
-  static const long int Seconds_in_week = 604800L;
-  static const long int Seconds_in_Day = 86400L;
 
 };
 
