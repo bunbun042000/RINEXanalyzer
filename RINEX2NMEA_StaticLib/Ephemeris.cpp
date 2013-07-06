@@ -7,6 +7,7 @@
 
 #include "Ephemeris.h"
 #include <iostream>
+#include <iomanip>
 
 Ephemeris::Ephemeris()
 {
@@ -149,10 +150,17 @@ ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime, const long double psudor
 
 	ECEF_Frame sat_pos = ECEF_Frame(x, y, z);
 
-//	std::cerr << "PRN = " << PRN << std::endl;
-//	std::cerr << "x   = " << std::fixed << sat_pos.GetX() << std::endl;
-//	std::cerr << "y   = " << std::fixed << sat_pos.GetY() << std::endl;
-//	std::cerr << "z   = " << std::fixed << sat_pos.GetZ() << std::endl;
+//	tm tmbuf = currentTime.ToDate();
+//	std::cout << std::setw(4) << std::right << std::setfill('0') << tmbuf.tm_year + 1900 << "-";
+//	std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mon + 1 << "-";
+//	std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mday << " ";
+//	std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_hour << ":";
+//	std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_min << ":";
+//	std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_sec << std::endl;
+//	std::cout << "PRN = " << PRN << std::endl;
+//	std::cout << "x   = " << std::fixed << sat_pos.GetX() << std::endl;
+//	std::cout << "y   = " << std::fixed << sat_pos.GetY() << std::endl;
+//	std::cout << "z   = " << std::fixed << sat_pos.GetZ() << std::endl;
 
 	return sat_pos;
 }

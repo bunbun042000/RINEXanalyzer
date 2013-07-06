@@ -49,6 +49,7 @@ private:
 	std::string filename;
 
 	long double GetLongDouble(std::string str);
+	bool _Read(std::ifstream &ifs);
 	bool ReadHeader(std::ifstream &ifs, int &leap_sec);
 	bool ReadBody(std::ifstream &ifs, int leap_sec);
 

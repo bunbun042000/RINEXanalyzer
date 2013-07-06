@@ -33,39 +33,19 @@ RINEX_NavigationMessage::~RINEX_NavigationMessage()
 
 bool RINEX_NavigationMessage::Read()
 {
-	int leap_second = 0;
 
-	std::ifstream ifs(filename.c_str());
-	std::string buf;
+	std::ifstream ifs;
+	bool flag = false;
 
-	if (ifs == 0)
-	{
-		return false;
-	}
-	else
-	{
-		// Do nothing
-	}
+	std::string fname = filename + "n";
+	ifs.open(fname.c_str());
+	flag = _Read(ifs);
 
-	if (false == ReadHeader(ifs, leap_second))
-	{
-		return false;
-	}
-	else
-	{
-		// Do nothing
-	}
+	fname = filename + "q";
+	ifs.open(fname.c_str());
+	flag = _Read(ifs);
 
-	if (false == ReadBody(ifs, leap_second))
-	{
-		return false;
-	}
-	else
-	{
-		// Do nothing
-	}
-
-	return true;
+	return flag;
 
 }
 
@@ -79,9 +59,10 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 
 	std::map <int, Ephemeris> ephemeris_m;
 
+	ephemeris_m.clear();
+
 	if(ephem_map.empty())
 	{
-		ephemeris_m.clear();
 		return ephemeris_m;
 	}
 	else
@@ -102,7 +83,7 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 		for (std::multimap<int, Ephemeris>::iterator its = range.first; its != range.second; its++)
 		{
 
-			if (((its->second).GetTot() - (candidator->second).GetTot() >= 0) && (current_gpst - (its->second).GetTot() >= 0))
+			if (((its->second).GetTot() >= (candidator->second).GetTot()) && (current_gpst >= (its->second).GetTot()))
 			{
 				long double freshness = its->second.GetData(Ephemeris::FIT) * GPS_Time::Seconds_in_Hour / 2.0;
 
@@ -191,6 +172,42 @@ long double RINEX_NavigationMessage::GetLongDouble(std::string str)
 	sscanf(str.c_str(), "%LF", &temp);
 	return temp;
 
+}
+
+bool RINEX_NavigationMessage::_Read(std::ifstream &ifs)
+{
+	int leap_second = 0;
+
+	std::string buf;
+
+	if (ifs == 0)
+	{
+		return false;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (false == ReadHeader(ifs, leap_second))
+	{
+		return false;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (false == ReadBody(ifs, leap_second))
+	{
+		return false;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	return true;
 }
 
 bool RINEX_NavigationMessage::ReadHeader(std::ifstream &ifs, int &leap_sec)

@@ -9,6 +9,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <iomanip>
 
 #include "Calculate_Position.h"
 #include "Matrix.h"
@@ -432,7 +433,7 @@ TEST(Calculate_Position, TEST1)
 
 TEST(RINEX_NavigationMessage, Read)
 {
-	std::string filename = "05311710.13n";
+	std::string filename = "05311710.13";
 	RINEX_NavigationMessage nav_message(filename);
 
 	nav_message.Read();
@@ -536,16 +537,13 @@ TEST(RINEX_NavigationMessage, Read)
 }
 
 
-TEST(RINEX_NavigationMessage, CalculatePosition211)
+TEST(RINEX_NavigationMessage, CalculatePosition2)
 {
-	std::string filename = "mtka3180.05n";
+	std::string filename = "mtka3180.05";
 	RINEX_NavigationMessage nav_message(filename);
 
 	nav_message.Read();
 
-	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(GPS_Time(1349, 86400.0, 0), -1); // 2005-11-14 00:00:00
-
-	filename = "mtka3180.05o";
 	RINEX_ObservationData obs_data(filename);
 
 
@@ -556,7 +554,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition211)
 
 	for (std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin(); it != psuRange.end(); it++)
 	{
-
+		// 2005-11-14 00:00:00
 		if (fabs(it->first - GPS_Time(1349, 86400.0, 0)) < 1.0e-5)
 		{
 			range.insert(std::pair<int, long double>((it->second).GetPRN(), (it->second).GetData(PsudoRange::C1)));
@@ -569,6 +567,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition211)
 
 	}
 
+	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1);
 
 	Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
 
@@ -579,8 +578,164 @@ TEST(RINEX_NavigationMessage, CalculatePosition211)
 //	ASSERT_DOUBLE_EQ(3364401.3024154068, position.GetY());
 //	ASSERT_DOUBLE_EQ(3699431.9924437893, position.GetZ());
 
-	ASSERT_DOUBLE_EQ(-3947762.6273552701, position.GetX());
-	ASSERT_DOUBLE_EQ(3364400.5445954604, position.GetY());
+	ASSERT_DOUBLE_EQ(-3947762.6273452728, position.GetX());
+	ASSERT_DOUBLE_EQ(3364400.5446071858, position.GetY());
 	ASSERT_DOUBLE_EQ(3699431.230931337, position.GetZ());
+
+	range.clear();
+	ephem_map.clear();
+
+	for (std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin(); it != psuRange.end(); it++)
+	{
+		// 2005-11-14 00:32:00
+		if (fabs(it->first - GPS_Time(1349, 88320.0, 0)) < 1.0e-5)
+		{
+			range.insert(std::pair<int, long double>((it->second).GetPRN(), (it->second).GetData(PsudoRange::C1)));
+			tm tmbuf = (it->first).ToDate();
+			std::cout << std::setw(4) << std::right << std::setfill('0') << tmbuf.tm_year + 1900 << "-";
+			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mon + 1 << "-";
+			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mday << " ";
+			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_hour << ":";
+			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_min << ":";
+			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_sec << std::endl;
+			std::cout << "PRN = " << std::setw(3) << std::right << std::setfill('0') << it->second.GetPRN() << std::endl;
+			std::cout << "PsudoRange = " << std::fixed << it->second.GetData(PsudoRange::C1) << std::endl;
+			cur = it->first;
+		}
+		else
+		{
+			// Do nothing
+		}
+
+	}
+
+	ephem_map = nav_message.GetEphemeris(cur, -1);
+
+	cal = Calculate_Position(ephem_map, range, cur, nav_message.GetIon());
+
+	position = cal.GetPosition();
+
+	ASSERT_DOUBLE_EQ(-3947765.2127858549, position.GetX());
+	ASSERT_DOUBLE_EQ(3364401.930418036, position.GetY());
+	ASSERT_DOUBLE_EQ(3699431.3939317954, position.GetZ());
+
+}
+
+TEST(RINEX_NavigationMessage, CalculatePosition21)
+{
+	std::string filename = "mtka3180.05";
+	RINEX_NavigationMessage nav_message(filename);
+
+	nav_message.Read();
+
+	RINEX_ObservationData obs_data(filename);
+
+	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
+
+	std::map<int, long double> range;
+	GPS_Time cur;
+	std::map <int, Ephemeris> ephem_map;
+	Calculate_Position cal;
+
+	std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin();
+	std::pair<std::multimap<GPS_Time, PsudoRange>::iterator,
+	std::multimap<GPS_Time, PsudoRange>::iterator> r_it = psuRange.equal_range(it->first);
+
+	do
+	{
+		range.clear();
+		ephem_map.clear();
+
+		cur = it->first;
+		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
+		{
+			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::C1)));
+		}
+		ephem_map = nav_message.GetEphemeris(cur, -1);
+		cal = Calculate_Position(ephem_map, range, cur, nav_message.GetIon());
+
+		ECEF_Frame position = cal.GetPosition();
+
+		tm tmbuf = cur.ToDate();
+		std::cout << std::setw(4) << std::right << std::setfill('0') << tmbuf.tm_year + 1900 << "-";
+		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mon + 1 << "-";
+		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mday << " ";
+		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_hour << ":";
+		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_min << ":";
+		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_sec << std::endl;
+		std::cout << "x = " << std::fixed << position.GetX() << std::endl;
+		std::cout << "y = " << std::fixed << position.GetY() << std::endl;
+		std::cout << "z = " << std::fixed << position.GetZ() << std::endl;
+
+		it = r_it.second;
+		if (it != psuRange.end())
+		{
+			r_it = psuRange.equal_range(it->first);
+		}
+		else
+		{
+			break;
+		}
+
+	} while (it != psuRange.end());
+
+
+
+
+
+}
+
+TEST(RINEX_NavigationMessage, CalculatePosition212)
+{
+	std::string filename = "05311710.13";
+	RINEX_NavigationMessage nav_message(filename);
+
+	nav_message.Read();
+
+	RINEX_ObservationData obs_data(filename);
+
+
+	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
+
+	std::map<int, long double> range;
+	GPS_Time cur;
+
+	std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin();
+	std::pair<std::multimap<GPS_Time, PsudoRange>::iterator,
+	std::multimap<GPS_Time, PsudoRange>::iterator> r_it = psuRange.equal_range(it->first);
+
+	do
+	{
+		range.clear();
+
+		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
+		{
+			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::CA)));
+			cur = its->first;
+		}
+		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1);
+		Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
+
+		ECEF_Frame position = cal.GetPosition();
+
+		std::cout << "x = " << std::fixed << position.GetX() << std::endl;
+		std::cout << "y = " << std::fixed << position.GetY() << std::endl;
+		std::cout << "z = " << std::fixed << position.GetZ() << std::endl;
+
+		it = r_it.second;
+		if (it != psuRange.end())
+		{
+			r_it = psuRange.equal_range(it->first);
+		}
+		else
+		{
+			break;
+		}
+
+	} while (it != psuRange.end());
+
+
+
+
 
 }

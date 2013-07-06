@@ -73,15 +73,21 @@ Calculate_Position::~Calculate_Position()
 {
 
 	number_of_satellites = 0;
+	ephemeris.clear();
+	psudodistance.clear();
 	satellites.clear();
+	distance.clear();
+	original_distance.clear();
+	clockdiff.clear();
+	valid_PRN.clear();
 
+	from_ephemeris = false;
 	valid = false;
 
 }
 
 ECEF_Frame Calculate_Position::GetPosition()
 {
-
 
 	IsValid();
 
@@ -146,11 +152,15 @@ ECEF_Frame Calculate_Position::GetPosition()
 		Matrix GtG = Gt * G;
 		Matrix Gtdr = Gt * dr;
 
-		Gaussian_Elimination gauss = Gaussian_Elimination(GtG, Gtdr);
+		Gaussian_Elimination gauss(GtG, Gtdr);
 
 		Gtdr = gauss.GetAnswer();
 
 		ans = ECEF_Frame(ans.GetX() + Gtdr.GetData(0, 0), ans.GetY() + Gtdr.GetData(1, 0), ans.GetZ() + Gtdr.GetData(2, 0));
+
+//		std::cout << "x = " << std::fixed << ans.GetX() << std::endl;
+//		std::cout << "y = " << std::fixed << ans.GetY() << std::endl;
+//		std::cout << "z = " << std::fixed << ans.GetZ() << std::endl;
 
 		if(from_ephemeris)
 		{
@@ -180,6 +190,11 @@ ECEF_Frame Calculate_Position::GetPosition()
 void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, long double clock_diff)
 {
 	int i = 0;
+
+	satellites.clear();
+	original_distance.clear();
+	clockdiff.clear();
+	distance.clear();
 
 	modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - clock_diff / WGS84_Frame::C_velocity, current.GetLeapSecond());
 

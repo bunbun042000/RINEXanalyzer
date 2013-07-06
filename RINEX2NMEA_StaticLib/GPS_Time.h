@@ -23,7 +23,7 @@ public:
   GPS_Time(const GPS_Time &gpst);
   virtual ~GPS_Time();
 
-  tm ToDate();
+  tm ToDate() const;
 
   long double operator-(const GPS_Time &gpst) const;
   GPS_Time &operator=(const GPS_Time gpst);

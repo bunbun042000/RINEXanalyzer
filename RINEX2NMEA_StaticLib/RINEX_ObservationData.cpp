@@ -48,7 +48,8 @@ std::multimap<GPS_Time, PsudoRange> RINEX_ObservationData::GetPsudoRange()
 
 	int leapsec;
 
-	std::ifstream ifs(filename.c_str());
+	std::string fname = filename + "o";
+	std::ifstream ifs(fname.c_str());
 	std::string buf;
 
 	if (ifs == 0)
@@ -139,6 +140,108 @@ bool RINEX_ObservationData::ReadHeader(std::ifstream &ifs, int &leapsec)
 				else if (column.find("P1") != std::string::npos)
 				{
 					columnOrder.push_back(PsudoRange::P1);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("CA") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::CA);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("LA") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::LA);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("SA") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::SA);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("S1") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::S1);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("CB") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::CB);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("LB") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::LB);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("SB") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::SB);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("CC") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::CC);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("LC") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::LC);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("SC") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::SC);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("CD") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::CD);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("LD") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::LD);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("SD") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::SD);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("S2") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::S2);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("C5") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::C5);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("L5") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::L5);
+					currentpos += 6;
+					number_of_observationData++;
+				}
+				else if (column.find("S5") != std::string::npos)
+				{
+					columnOrder.push_back(PsudoRange::S5);
 					currentpos += 6;
 					number_of_observationData++;
 				}
@@ -268,8 +371,11 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 		}
 
 		// Read PRNs
+		PRN_list.clear();
+
 		for (int i = 0; i < number_of_satellites; i++)
 		{
+
 			if(i>0 && (i % MAX_PRNs_Line) == 0)
 			{
 				std::getline(ifs, buf);
@@ -299,6 +405,18 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 					// Do nothing
 				}
 				PRN_list.push_back(PRN);
+				break;
+			case 'J':
+				PRN = atoi(buf.substr(start_position_PRN + 1 + 3 * (i % MAX_PRNs_Line), 2).c_str());
+				if (PRN <= 0)
+				{
+					PRN = 0;
+				}
+				else
+				{
+					// Do nothing
+				}
+				PRN_list.push_back(PRN + 192);
 				break;
 			default:
 				PRN_list.push_back(0);

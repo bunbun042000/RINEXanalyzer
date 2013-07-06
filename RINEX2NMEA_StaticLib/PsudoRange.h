@@ -23,6 +23,23 @@ public:
 		L1,
 		L2,
 		P1,
+		CA,
+		LA,
+		SA,
+		S1,
+		CB,
+		LB,
+		SB,
+		CC,
+		LC,
+		SC,
+		CD,
+		LD,
+		SD,
+		S2,
+		C5,
+		L5,
+		S5,
 		UNKNOWN
 	};
 
