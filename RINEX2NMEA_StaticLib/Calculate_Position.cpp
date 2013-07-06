@@ -112,16 +112,17 @@ ECEF_Frame Calculate_Position::GetPosition()
 		}
 		else
 		{
-
+			// Do nothing
 		}
 
 		// Create Observation matrix
 		for (i = 0; i < number_of_satellites; i++)
 		{
 			r = satellites[i].Distance(ans);
-			G.SetData((ans.GetX() - satellites[i].GetX())/r, i, 0);
-			G.SetData((ans.GetY() - satellites[i].GetY())/r, i, 1);
-			G.SetData((ans.GetZ() - satellites[i].GetZ())/r, i, 2);
+			ENU_Frame enu(satellites[i], ans);
+			G.SetData(-enu.GetE()/r, i, 0);
+			G.SetData(-enu.GetN()/r, i, 1);
+			G.SetData(-enu.GetU()/r, i, 2);
 			G.SetData(1.0, i, 3);
 
 			if(from_ephemeris)
@@ -156,7 +157,7 @@ ECEF_Frame Calculate_Position::GetPosition()
 
 		Gtdr = gauss.GetAnswer();
 
-		ans = ECEF_Frame(ans.GetX() + Gtdr.GetData(0, 0), ans.GetY() + Gtdr.GetData(1, 0), ans.GetZ() + Gtdr.GetData(2, 0));
+		ans = ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(ans)).GetPosition();
 
 //		std::cout << "x = " << std::fixed << ans.GetX() << std::endl;
 //		std::cout << "y = " << std::fixed << ans.GetY() << std::endl;

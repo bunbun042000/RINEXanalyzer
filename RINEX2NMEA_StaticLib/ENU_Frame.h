@@ -15,7 +15,7 @@ class ENU_Frame
 
 public:
 	ENU_Frame();
-	ENU_Frame(long double x_enu, long double y_enu, long double z_enu, const WGS84_Frame &wgs84_orig);
+	ENU_Frame(long double e_enu, long double n_enu, long double u_enu, const WGS84_Frame &wgs84_orig);
 	ENU_Frame(const WGS84_Frame wgs84_f, const WGS84_Frame wgs84_orig);
 	virtual ~ENU_Frame();
 
