@@ -127,7 +127,7 @@ ECEF_Frame Calculate_Position::GetPosition()
 
 			if(from_ephemeris)
 			{
-				dr.SetData(original_distance[i] + clockdiff[i] * WGS84_Frame::C_velocity - r - receiver_clockdiff, i, 0);
+				dr.SetData(original_distance[i] + clockdiff[i] * IS_GPS_200::C_velocity - r - receiver_clockdiff, i, 0);
 			}
 			else
 			{
@@ -197,7 +197,7 @@ void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, long double c
 	clockdiff.clear();
 	distance.clear();
 
-	modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - clock_diff / WGS84_Frame::C_velocity, current.GetLeapSecond());
+	modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - clock_diff / IS_GPS_200::C_velocity, current.GetLeapSecond());
 
 	std::map<int, long double>::iterator current_dist_it = psudodistance.begin();
 	for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
@@ -209,7 +209,7 @@ void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, long double c
 				original_distance.push_back(dist_it->second);
 				long double r = dist_it->second - clock_diff;
 				long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
-				r = dist_it->second - clock_diff + satellite_clock * WGS84_Frame::C_velocity;
+				r = dist_it->second - clock_diff + satellite_clock * IS_GPS_200::C_velocity;
 				satellite_clock = (it->second).GetClock(modifiedCurrent, r);
 				ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
 				satellites.push_back(satellite_position);

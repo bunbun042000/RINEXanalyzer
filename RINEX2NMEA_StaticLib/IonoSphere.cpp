@@ -43,7 +43,7 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 
 		WGS84_Frame userpos = WGS84_Frame(userPosition);
 		long double psi = 0.0137 / (elevation + 0.11) - 0.022;
-		long double phi_i = WGS84_Frame::Rad2Sc(userpos.GetLat()) + psi * cos(azimuth * WGS84_Frame::GPS_Pi);
+		long double phi_i = WGS84_Frame::Rad2Sc(userpos.GetLat()) + psi * cos(azimuth * IS_GPS_200::GPS_Pi);
 
 		if (phi_i > 0.416)
 		{
@@ -54,8 +54,8 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 			phi_i = -0.416;
 		}
 
-		long double lam_i = WGS84_Frame::Rad2Sc(userpos.GetLongi()) + psi * sin(azimuth * WGS84_Frame::GPS_Pi) / cos(phi_i * WGS84_Frame::GPS_Pi);
-		long double phi_m = phi_i + 0.064 * cos((lam_i - 1.617) * WGS84_Frame::GPS_Pi);
+		long double lam_i = WGS84_Frame::Rad2Sc(userpos.GetLongi()) + psi * sin(azimuth * IS_GPS_200::GPS_Pi) / cos(phi_i * WGS84::Pi);
+		long double phi_m = phi_i + 0.064 * cos((lam_i - 1.617) * IS_GPS_200::GPS_Pi);
 
 		// Local time
 		long double lt = GPS_Time::Seconds_in_Day / 2.0 * lam_i + currentTime.GetSecond();
@@ -96,14 +96,14 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 		long double x = 0.53 - elevation;
 		long double f = 1.0 + 16.0 * x * x * x;
 
-		x = 2.0 * WGS84_Frame::GPS_Pi * (lt - MAX_Delay_time) / per;
-		while (x > WGS84_Frame::GPS_Pi)
+		x = 2.0 * IS_GPS_200::GPS_Pi * (lt - MAX_Delay_time) / per;
+		while (x > IS_GPS_200::GPS_Pi)
 		{
-			x -= 2.0 * WGS84_Frame::GPS_Pi;
+			x -= 2.0 * IS_GPS_200::GPS_Pi;
 		}
-		while (x < -1.0 * WGS84_Frame::GPS_Pi)
+		while (x < -1.0 * IS_GPS_200::GPS_Pi)
 		{
-			x += 2.0 * WGS84_Frame::GPS_Pi;
+			x += 2.0 * IS_GPS_200::GPS_Pi;
 		}
 
 		long double y = 0.0L;
@@ -116,7 +116,7 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 			y = 0.0;
 		}
 
-		return -f * (Night_Delay + y) * WGS84_Frame::C_velocity;
+		return -f * (Night_Delay + y) * IS_GPS_200::C_velocity;
 	}
 	else
 	{

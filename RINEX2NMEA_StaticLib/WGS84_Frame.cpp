@@ -46,12 +46,12 @@ WGS84_Frame::WGS84_Frame(const ECEF_Frame &ecef_f) : ECEF_Frame(ecef_f)
 	{
 		Latitude = 0.0;
 		Longitude = 0.0;
-		Geoidal_Height = R_Earth * (-1);
+		Geoidal_Height = WGS84::R_Earth * (-1);
 	}
 	else
 	{
-		f = 1.0 / F_Earth;			// Reciprocal of Flattening
-		a = R_Earth;				// Semi-major Axis
+		f = 1.0 / WGS84::F_Earth;	// Reciprocal of Flattening
+		a = WGS84::R_Earth;			// Semi-major Axis
 		b = a * (1.0 - f);			// Semi-minor Axis
 		e = sqrt(f * (2.0 - f));	// Eccentricity
 
@@ -82,8 +82,8 @@ void WGS84_Frame::Set(long double Lat, long double Longi, long double G_Height)
 	Longitude = Longi;
 	Geoidal_Height = G_Height;
 
-	f = 1.0 / F_Earth;			// Reciprocal of Flattening
-	a = R_Earth;				// Semi-major Axis
+	f = 1.0 / WGS84::F_Earth;	// Reciprocal of Flattening
+	a = WGS84::R_Earth;			// Semi-major Axis
 	b = a * (1.0 - f);			// Semi-minor Axis
 	e = sqrt(f * (2.0 - f));	// Eccentricity
 

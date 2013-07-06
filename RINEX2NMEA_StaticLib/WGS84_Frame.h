@@ -8,6 +8,16 @@
 #ifndef WGS84_FRAME_H_
 #define WGS84_FRAME_H_
 #include "ECEF_Frame.h"
+#include "IS-GPS-200.h"
+#include <cmath>
+
+namespace WGS84
+{
+	static const long double Pi = 6*asin( 0.5 );
+	static const long double R_Earth = 6378137.0; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-5
+	static const long double F_Earth = 298.257223563; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-5
+
+}
 
 class WGS84_Frame : public ECEF_Frame
 {
@@ -23,12 +33,6 @@ public:
 	WGS84_Frame(const ECEF_Frame &ecef_f);
 	virtual ~WGS84_Frame();
 
-	static const long double GPS_Pi = 3.1415926535898; // From IS-GPS-200G(05 Sep. 2012) p.154
-	static const long double C_velocity = 2.99792458e+8; // From IS-GPS-200G(05 Sep. 2012) p.126
-	static const long double GMe = 3.986005e+14; // From IS-GPS-200G(05 Sep. 2012) p.93
-	static const long double Omega_E = 7.2921151467e-5; // From IS-GPS-200G(05 Sep. 2012) p.100
-	static const long double R_Earth = 6378137.0; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-5
-	static const long double F_Earth = 298.257223563; // From NIMA TR8350.2 Third Edition (03 Jan. 2000) p. 3-5
 
 	long double GetLat()
 	{
@@ -47,22 +51,22 @@ public:
 
 	static long double Rad2Deg(long double rad)
 	{
-		return rad / GPS_Pi * 180.0L;
+		return rad / WGS84::Pi * 180.0L;
 	};
 
 	static long double Deg2Rad(long double deg)
 	{
-		return deg / 180.0L * GPS_Pi;
+		return deg / 180.0L * WGS84::Pi;
 	};
 
 	static long double Rad2Sc(long double rad)
 	{
-		return rad / GPS_Pi;
+		return rad / WGS84::Pi;
 	};
 
 	static long double Sc2Rad(long double sc)
 	{
-		return GPS_Pi * sc;
+		return WGS84::Pi * sc;
 	};
 
 protected:

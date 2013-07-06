@@ -104,11 +104,11 @@ long double Ephemeris::GetClock(GPS_Time currentTime, const long double psudoran
 
 	long double Ek = CalculateEk(currentTime, psudorange);
 
-	long double tr = -2.0 * sqrt(WGS84_Frame::GMe) / WGS84_Frame::C_velocity / WGS84_Frame::C_velocity
+	long double tr = -2.0 * sqrt(IS_GPS_200::GMe) / IS_GPS_200::C_velocity / IS_GPS_200::C_velocity
 			* data[eccentricity] * data[sqrtA] * sin(Ek);
 
 	long double tk0 = currentTime - time_of_clock;
-	long double tk = tk0 - psudorange / WGS84_Frame::C_velocity;
+	long double tk = tk0 - psudorange / IS_GPS_200::C_velocity;
 
 	long double dt = data[Af0] + data[Af1] * tk + data[Af2] * tk * tk;
 
@@ -121,7 +121,7 @@ ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime, const long double psudor
 	long double e = data[eccentricity];
 
 	long double tk0 = currentTime - time_of_ephemeris;
-	long double tk = tk0 - psudorange / WGS84_Frame::C_velocity;
+	long double tk = tk0 - psudorange / IS_GPS_200::C_velocity;
 
 	long double Ek = CalculateEk(currentTime, psudorange);
 
@@ -140,8 +140,8 @@ ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime, const long double psudor
 	long double yk = rk * sin(uk);
 
 	// ascending node
-	long double Omegak = data[OMEGA0] + (data[OMEGA_dot] - WGS84_Frame::Omega_E) * tk0
-			- WGS84_Frame::Omega_E * time_of_ephemeris.GetSecond();
+	long double Omegak = data[OMEGA0] + (data[OMEGA_dot] - IS_GPS_200::Omega_E) * tk0
+			- IS_GPS_200::Omega_E * time_of_ephemeris.GetSecond();
 
 	long double x = xk * cos(Omegak) - yk * sin(Omegak) * cos(ik);
 	long double y = xk * sin(Omegak) + yk * cos(Omegak) * cos(ik);
@@ -168,11 +168,11 @@ ECEF_Frame Ephemeris::GetPosition(GPS_Time currentTime, const long double psudor
 long double Ephemeris::CalculateEk(GPS_Time currentTime, const long double psudorange)
 {
 	long double tk0 = currentTime - time_of_ephemeris;
-	long double tk = tk0 - psudorange / WGS84_Frame::C_velocity;
+	long double tk = tk0 - psudorange / IS_GPS_200::C_velocity;
 
 	long double sqrt_A = data[sqrtA];
 	long double e = data[eccentricity]; // Eccentricity
-	long double n = sqrt(WGS84_Frame::GMe) / sqrt_A / sqrt_A / sqrt_A + data[d_n];
+	long double n = sqrt(IS_GPS_200::GMe) / sqrt_A / sqrt_A / sqrt_A + data[d_n];
 	long double Mk = data[M0] + n * tk; // mean anomaly
 	long double Ek = Mk;
 	for (int i = 0; i < 10; i++)
