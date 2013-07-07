@@ -52,7 +52,7 @@ tm GPS_Time::ToDate() const
   time_t t;
 
   t = (long) week * Days_in_Week * Seconds_in_Day + GPS_Week_Origin
-     +(long)((second>0.0)?second+0.5:second-0.5) + leap_second;
+     +(long)((second>0.0)?second+0.5:second-0.5) - leap_second;
   return *gmtime(&t);
 }
 
