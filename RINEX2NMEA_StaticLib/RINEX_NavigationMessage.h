@@ -16,6 +16,7 @@
 
 #include "Ephemeris.h"
 #include "IonoSphere.h"
+#include "RINEX.h"
 
 class RINEX_NavigationMessage
 {
@@ -32,7 +33,7 @@ public:
 		return ion;
 	}
 
-	std::map<int, Ephemeris> GetEphemeris(GPS_Time current_gpst, const int IODE);
+	std::map<int, Ephemeris> GetEphemeris(GPS_Time current_gpst, const int IODE, const bool use_qzss);
 	std::map<int, long double> GetIonoDelayCorrection(ECEF_Frame userPosition, GPS_Time currentTime, const int IODE);
 
 	std::multimap <int, Ephemeris> ephem_map; // PRN and Ephemeris_Data
@@ -41,17 +42,38 @@ public:
 private:
 	static const int RINEX_NAV_FIELDS_LINE = 4;
 	static const int RINEX_NORMAL_FIELD_WIDTH = 19;
-	static const int RINEX_TOP_FIELD_WIDTH = 22;
+	static const int RINEX_TOP_FIELD_WIDTH_Normal = 22;
+	static const int RINEX_TOP_FIELD_WIDTH_QZS_and_300_above = 23;
 	static const long int Ephemeris_Default_Freshness = 7200L; // 2 hours
 
 	IonoSphere ion;
 
 	std::string filename;
 
+	enum _Version
+	{
+		Ver2,
+		Ver210,
+		Ver211,
+		Ver212,
+		Ver300,
+		Ver301,
+		Ver302
+	};
+
+	enum _FileType
+	{
+		GPS_Navigation,
+		QZSS_Navigation
+	};
+
 	long double GetLongDouble(std::string str);
 	bool _Read(std::ifstream &ifs);
 	bool ReadHeader(std::ifstream &ifs, int &leap_sec);
 	bool ReadBody(std::ifstream &ifs, int leap_sec);
+
+	_Version ver;
+	_FileType type;
 
 };
 

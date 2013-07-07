@@ -16,6 +16,7 @@
 #include <cctype>
 
 #include "PsudoRange.h"
+#include "RINEX.h"
 
 
 class RINEX_ObservationData

@@ -13,7 +13,8 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(std::string fname = "")
 {
 	filename = fname;
 
-
+	ver = Ver2;
+	type = GPS_Navigation;
 }
 
 RINEX_NavigationMessage::RINEX_NavigationMessage(const RINEX_NavigationMessage &nRIN)
@@ -21,6 +22,8 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(const RINEX_NavigationMessage &
 	filename = nRIN.filename;
 	ephem_map = nRIN.ephem_map;
 	ion = nRIN.ion;
+	ver = nRIN.ver;
+	type = nRIN.type;
 
 }
 
@@ -41,6 +44,8 @@ bool RINEX_NavigationMessage::Read()
 	ifs.open(fname.c_str());
 	flag = _Read(ifs);
 
+	ifs.close();
+
 	fname = filename + "q";
 	ifs.open(fname.c_str());
 	flag = _Read(ifs);
@@ -54,7 +59,7 @@ void RINEX_NavigationMessage::SetFileName(std::string fname)
 	filename = fname;
 }
 
-std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_gpst, const int IODE)
+std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_gpst, const int IODE, const bool use_qzss)
 {
 
 	std::map <int, Ephemeris> ephemeris_m;
@@ -114,9 +119,21 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 						}
 					}
 
-					if ((its->second).GetData(Ephemeris::health) != 0.0L)
+					// Health check
+					if (((its->first) <= RINEX::QZSS_PRN_Offset) && ((its->second).GetData(Ephemeris::health) != 0.0L))
 					{
 						continue;
+					}
+					else if ((its->first) > RINEX::QZSS_PRN_Offset)
+					{
+						if(use_qzss && ((its->second).GetData(Ephemeris::health) <= 1.0L))
+						{
+							// QZSS is now health = 1.0L
+						}
+						else
+						{
+							continue;
+						}
 					}
 					else
 					{
@@ -214,16 +231,78 @@ bool RINEX_NavigationMessage::ReadHeader(std::ifstream &ifs, int &leap_sec)
 {
 	std::string buf;
 
-	bool success = false;
+	bool success_ver = false;
+	bool success_type = false;
+	bool success_end = false;
+
 	while (ifs && std::getline(ifs, buf))
 	{
-		if (buf.find("ION ALPHA") != std::string::npos)
+		if (buf.find("RINEX VERSION / TYPE") != std::string::npos)
+		{
+			std::string ver_str = buf.substr(0, 9);
+			if (ver_str.find("2  ") != std::string::npos)
+			{
+				ver = Ver2;
+				success_ver = true;
+			}
+			else if(ver_str.find("2.10") != std::string::npos)
+			{
+				ver = Ver210;
+				success_ver = true;
+			}
+			else if(ver_str.find("2.11") != std::string::npos)
+			{
+				ver = Ver211;
+				success_ver = true;
+			}
+			else if(ver_str.find("2.12") != std::string::npos)
+			{
+				ver = Ver212;
+				success_ver = true;
+			}
+			else if(ver_str.find("3.00") != std::string::npos)
+			{
+				ver = Ver300;
+				success_ver = true;
+			}
+			else if(ver_str.find("3.01") != std::string::npos)
+			{
+				ver =Ver301;
+				success_ver = true;
+			}
+			else if(ver_str.find("3.02") != std::string::npos)
+			{
+				ver = Ver302;
+				success_ver = true;
+			}
+			else
+			{
+				break;
+			}
+
+			std::string file_type = buf.substr(20,1);
+			if (file_type == "N")
+			{
+				type = GPS_Navigation;
+				success_type = true;
+			}
+			else if (file_type == "J")
+			{
+				type = QZSS_Navigation;
+				success_type = true;
+			}
+			else
+			{
+				break;
+			}
+
+		}
+		else if (buf.find("ION ALPHA") != std::string::npos)
 		{
 			ion.SetData(GetLongDouble(buf.substr(0, 14)), IonoSphere::A0);
 			ion.SetData(GetLongDouble(buf.substr(14, 12)), IonoSphere::A1);
 			ion.SetData(GetLongDouble(buf.substr(26, 12)), IonoSphere::A2);
 			ion.SetData(GetLongDouble(buf.substr(38, 12)), IonoSphere::A3);
-			success = true;
 		}
 		else if (buf.find("ION BETA") != std::string::npos)
 		{
@@ -231,27 +310,35 @@ bool RINEX_NavigationMessage::ReadHeader(std::ifstream &ifs, int &leap_sec)
 			ion.SetData(GetLongDouble(buf.substr(14, 12)), IonoSphere::B1);
 			ion.SetData(GetLongDouble(buf.substr(26, 12)), IonoSphere::B2);
 			ion.SetData(GetLongDouble(buf.substr(38, 12)), IonoSphere::B3);
-			success = true;
 		}
 		else if (buf.find("LEAP SECONDS") != std::string::npos)
 		{
 			leap_sec = atol(buf.substr(0, 6).c_str());
-			success = true;
 		}
 		else if (buf.find("END OF HEADER") != std::string::npos)
 		{
-			success = true;
+			success_end = true;
 			break;
 		}
 	}
 
-	return success;
+	return (success_ver && success_end);
 
 }
 bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 {
 	bool success = false;
 	std::string buf;
+	int top_field_length;
+
+	if ((type == GPS_Navigation) && ((ver == Ver2) || (ver == Ver210) || (ver == Ver211) || (ver == Ver212)))
+	{
+		top_field_length = RINEX_TOP_FIELD_WIDTH_Normal;
+	}
+	else
+	{
+		top_field_length = RINEX_TOP_FIELD_WIDTH_QZS_and_300_above;
+	}
 
 	while (ifs)
 	{
@@ -268,10 +355,29 @@ bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 			{
 				if (column == Ephemeris::TOC)
 				{
-					prn = atoi(buf.substr(0, 2).c_str());
+					int Epoch_offset;
+					if ((type == GPS_Navigation) && ((ver == Ver2) || (ver == Ver210) || (ver == Ver211) || (ver == Ver212)))
+					{
+						prn = atoi(buf.substr(0, 2).c_str());
+						Epoch_offset = 2;
+					}
+					else
+					{
+						std::string satellite_type = buf.substr(0, 1);
+						if (satellite_type == "G")
+						{
+							prn = atoi(buf.substr(1, 2).c_str());
+						}
+						else if (satellite_type == "J")
+						{
+							prn = atoi(buf.substr(1, 2).c_str()) + RINEX::QZSS_PRN_Offset;
+						}
+						Epoch_offset = 3;
+					}
+
 					ephem.SetPRN(prn);
 					tm tmbuf;
-					tmbuf.tm_year = atoi(buf.substr(2, 3).c_str());
+					tmbuf.tm_year = atoi(buf.substr(Epoch_offset, 3).c_str());
 					if (tmbuf.tm_year < 80)
 					{
 						tmbuf.tm_year += 100;
@@ -280,32 +386,32 @@ bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 					{
 						// Do nothing
 					}
-					tmbuf.tm_mon = atoi(buf.substr(5, 3).c_str()) - 1;
-					tmbuf.tm_mday = atoi(buf.substr(8, 3).c_str());
-					tmbuf.tm_hour = atoi(buf.substr(11, 3).c_str());
-					tmbuf.tm_min = atoi(buf.substr(14, 3).c_str());
+					tmbuf.tm_mon = atoi(buf.substr(Epoch_offset + 3, 3).c_str()) - 1;
+					tmbuf.tm_mday = atoi(buf.substr(Epoch_offset + 6, 3).c_str());
+					tmbuf.tm_hour = atoi(buf.substr(Epoch_offset + 9, 3).c_str());
+					tmbuf.tm_min = atoi(buf.substr(Epoch_offset + 12, 3).c_str());
 					tmbuf.tm_sec = 0;
 					long double temp;
-					sscanf(buf.substr(17, 5).c_str(), "%LF", &temp);
+					sscanf(buf.substr(Epoch_offset + 15, 5).c_str(), "%LF", &temp);
 					ephem.SetToc(GPS_Time(tmbuf, temp, leap_sec));
 					success = true;
 				}
 				else
 				{
-					ephem.SetData(GetLongDouble(buf.substr(0, RINEX_TOP_FIELD_WIDTH)), column);
+					ephem.SetData(GetLongDouble(buf.substr(0, top_field_length)), column);
 				}
 
 				if (column != Ephemeris::TOT)
 				{
 					for (int i = 1; i < RINEX_NAV_FIELDS_LINE; i++)
 					{
-						ephem.SetData(GetLongDouble(buf.substr(RINEX_TOP_FIELD_WIDTH + (i - 1) * RINEX_NORMAL_FIELD_WIDTH, RINEX_NORMAL_FIELD_WIDTH)), (Ephemeris::Ephemeris_column)(column + i));
+						ephem.SetData(GetLongDouble(buf.substr(top_field_length + (i - 1) * RINEX_NORMAL_FIELD_WIDTH, RINEX_NORMAL_FIELD_WIDTH)), (Ephemeris::Ephemeris_column)(column + i));
 					}
 
 				}
 				else
 				{
-					ephem.SetData(GetLongDouble(buf.substr(RINEX_TOP_FIELD_WIDTH, RINEX_NORMAL_FIELD_WIDTH)), Ephemeris::FIT);
+					ephem.SetData(GetLongDouble(buf.substr(top_field_length, RINEX_NORMAL_FIELD_WIDTH)), Ephemeris::FIT);
 				}
 
 

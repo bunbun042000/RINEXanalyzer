@@ -416,7 +416,7 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 				{
 					// Do nothing
 				}
-				PRN_list.push_back(PRN + 192);
+				PRN_list.push_back(PRN + RINEX::QZSS_PRN_Offset);
 				break;
 			default:
 				PRN_list.push_back(0);

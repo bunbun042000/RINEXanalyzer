@@ -438,7 +438,7 @@ TEST(RINEX_NavigationMessage, Read)
 
 	nav_message.Read();
 
-	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(GPS_Time(1745, 388800, 0), -1); // 2013-06-20 12:00:00
+	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(GPS_Time(1745, 388800, 0), -1, true); // 2013-06-20 12:00:00
 
 	std::map<int, Ephemeris>::iterator it = ephem_map.begin();
 	ASSERT_EQ(1, it->first);
@@ -523,6 +523,9 @@ TEST(RINEX_NavigationMessage, Read)
 	ASSERT_EQ(32, it->first);
 	ASSERT_DOUBLE_EQ(95, it->second.GetData(Ephemeris::IODE));
 	it++;
+	ASSERT_EQ(193, it->first);
+	ASSERT_DOUBLE_EQ(6, it->second.GetData(Ephemeris::IODE));
+	it++;
 
 	if (it == ephem_map.end())
 	{
@@ -567,7 +570,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	}
 
-	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1);
+	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
 
 	Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
 
@@ -592,14 +595,6 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 		{
 			range.insert(std::pair<int, long double>((it->second).GetPRN(), (it->second).GetData(PsudoRange::C1)));
 			tm tmbuf = (it->first).ToDate();
-			std::cout << std::setw(4) << std::right << std::setfill('0') << tmbuf.tm_year + 1900 << "-";
-			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mon + 1 << "-";
-			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mday << " ";
-			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_hour << ":";
-			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_min << ":";
-			std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_sec << std::endl;
-			std::cout << "PRN = " << std::setw(3) << std::right << std::setfill('0') << it->second.GetPRN() << std::endl;
-			std::cout << "PsudoRange = " << std::fixed << it->second.GetData(PsudoRange::C1) << std::endl;
 			cur = it->first;
 		}
 		else
@@ -609,7 +604,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	}
 
-	ephem_map = nav_message.GetEphemeris(cur, -1);
+	ephem_map = nav_message.GetEphemeris(cur, -1, false);
 
 	cal = Calculate_Position(ephem_map, range, cur, nav_message.GetIon());
 
@@ -651,21 +646,11 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 		{
 			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::C1)));
 		}
-		ephem_map = nav_message.GetEphemeris(cur, -1);
+		ephem_map = nav_message.GetEphemeris(cur, -1, false);
 		cal = Calculate_Position(ephem_map, range, cur, nav_message.GetIon());
 
 		ECEF_Frame position = cal.GetPosition();
 
-		tm tmbuf = cur.ToDate();
-		std::cout << std::setw(4) << std::right << std::setfill('0') << tmbuf.tm_year + 1900 << "-";
-		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mon + 1 << "-";
-		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_mday << " ";
-		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_hour << ":";
-		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_min << ":";
-		std::cout << std::setw(2) << std::right << std::setfill('0') << tmbuf.tm_sec << std::endl;
-		std::cout << "x = " << std::fixed << position.GetX() << std::endl;
-		std::cout << "y = " << std::fixed << position.GetY() << std::endl;
-		std::cout << "z = " << std::fixed << position.GetZ() << std::endl;
 
 		it = r_it.second;
 		if (it != psuRange.end())
@@ -685,7 +670,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 
 }
 
-TEST(RINEX_NavigationMessage, CalculatePosition212)
+TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 {
 	std::string filename = "05311710.13";
 	RINEX_NavigationMessage nav_message(filename);
@@ -708,19 +693,24 @@ TEST(RINEX_NavigationMessage, CalculatePosition212)
 	{
 		range.clear();
 
+
 		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
 		{
 			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::CA)));
 			cur = its->first;
+
 		}
-		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1);
+		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
 		Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
 
 		ECEF_Frame position = cal.GetPosition();
 
-		std::cout << "x = " << std::fixed << position.GetX() << std::endl;
-		std::cout << "y = " << std::fixed << position.GetY() << std::endl;
-		std::cout << "z = " << std::fixed << position.GetZ() << std::endl;
+		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
+		{
+			ASSERT_DOUBLE_EQ(-3814969.60410609, position.GetX());
+			ASSERT_DOUBLE_EQ(2699236.3398733628, position.GetY());
+			ASSERT_DOUBLE_EQ(4326126.7209189935, position.GetZ());
+		}
 
 		it = r_it.second;
 		if (it != psuRange.end())
@@ -734,8 +724,60 @@ TEST(RINEX_NavigationMessage, CalculatePosition212)
 
 	} while (it != psuRange.end());
 
+}
+
+TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
+{
+	std::string filename = "05311710.13";
+	RINEX_NavigationMessage nav_message(filename);
+
+	nav_message.Read();
+
+	RINEX_ObservationData obs_data(filename);
 
 
+	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
+	std::map<int, long double> range;
+	GPS_Time cur;
+
+	std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin();
+	std::pair<std::multimap<GPS_Time, PsudoRange>::iterator,
+	std::multimap<GPS_Time, PsudoRange>::iterator> r_it = psuRange.equal_range(it->first);
+
+	do
+	{
+		range.clear();
+
+
+		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
+		{
+			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::CA)));
+			cur = its->first;
+
+		}
+		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
+		Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
+
+		ECEF_Frame position = cal.GetPosition();
+
+		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
+		{
+			ASSERT_DOUBLE_EQ(-3814970.2604134339, position.GetX());
+			ASSERT_DOUBLE_EQ(2699236.998314104, position.GetY());
+			ASSERT_DOUBLE_EQ(4326126.8061326146, position.GetZ());
+		}
+
+		it = r_it.second;
+		if (it != psuRange.end())
+		{
+			r_it = psuRange.equal_range(it->first);
+		}
+		else
+		{
+			break;
+		}
+
+	} while (it != psuRange.end());
 
 }
