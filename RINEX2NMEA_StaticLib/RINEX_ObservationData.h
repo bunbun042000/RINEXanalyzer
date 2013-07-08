@@ -36,6 +36,7 @@ private:
 	std::string filename;
 	std::vector<PsudoRange::MeansType> columnOrder;
 	int number_of_observationData;
+	RINEX::_Version ver;
 
 
 	bool ReadHeader(std::ifstream &ifs, int &leapSecond);

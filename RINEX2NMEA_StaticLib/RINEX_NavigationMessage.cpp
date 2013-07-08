@@ -13,7 +13,7 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(std::string fname = "")
 {
 	filename = fname;
 
-	ver = Ver2;
+	ver = RINEX::Ver2;
 	type = GPS_Navigation;
 }
 
@@ -242,37 +242,37 @@ bool RINEX_NavigationMessage::ReadHeader(std::ifstream &ifs, int &leap_sec)
 			std::string ver_str = buf.substr(0, 9);
 			if (ver_str.find("2  ") != std::string::npos)
 			{
-				ver = Ver2;
+				ver = RINEX::Ver2;
 				success_ver = true;
 			}
 			else if(ver_str.find("2.10") != std::string::npos)
 			{
-				ver = Ver210;
+				ver = RINEX::Ver210;
 				success_ver = true;
 			}
 			else if(ver_str.find("2.11") != std::string::npos)
 			{
-				ver = Ver211;
+				ver = RINEX::Ver211;
 				success_ver = true;
 			}
 			else if(ver_str.find("2.12") != std::string::npos)
 			{
-				ver = Ver212;
+				ver = RINEX::Ver212;
 				success_ver = true;
 			}
 			else if(ver_str.find("3.00") != std::string::npos)
 			{
-				ver = Ver300;
+				ver = RINEX::Ver300;
 				success_ver = true;
 			}
 			else if(ver_str.find("3.01") != std::string::npos)
 			{
-				ver =Ver301;
+				ver = RINEX::Ver301;
 				success_ver = true;
 			}
 			else if(ver_str.find("3.02") != std::string::npos)
 			{
-				ver = Ver302;
+				ver = RINEX::Ver302;
 				success_ver = true;
 			}
 			else
@@ -331,7 +331,7 @@ bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 	std::string buf;
 	int top_field_length;
 
-	if ((type == GPS_Navigation) && ((ver == Ver2) || (ver == Ver210) || (ver == Ver211) || (ver == Ver212)))
+	if ((type == GPS_Navigation) && ((ver == RINEX::Ver2) || (ver == RINEX::Ver210) || (ver == RINEX::Ver211) || (ver == RINEX::Ver212)))
 	{
 		top_field_length = RINEX_TOP_FIELD_WIDTH_Normal;
 	}
@@ -356,7 +356,7 @@ bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 				if (column == Ephemeris::TOC)
 				{
 					int Epoch_offset;
-					if ((type == GPS_Navigation) && ((ver == Ver2) || (ver == Ver210) || (ver == Ver211) || (ver == Ver212)))
+					if ((type == GPS_Navigation) && ((ver == RINEX::Ver2) || (ver == RINEX::Ver210) || (ver == RINEX::Ver211) || (ver == RINEX::Ver212)))
 					{
 						prn = atoi(buf.substr(0, 2).c_str());
 						Epoch_offset = 2;

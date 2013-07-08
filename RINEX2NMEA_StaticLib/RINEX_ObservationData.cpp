@@ -12,6 +12,7 @@ RINEX_ObservationData::RINEX_ObservationData()
 {
 	PsudoRangeMap.clear();
 	number_of_observationData = 0;
+	ver = RINEX::Ver2;
 
 }
 
@@ -20,6 +21,7 @@ RINEX_ObservationData::RINEX_ObservationData(const std::string fname)
 	filename = fname;
 	PsudoRangeMap.clear();
 	number_of_observationData = 0;
+	ver = RINEX::Ver2;
 
 }
 
@@ -28,6 +30,7 @@ RINEX_ObservationData::RINEX_ObservationData(const RINEX_ObservationData &RIN_ob
 	filename = RIN_obs.filename;
 	PsudoRangeMap = RIN_obs.PsudoRangeMap;
 	number_of_observationData = RIN_obs.number_of_observationData;
+	ver = RIN_obs.ver;
 
 }
 
@@ -86,11 +89,57 @@ bool RINEX_ObservationData::ReadHeader(std::ifstream &ifs, int &leapsec)
 {
 	std::string buf;
 
-	bool success = false;
+	bool success_ver = false;
+	bool success_dataType = false;
+	bool success_end = false;
 	number_of_observationData = 0;
 
 	while (ifs && std::getline(ifs, buf))
 	{
+		if (buf.find("RINEX VERSION / TYPE") != std::string::npos)
+		{
+			std::string ver_str = buf.substr(0, 9);
+			if (ver_str.find("2  ") != std::string::npos)
+			{
+				ver = RINEX::Ver2;
+				success_ver = true;
+			}
+			else if(ver_str.find("2.10") != std::string::npos)
+			{
+				ver = RINEX::Ver210;
+				success_ver = true;
+			}
+			else if(ver_str.find("2.11") != std::string::npos)
+			{
+				ver = RINEX::Ver211;
+				success_ver = true;
+			}
+			else if(ver_str.find("2.12") != std::string::npos)
+			{
+				ver = RINEX::Ver212;
+				success_ver = true;
+			}
+			else if(ver_str.find("3.00") != std::string::npos)
+			{
+				ver = RINEX::Ver300;
+				success_ver = true;
+			}
+			else if(ver_str.find("3.01") != std::string::npos)
+			{
+				ver = RINEX::Ver301;
+				success_ver = true;
+			}
+			else if(ver_str.find("3.02") != std::string::npos)
+			{
+				ver = RINEX::Ver302;
+				success_ver = true;
+			}
+			else
+			{
+				break;
+			}
+		}
+
 		if (buf.find("# / TYPES OF OBSERV") != std::string::npos)
 		{
 			int n = atoi(buf.substr(0, 6).c_str());
@@ -252,21 +301,20 @@ bool RINEX_ObservationData::ReadHeader(std::ifstream &ifs, int &leapsec)
 					number_of_observationData++;
 				}
 			}
-			success = true;
+			success_dataType = true;
 		}
 		else if (buf.find("LEAP SECONDS") != std::string::npos)
 		{
 			leapsec = atol(buf.substr(0, 6).c_str());
-			success = true;
 		}
 		else if (buf.find("END OF HEADER") != std::string::npos)
 		{
-			success = true;
+			success_end = true;
 			break;
 		}
 	}
 
-	return success;
+	return (success_ver && success_dataType && success_end);
 
 }
 

@@ -50,17 +50,6 @@ private:
 
 	std::string filename;
 
-	enum _Version
-	{
-		Ver2,
-		Ver210,
-		Ver211,
-		Ver212,
-		Ver300,
-		Ver301,
-		Ver302
-	};
-
 	enum _FileType
 	{
 		GPS_Navigation,
@@ -72,7 +61,7 @@ private:
 	bool ReadHeader(std::ifstream &ifs, int &leap_sec);
 	bool ReadBody(std::ifstream &ifs, int leap_sec);
 
-	_Version ver;
+	RINEX::_Version ver;
 	_FileType type;
 
 };
