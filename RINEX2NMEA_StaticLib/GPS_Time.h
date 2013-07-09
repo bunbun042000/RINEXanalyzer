@@ -19,7 +19,6 @@ class GPS_Time {
 public:
   GPS_Time();
   GPS_Time(int w, long double sec, int leap_second = 0);
-//  GPS_Time(tm tmbuf, long double sec, int leap_seconds = -1);
   GPS_Time(int year, int month, int day, int hour, int min, long double sec, int leapsec = 0);
   GPS_Time(const GPS_Time &gpst);
   virtual ~GPS_Time();
