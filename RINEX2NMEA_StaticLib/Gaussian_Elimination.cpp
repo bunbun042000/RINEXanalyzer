@@ -10,94 +10,98 @@
 
 Gaussian_Elimination::Gaussian_Elimination()
 {
-	valid = false;
 }
 
-Gaussian_Elimination::Gaussian_Elimination(const Gaussian_Elimination &gauss)
-{
-	matA = gauss.matA;
-	vecb = gauss.vecb;
-
-	valid = gauss.valid;
-
-}
-
-Gaussian_Elimination::Gaussian_Elimination(Matrix &mA, Matrix &vb)
-{
-
-	if (mA.GetMaxRow() != vb.GetMaxRow())
-	{
-		valid = false;
-	}
-	else
-	{
-		matA = mA;
-		vecb = vb;
-		valid = true;
-	}
-
-}
 
 Gaussian_Elimination::~Gaussian_Elimination()
 {
-	valid = false;
 }
 
-Matrix Gaussian_Elimination::GetAnswer()
+Matrix Gaussian_Elimination::GetAnswer(Matrix &mA, Matrix &vb)
 {
 
-	Forward_Elimination();
-	Backward_Substitution();
+	Matrix inverseA(mA.GetMaxRow(), mA.GetMaxColumn());
 
-	return vecb;
+	for (int i = 0; i < inverseA.GetMaxRow(); i++)
+	{
+		for (int j = 0; j < inverseA.GetMaxColumn(); j++)
+		{
+			if (i == j)
+			{
+				inverseA.SetData(1.0L, i, j);
+			}
+			else
+			{
+				inverseA.SetData(0.0L, i, j);
+			}
+		}
+	}
+
+
+	Forward_Elimination(mA, inverseA, vb);
+	Backward_Substitution(mA, inverseA, vb);
+
+	return inverseA;
 
 }
 
-void Gaussian_Elimination::Forward_Elimination()
+void Gaussian_Elimination::Forward_Elimination(Matrix &A, Matrix &inverseA, Matrix &b)
 {
 
 	int i, j, k;
 	long double w;
 
 
-	for (i = 0; i < matA.GetMaxRow() - 1; i++)
+	for (i = 0; i < A.GetMaxRow() - 1; i++)
 	{
-		j = matA.Pivot(i);
+		j = A.Pivot(i);
 		if ((j != -1) && (i != j))
 		{
-			matA.SwapRow(i, j);
-			vecb.SwapRow(i, j);
+			A.SwapRow(i, j);
+			b.SwapRow(i, j);
+			inverseA.SwapRow(i, j);
 		}
 		else
 		{
 			// Do nothing
 		}
 
-		for (k = i + 1; k < matA.GetMaxRow(); k++)
+		for (k = i + 1; k < A.GetMaxRow(); k++)
 		{
-			w = -(matA.GetData(k, i) / matA.GetData(i, i));
-			matA.RowAddition(k, w, i);
-			vecb.RowAddition(k, w, i);
+			w = -(A.GetData(k, i) / A.GetData(i, i));
+			A.RowAddition(k, w, i);
+			b.RowAddition(k, w, i);
+			inverseA.RowAddition(k, w, i);
 		}
 	}
 
 }
 
-void Gaussian_Elimination::Backward_Substitution()
+void Gaussian_Elimination::Backward_Substitution(Matrix &A, Matrix &inverseA, Matrix &b)
 {
 	int i, j, n;
 	long double w;
 
-	n = vecb.GetMaxRow() - 1;
-	vecb.SetData(vecb.GetData(n, 0) / matA.GetData(n, n), n, 0);
+	n = b.GetMaxRow() - 1;
+
+	for (i = n ; i >= 0; i--)
+	{
+		inverseA.RowMultiplation(1.0L / A.GetData(i, i), i);
+		for (j = 0; j < i; j++)
+		{
+			inverseA.RowAddition(j, -(A.GetData(j, i)), i);
+		}
+	}
+
+	b.SetData(b.GetData(n, 0) / A.GetData(n, n), n, 0);
 	for (i = n - 1; i >= 0; i--)
 	{
-		w = vecb.GetData(i, 0);
+		w = b.GetData(i, 0);
 		for (j = i + 1; j <= n; j++)
 		{
-			w -= vecb.GetData(j, 0) * matA.GetData(i, j);
+			w -= b.GetData(j, 0) * A.GetData(i, j);
 		}
-		w = w / matA.GetData(i, i);
-		vecb.SetData(w, i, 0);
+		w = w / A.GetData(i, i);
+		b.SetData(w, i, 0);
 	}
 }

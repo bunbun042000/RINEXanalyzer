@@ -12,6 +12,9 @@ PsudoRange::PsudoRange()
 	PRN = 0;
 	observation.clear();
 	event_flag = 0;
+	satellitePosition = ECEF_Frame(0.0L, 0.0L, 0.0L);
+	weight= 0.0L;
+	calculateDistance = 0.0L;
 }
 
 PsudoRange::PsudoRange(const PsudoRange &psur)
@@ -20,6 +23,9 @@ PsudoRange::PsudoRange(const PsudoRange &psur)
 	current = psur.current;
 	PRN = psur.PRN;
 	event_flag = psur.event_flag;
+	satellitePosition = psur.satellitePosition;
+	weight = psur.weight;
+	calculateDistance = psur.calculateDistance;
 }
 
 PsudoRange::~PsudoRange()

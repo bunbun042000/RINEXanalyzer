@@ -18,6 +18,7 @@
 #include "RINEX_NavigationMessage.h"
 #include "IonoSphere.h"
 #include "RINEX_ObservationData.h"
+#include "ReceiverOutput.h"
 
 TEST(GPS_Time_Test, ToDate)
 {
@@ -367,23 +368,26 @@ TEST(Gaussian_Elimination, GetAnswer)
 	vecB.SetData(-4.0L, 1, 0);
 	vecB.SetData(3.0L, 2, 0);
 
-	Gaussian_Elimination Gauss = Gaussian_Elimination(matA, vecB);
+	Gaussian_Elimination Gauss;
 
-	if (Gauss.IsValid())
-	{
-		SUCCEED();
-	}
-	else
-	{
-		FAIL();
-	}
 
 	Matrix vecX;
-	vecX = Gauss.GetAnswer();
+	vecX = Gauss.GetAnswer(matA, vecB);
 
-	ASSERT_DOUBLE_EQ(1.0L, vecX.GetData(0, 0));
-	ASSERT_DOUBLE_EQ(-2.0L, vecX.GetData(1, 0));
-	ASSERT_DOUBLE_EQ(3.0L, vecX.GetData(2, 0));
+	ASSERT_DOUBLE_EQ(1.0L, vecB.GetData(0, 0));
+	ASSERT_DOUBLE_EQ(-2.0L, vecB.GetData(1, 0));
+	ASSERT_DOUBLE_EQ(3.0L, vecB.GetData(2, 0));
+
+	ASSERT_DOUBLE_EQ(-8.0L/11.0L, vecX.GetData(0, 0));
+	ASSERT_DOUBLE_EQ(-6.0L/11.0L, vecX.GetData(0, 1));
+	ASSERT_DOUBLE_EQ(9.0L/11.0L, vecX.GetData(0, 2));
+	ASSERT_DOUBLE_EQ(1.0L, vecX.GetData(1, 0));
+	ASSERT_DOUBLE_EQ(1.0L, vecX.GetData(1, 1));
+	ASSERT_DOUBLE_EQ(-1.0L, vecX.GetData(1, 2));
+	ASSERT_DOUBLE_EQ(-2.0L/11.0L, vecX.GetData(2, 0));
+	ASSERT_DOUBLE_EQ(-7.0L/11.0L, vecX.GetData(2, 1));
+	ASSERT_DOUBLE_EQ(5.0L/11.0L, vecX.GetData(2, 2));
+
 
 }
 
@@ -408,10 +412,10 @@ TEST(Calculate_Position, TEST1)
 
 	Calculate_Position cal(sat, range, 5);
 
-	ECEF_Frame position = cal.GetPosition();
-	ASSERT_DOUBLE_EQ(-3947762.4862546385, position.GetX());
-	ASSERT_DOUBLE_EQ(3364401.3024154068, position.GetY());
-	ASSERT_DOUBLE_EQ(3699431.9924437893, position.GetZ());
+	ReceiverOutput position = cal.GetPosition();
+	ASSERT_DOUBLE_EQ(-3947762.4862546385, position.GetPosition().GetX());
+	ASSERT_DOUBLE_EQ(3364401.3024154068, position.GetPosition().GetY());
+	ASSERT_DOUBLE_EQ(3699431.9924437893, position.GetPosition().GetZ());
 
 }
 
@@ -536,7 +540,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
-	std::map<int, long double> range;
+	std::map<int, PsudoRange> range;
 	GPS_Time cur;
 
 	for (std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin(); it != psuRange.end(); it++)
@@ -544,7 +548,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 		// 2005-11-14 00:00:00
 		if (fabs(it->first - GPS_Time(1349, 86400.0, 0)) < 1.0e-5)
 		{
-			range.insert(std::pair<int, long double>((it->second).GetPRN(), (it->second).GetData(PsudoRange::C1)));
+			range.insert(std::pair<int, PsudoRange>((it->second).GetPRN(), it->second));
 			cur = it->first;
 		}
 		else
@@ -556,18 +560,18 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
 
-	Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
+	Calculate_Position cal(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
 
-	ECEF_Frame position = cal.GetPosition();
+	ReceiverOutput position = cal.GetPosition();
 
 // relative effect collection
 //	ASSERT_DOUBLE_EQ(-3947762.4862546385, position.GetX());
 //	ASSERT_DOUBLE_EQ(3364401.3024154068, position.GetY());
 //	ASSERT_DOUBLE_EQ(3699431.9924437893, position.GetZ());
 
-	ASSERT_DOUBLE_EQ(-3947762.6273452728, position.GetX());
-	ASSERT_DOUBLE_EQ(3364400.5446071858, position.GetY());
-	ASSERT_DOUBLE_EQ(3699431.230931337, position.GetZ());
+	ASSERT_DOUBLE_EQ(-3947762.6273452728, position.GetPosition().GetX());
+	ASSERT_DOUBLE_EQ(3364400.5446071858, position.GetPosition().GetY());
+	ASSERT_DOUBLE_EQ(3699431.230931337, position.GetPosition().GetZ());
 
 	range.clear();
 	ephem_map.clear();
@@ -577,7 +581,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 		// 2005-11-14 00:32:00
 		if (fabs(it->first - GPS_Time(1349, 88320.0, 0)) < 1.0e-5)
 		{
-			range.insert(std::pair<int, long double>((it->second).GetPRN(), (it->second).GetData(PsudoRange::C1)));
+			range.insert(std::pair<int, PsudoRange>((it->second).GetPRN(), it->second));
 			tm tmbuf = (it->first).ToDate();
 			cur = it->first;
 		}
@@ -590,13 +594,13 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	ephem_map = nav_message.GetEphemeris(cur, -1, false);
 
-	cal = Calculate_Position(ephem_map, range, cur, nav_message.GetIon());
+	cal = Calculate_Position(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
 
 	position = cal.GetPosition();
 
-	ASSERT_DOUBLE_EQ(-3947765.2127858549, position.GetX());
-	ASSERT_DOUBLE_EQ(3364401.930418036, position.GetY());
-	ASSERT_DOUBLE_EQ(3699431.3939317954, position.GetZ());
+	ASSERT_DOUBLE_EQ(-3947765.2127858549, position.GetPosition().GetX());
+	ASSERT_DOUBLE_EQ(3364401.930418036, position.GetPosition().GetY());
+	ASSERT_DOUBLE_EQ(3699431.3939317954, position.GetPosition().GetZ());
 
 }
 
@@ -611,7 +615,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
-	std::map<int, long double> range;
+	std::map<int, PsudoRange> range;
 	GPS_Time cur;
 	std::map <int, Ephemeris> ephem_map;
 	Calculate_Position cal;
@@ -628,12 +632,12 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 		cur = it->first;
 		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
 		{
-			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::C1)));
+			range.insert(std::pair<int, PsudoRange>((its->second).GetPRN(), its->second));
 		}
 		ephem_map = nav_message.GetEphemeris(cur, -1, false);
-		cal = Calculate_Position(ephem_map, range, cur, nav_message.GetIon());
+		cal = Calculate_Position(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
 
-		ECEF_Frame position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition();
 
 
 		it = r_it.second;
@@ -666,7 +670,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
-	std::map<int, long double> range;
+	std::map<int, PsudoRange> range;
 	GPS_Time cur;
 
 	std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin();
@@ -680,20 +684,21 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 
 		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
 		{
-			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::CA)));
+			range.insert(std::pair<int, PsudoRange>((its->second).GetPRN(), its->second));
 			cur = its->first;
 
 		}
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
-		Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
+		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
-		ECEF_Frame position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition();
 
 		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
 		{
-			ASSERT_DOUBLE_EQ(-3814969.60410609, position.GetX());
-			ASSERT_DOUBLE_EQ(2699236.3398733628, position.GetY());
-			ASSERT_DOUBLE_EQ(4326126.7209189935, position.GetZ());
+			ASSERT_DOUBLE_EQ(-3814969.60410609, position.GetPosition().GetX());
+			ASSERT_DOUBLE_EQ(2699236.3398733628, position.GetPosition().GetY());
+			ASSERT_DOUBLE_EQ(4326126.7209189935, position.GetPosition().GetZ());
+			std::cout << "HDOP = " << std::fixed << position.GetHDOP() << std::endl;
 		}
 
 		it = r_it.second;
@@ -722,7 +727,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
-	std::map<int, long double> range;
+	std::map<int, PsudoRange> range;
 	GPS_Time cur;
 
 	std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin();
@@ -736,20 +741,21 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 
 		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
 		{
-			range.insert(std::pair<int, long double>((its->second).GetPRN(), (its->second).GetData(PsudoRange::CA)));
+			range.insert(std::pair<int, PsudoRange>((its->second).GetPRN(), its->second));
 			cur = its->first;
 
 		}
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
-		Calculate_Position cal(ephem_map, range, cur, nav_message.GetIon());
+		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
-		ECEF_Frame position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition();
 
 		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
 		{
-			ASSERT_DOUBLE_EQ(-3814970.2604134339, position.GetX());
-			ASSERT_DOUBLE_EQ(2699236.998314104, position.GetY());
-			ASSERT_DOUBLE_EQ(4326126.8061326146, position.GetZ());
+			ASSERT_DOUBLE_EQ(-3814970.2604134339, position.GetPosition().GetX());
+			ASSERT_DOUBLE_EQ(2699236.998314104, position.GetPosition().GetY());
+			ASSERT_DOUBLE_EQ(4326126.8061326146, position.GetPosition().GetZ());
+			std::cout << "HDOP = " << std::fixed << position.GetHDOP() << std::endl;
 		}
 
 		it = r_it.second;

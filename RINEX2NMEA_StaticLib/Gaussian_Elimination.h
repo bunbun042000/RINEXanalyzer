@@ -14,25 +14,14 @@ class Gaussian_Elimination
 {
 public:
 	Gaussian_Elimination();
-	Gaussian_Elimination(const Gaussian_Elimination &gauss);
-	Gaussian_Elimination(Matrix &mA, Matrix &vb);
 	virtual ~Gaussian_Elimination();
 
-	bool IsValid()
-	{
-		return valid;
-	};
-
-	Matrix GetAnswer();
+	Matrix GetAnswer(Matrix &mA, Matrix &vb);
 
 private:
-	Matrix matA;
-	Matrix vecb;
 
-	bool valid;
-
-	void Forward_Elimination();
-	void Backward_Substitution();
+	void Forward_Elimination(Matrix &A, Matrix &inverseA, Matrix &b);
+	void Backward_Substitution(Matrix &A, Matrix &inverseA, Matrix &b);
 
 };
 

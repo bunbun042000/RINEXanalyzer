@@ -7,7 +7,6 @@
 
 #include "Calculate_Position.h"
 #include <iostream>
-#include <vector>
 
 Calculate_Position::Calculate_Position()
 {
@@ -15,21 +14,10 @@ Calculate_Position::Calculate_Position()
 	satellites.clear();
 	valid = false;
 	from_ephemeris = false;
+	type = PsudoRange::C1;
 
 }
 
-Calculate_Position::Calculate_Position(const Calculate_Position &cal)
-{
-	number_of_satellites = cal.number_of_satellites;
-	satellites = cal.satellites;
-	distance = cal.distance;
-	valid = cal.valid;
-	current = cal.current;
-	clockdiff = cal.clockdiff;
-	from_ephemeris = cal.from_ephemeris;
-	ionosphere = cal.ionosphere;
-
-}
 
 Calculate_Position::Calculate_Position(std::vector<ECEF_Frame> sats, std::vector<long double> dist, const int n_sats)
 {
@@ -54,14 +42,15 @@ Calculate_Position::Calculate_Position(std::vector<ECEF_Frame> sats, std::vector
 
 }
 
-Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<int, long double> dist, GPS_Time currentTime, IonoSphere ion)
+Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<int, PsudoRange> range, PsudoRange::MeansType _type, GPS_Time currentTime, IonoSphere ion)
 {
 
 	current = currentTime;
 
 	ephemeris = ephem;
-	psudodistance = dist;
-	GetCurrentSatellites(ECEF_Frame(0.0L, 0.0L, 0.0L), 0.0L);
+	psudodistance = range;
+	type = _type;
+	GetCurrentSatellites(ECEF_Frame(0.0L, 0.0L, 0.0L), type, 0.0L);
 
 	ionosphere = ion;
 	from_ephemeris = true;
@@ -86,7 +75,7 @@ Calculate_Position::~Calculate_Position()
 
 }
 
-ECEF_Frame Calculate_Position::GetPosition()
+ReceiverOutput Calculate_Position::GetPosition()
 {
 
 	IsValid();
@@ -97,7 +86,7 @@ ECEF_Frame Calculate_Position::GetPosition()
 	int i;
 	int j = 0;
 	long double r;
-
+	Matrix cov;
 
 	long double diff;
 	diff = max_diff;
@@ -108,7 +97,7 @@ ECEF_Frame Calculate_Position::GetPosition()
 	{
 		if (from_ephemeris)
 		{
-			GetCurrentSatellites(ans, receiver_clockdiff);
+			GetCurrentSatellites(ans, type, receiver_clockdiff);
 		}
 		else
 		{
@@ -153,9 +142,9 @@ ECEF_Frame Calculate_Position::GetPosition()
 		Matrix GtG = Gt * G;
 		Matrix Gtdr = Gt * dr;
 
-		Gaussian_Elimination gauss(GtG, Gtdr);
+		Gaussian_Elimination gauss;
 
-		Gtdr = gauss.GetAnswer();
+		cov = gauss.GetAnswer(GtG, Gtdr);
 
 		ans = ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(ans)).GetPosition();
 
@@ -185,10 +174,11 @@ ECEF_Frame Calculate_Position::GetPosition()
 		j++;
 	}
 
-	return ans;
+	ReceiverOutput ret = ReceiverOutput(modifiedCurrent, ans, psudodistance, cov);
+	return ret;
 }
 
-void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, long double clock_diff)
+void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, PsudoRange::MeansType type, long double clock_diff)
 {
 	int i = 0;
 
@@ -199,20 +189,22 @@ void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, long double c
 
 	modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - clock_diff / IS_GPS_200::C_velocity, current.GetLeapSecond());
 
-	std::map<int, long double>::iterator current_dist_it = psudodistance.begin();
+	std::map<int, PsudoRange>::iterator current_dist_it = psudodistance.begin();
 	for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
 	{
-		for (std::map<int, long double>::iterator dist_it = current_dist_it; dist_it != psudodistance.end(); dist_it++)
+		for (std::map<int, PsudoRange>::iterator dist_it = current_dist_it; dist_it != psudodistance.end(); dist_it++)
 		{
 			if (dist_it->first == it->first)
 			{
-				original_distance.push_back(dist_it->second);
-				long double r = dist_it->second - clock_diff;
+				original_distance.push_back(dist_it->second.GetData(type));
+				long double r = dist_it->second.GetData(type) - clock_diff;
 				long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
-				r = dist_it->second - clock_diff + satellite_clock * IS_GPS_200::C_velocity;
+				r = dist_it->second.GetData(type) - clock_diff + satellite_clock * IS_GPS_200::C_velocity;
+				dist_it->second.SetCalculateRange(r);
 				satellite_clock = (it->second).GetClock(modifiedCurrent, r);
 				ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
 				satellites.push_back(satellite_position);
+				dist_it->second.SetSatellitePosition(satellite_position);
 				clockdiff.push_back(satellite_clock);
 				distance.push_back(satellite_position.Distance(position));
 				current_dist_it = dist_it;

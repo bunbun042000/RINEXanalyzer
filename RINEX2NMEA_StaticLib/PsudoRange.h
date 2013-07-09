@@ -7,6 +7,10 @@
 
 #include <map>
 #include "GPS_Time.h"
+#include "ENU_Frame.h"
+
+#ifndef PSUDORANGE_H_
+#define PSUDORANGE_H_
 
 class PsudoRange
 {
@@ -67,11 +71,45 @@ public:
 	long double GetData(MeansType type);
 	void clear();
 
+	ECEF_Frame GetSatellitePosition()
+	{
+		return satellitePosition;
+	}
+
+	void SetSatellitePosition(const ECEF_Frame satpos)
+	{
+		satellitePosition = satpos;
+	}
+
+	long double GetWeight()
+	{
+		return weight;
+	}
+
+	void SetWeight(const long double w)
+	{
+		weight = w;
+	}
+
+	long double GetCalculateRange()
+	{
+		return calculateDistance;
+	}
+
+	void SetCalculateRange(const long double r)
+	{
+		calculateDistance = r;
+	}
+
 private:
 	std::map<MeansType, long double>observation;
 	int PRN;
 	GPS_Time current;
 	int event_flag;
+	ECEF_Frame satellitePosition;
+	long double weight;
+	long double calculateDistance;
 
 };
 
+#endif /* PSUDORANGE_H_ */

@@ -18,18 +18,19 @@
 #include "Ephemeris.h"
 #include "IonoSphere.h"
 #include "TropoSphere.h"
+#include "PsudoRange.h"
+#include "ReceiverOutput.h"
 
 
 class Calculate_Position
 {
 public:
 	Calculate_Position();
-	Calculate_Position(const Calculate_Position &cal);
 	Calculate_Position(std::vector<ECEF_Frame> sats, std::vector<long double> dist, const int n_sats);
-	Calculate_Position(std::map<int, Ephemeris> ephemeris, std::map<int, long double>dist, GPS_Time currentTime, IonoSphere ion);
+	Calculate_Position(std::map<int, Ephemeris> ephemeris, std::map<int, PsudoRange> range, PsudoRange::MeansType _type, GPS_Time currentTime, IonoSphere ion);
 	virtual ~Calculate_Position();
 
-	ECEF_Frame GetPosition();
+	ReceiverOutput GetPosition();
 
 	bool IsValid()
 	{
@@ -57,7 +58,7 @@ public:
 private:
 	int number_of_satellites;
 	std::map<int, Ephemeris> ephemeris;
-	std::map<int, long double> psudodistance;
+	std::map<int, PsudoRange> psudodistance;
 	std::vector<ECEF_Frame> satellites;
 	std::vector<long double> distance;
 	std::vector<long double> original_distance;
@@ -68,8 +69,9 @@ private:
 	GPS_Time current;
 	GPS_Time modifiedCurrent;
 	IonoSphere ionosphere;
+	PsudoRange::MeansType type;
 
-	void GetCurrentSatellites(ECEF_Frame position, long double clockdiff);
+	void GetCurrentSatellites(ECEF_Frame position, PsudoRange::MeansType _type, long double clockdiff);
 
 	const static long double max_diff = 1.0e8;
 	const static long double min_diff = 1.0e-5;
