@@ -23,7 +23,7 @@ TEST(GPS_Time_Test, ToDate)
 {
   GPS_Time gpstime;
   struct tm tbuf;
-  gpstime = GPS_Time(1350, 100.0, 0);
+  gpstime = GPS_Time(1350, 100.0, -1);
 
   tbuf = gpstime.ToDate();
   ASSERT_EQ(2005, tbuf.tm_year+1900);
@@ -31,7 +31,8 @@ TEST(GPS_Time_Test, ToDate)
   ASSERT_EQ(20, tbuf.tm_mday);
   ASSERT_EQ(00, tbuf.tm_hour);
   ASSERT_EQ(01, tbuf.tm_min);
-  ASSERT_EQ(40, tbuf.tm_sec);
+  ASSERT_EQ(27, tbuf.tm_sec);
+  ASSERT_EQ(13, gpstime.GetLeapSecond());
 
 }
 
@@ -39,18 +40,9 @@ TEST(GPS_Time_Test, ToGPSTime1)
 {
 	GPS_Time gpstime;
 
-	tm tbuf;
-	tbuf.tm_year = 119;
-	tbuf.tm_mon = 3;
-	tbuf.tm_mday = 7;
-	tbuf.tm_hour = 1;
-	tbuf.tm_min = 1;
-	tbuf.tm_sec = 40;
+	gpstime = GPS_Time(2019, 4, 7, 1, 1, 40);
 
-	gpstime = GPS_Time(tbuf, 0, 0);
-
-	int week = gpstime.GetWeek();
-	ASSERT_EQ(2048, week);
+	ASSERT_EQ(2048, gpstime.GetWeek());
 	ASSERT_DOUBLE_EQ(3700.0, gpstime.GetSecond());
 
 }
@@ -59,15 +51,7 @@ TEST(GPS_Time_Test, ToGPSTime2)
 {
 	GPS_Time gpstime;
 
-	tm tbuf;
-	tbuf.tm_year = 80;
-	tbuf.tm_mon = 0;
-	tbuf.tm_mday = 6;
-	tbuf.tm_hour = 0;
-	tbuf.tm_min = 0;
-	tbuf.tm_sec = 0;
-
-	gpstime = GPS_Time(tbuf, 0, 0);
+	gpstime = GPS_Time(1980, 1, 6, 0, 0, 0);
 
 	ASSERT_EQ(0, gpstime.GetWeek());
 	ASSERT_DOUBLE_EQ(0.0, gpstime.GetSecond());

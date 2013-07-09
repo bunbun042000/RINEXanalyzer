@@ -376,24 +376,22 @@ bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 					}
 
 					ephem.SetPRN(prn);
-					tm tmbuf;
-					tmbuf.tm_year = atoi(buf.substr(Epoch_offset, 3).c_str());
-					if (tmbuf.tm_year < 80)
+					int year = atoi(buf.substr(Epoch_offset, 3).c_str());
+					if (year < 80)
 					{
-						tmbuf.tm_year += 100;
+						year += 2000;
 					}
 					else
 					{
-						// Do nothing
+						year += 1900;
 					}
-					tmbuf.tm_mon = atoi(buf.substr(Epoch_offset + 3, 3).c_str()) - 1;
-					tmbuf.tm_mday = atoi(buf.substr(Epoch_offset + 6, 3).c_str());
-					tmbuf.tm_hour = atoi(buf.substr(Epoch_offset + 9, 3).c_str());
-					tmbuf.tm_min = atoi(buf.substr(Epoch_offset + 12, 3).c_str());
-					tmbuf.tm_sec = 0;
-					long double temp;
-					sscanf(buf.substr(Epoch_offset + 15, 5).c_str(), "%LF", &temp);
-					ephem.SetToc(GPS_Time(tmbuf, temp, leap_sec));
+					int month = atoi(buf.substr(Epoch_offset + 3, 3).c_str());
+					int day = atoi(buf.substr(Epoch_offset + 6, 3).c_str());
+					int hour = atoi(buf.substr(Epoch_offset + 9, 3).c_str());
+					int minute = atoi(buf.substr(Epoch_offset + 12, 3).c_str());
+					long double sec;
+					sscanf(buf.substr(Epoch_offset + 15, 5).c_str(), "%LF", &sec);
+					ephem.SetToc(GPS_Time(year, month, day, hour, minute, sec, leap_sec));
 					success = true;
 				}
 				else

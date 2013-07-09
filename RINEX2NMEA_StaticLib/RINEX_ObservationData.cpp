@@ -332,27 +332,24 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 		bool valid_epoch = false;
 
 		// Read epoch
-		tm tmbuf;
-		tmbuf.tm_year = atoi(buf.substr(0, 3).c_str());
-		if (tmbuf.tm_year < 80)
+		int year = atoi(buf.substr(0, 3).c_str());
+		if (year < 80)
 		{
-			tmbuf.tm_year += 100;
+			year += 2000;
 		}
 		else
 		{
-			// Do nothing
+			year += 1900;
 		}
-		tmbuf.tm_mon = atoi(buf.substr(3, 3).c_str()) - 1;
-		tmbuf.tm_mday = atoi(buf.substr(6, 3).c_str());
-		tmbuf.tm_hour = atoi(buf.substr(9, 3).c_str());
-		tmbuf.tm_min = atoi(buf.substr(12, 3).c_str());
-		long double temp;
-		sscanf(buf.substr(15, 11).c_str(), "%LF", &temp);
-		tmbuf.tm_sec = (int) (temp + 0.5);
-		temp -= tmbuf.tm_sec;
-		if ((tmbuf.tm_mon >= 0) && (tmbuf.tm_mday > 0))
+		int month = atoi(buf.substr(3, 3).c_str());
+		int day = atoi(buf.substr(6, 3).c_str());
+		int hour = atoi(buf.substr(9, 3).c_str());
+		int min = atoi(buf.substr(12, 3).c_str());
+		long double sec;
+		sscanf(buf.substr(15, 11).c_str(), "%LF", &sec);
+		if ((month >= 0) && (day > 0))
 		{
-			currentTime = GPS_Time(tmbuf, temp, leapsec);
+			currentTime = GPS_Time(year, month, day, hour, min, sec, leapsec);
 			valid_epoch = true;
 			success = true;
 		}

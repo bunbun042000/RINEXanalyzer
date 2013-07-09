@@ -18,8 +18,9 @@
 class GPS_Time {
 public:
   GPS_Time();
-  GPS_Time(int w, long double sec, int leap_second);
-  GPS_Time(tm tmbuf, long double sec, int leap_seconds);
+  GPS_Time(int w, long double sec, int leap_second = 0);
+//  GPS_Time(tm tmbuf, long double sec, int leap_seconds = -1);
+  GPS_Time(int year, int month, int day, int hour, int min, long double sec, int leapsec = 0);
   GPS_Time(const GPS_Time &gpst);
   virtual ~GPS_Time();
 
@@ -65,7 +66,8 @@ private:
   static const long int Days_in_Week = 7L;
   static const long int Seconds_in_Minute = 60L;
 
-  long double GetJulianDay(tm tmbuf);
+  long double GetJulianDay(int year, int month, int day);
+  int CalculateLeapSecond();
 
 
 };

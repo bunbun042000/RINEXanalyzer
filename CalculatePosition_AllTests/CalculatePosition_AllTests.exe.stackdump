@@ -1,0 +1,8 @@
+Exception: STATUS_ACCESS_VIOLATION at eip=6E7FE1B5
+eax=00000000 ebx=6E810484 ecx=00288B30 edx=30303030 esi=00000006 edi=00288D10
+ebp=00288CE8 esp=00288CD0 program=C:\home\bun\git\RINEX2NMEA\CalculatePosition_AllTests\Debug\CalculatePosition_AllTests.exe, pid 301996, thread main
+cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
+Stack trace:
+Frame     Function  Args
+00288CE8  6E7FE1B5 (30303030, 00288D10, 00000000, 0028A0B8)
+0028A0E8  6E7C1D7F (30303030, 30303030, 30303030, 30303030)
