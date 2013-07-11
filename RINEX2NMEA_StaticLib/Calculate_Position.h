@@ -32,46 +32,14 @@ public:
 
 	ReceiverOutput GetPosition();
 
-	bool IsValid()
-	{
-	    std::vector<ECEF_Frame>::iterator begin;
-
-		if (satellites.empty()){
-			std::cerr << "satellites is not initialized!\n";
-			return false;
-		}
-		else
-		{
-			begin = satellites.begin();
-			if (fabs(begin->GetX()) < min_diff)
-			{
-				return false;
-			}
-			else
-			{
-				// Do nothing
-			}
-		}
-		return valid;
-	};
 
 private:
-	int number_of_satellites;
 	std::map<int, Ephemeris> ephemeris;
-	std::map<int, PsudoRange> psudodistance;
-	std::vector<ECEF_Frame> satellites;
-	std::vector<long double> distance;
-	std::vector<long double> original_distance;
-	std::vector<long double> clockdiff;
-	std::vector<int> valid_PRN;
-	bool from_ephemeris;
-	bool valid;
+	std::map<int, PsudoRange> originalpsudodistance;
+
 	GPS_Time current;
-	GPS_Time modifiedCurrent;
 	IonoSphere ionosphere;
 	PsudoRange::MeansType type;
-
-	void GetCurrentSatellites(ECEF_Frame position, PsudoRange::MeansType _type, long double clockdiff);
 
 	const static long double max_diff = 1.0e8;
 	const static long double min_diff = 1.0e-5;

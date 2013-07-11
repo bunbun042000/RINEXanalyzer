@@ -10,37 +10,10 @@
 
 Calculate_Position::Calculate_Position()
 {
-	number_of_satellites = 0;
-	satellites.clear();
-	valid = false;
-	from_ephemeris = false;
 	type = PsudoRange::C1;
 
 }
 
-
-Calculate_Position::Calculate_Position(std::vector<ECEF_Frame> sats, std::vector<long double> dist, const int n_sats)
-{
-
-	valid = false;
-
-	if (sats.size() == dist.size())
-	{
-		number_of_satellites = sats.size();
-	}
-	else
-	{
-		return;
-	}
-
-	satellites = sats;
-	distance = dist;
-
-	valid = true;
-	from_ephemeris = false;
-	IsValid();
-
-}
 
 Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<int, PsudoRange> range, PsudoRange::MeansType _type, GPS_Time currentTime, IonoSphere ion)
 {
@@ -48,45 +21,44 @@ Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<
 	current = currentTime;
 
 	ephemeris = ephem;
-	psudodistance = range;
+	originalpsudodistance = range;
 	type = _type;
-	GetCurrentSatellites(ECEF_Frame(0.0L, 0.0L, 0.0L), type, 0.0L);
 
 	ionosphere = ion;
-	from_ephemeris = true;
+	std::vector<ECEF_Frame> satellites;
+	GPS_Time modifiedCurrent;
+	std::vector<long double> original_distance;
+	std::vector<long double> distance;
 
-	valid = true;
 }
 
 Calculate_Position::~Calculate_Position()
 {
 
-	number_of_satellites = 0;
 	ephemeris.clear();
-	psudodistance.clear();
-	satellites.clear();
-	distance.clear();
-	original_distance.clear();
-	clockdiff.clear();
-	valid_PRN.clear();
-
-	from_ephemeris = false;
-	valid = false;
+	originalpsudodistance.clear();
 
 }
 
 ReceiverOutput Calculate_Position::GetPosition()
 {
 
-	IsValid();
-
-	ECEF_Frame ans = ECEF_Frame(0.0L, 0.0L, 0.0L);
-	Matrix G = Matrix(number_of_satellites, 4);
-	Matrix dr = Matrix(number_of_satellites, 1);
+	ECEF_Frame position = ECEF_Frame(0.0L, 0.0L, 0.0L);
+	Matrix G; //= Matrix(number_of_satellites, 4);
+	Matrix dr; //= Matrix(number_of_satellites, 1);
 	int i;
 	int j = 0;
 	long double r;
 	Matrix cov;
+
+	int number_of_satellites = 0;
+
+	std::vector<ECEF_Frame> satellites;
+	std::map<int, PsudoRange> psudodistance;
+	GPS_Time modifiedCurrent;
+	std::vector<long double> original_distance;
+	std::vector<long double> distance;
+	std::vector<long double> clockdiff;
 
 	long double diff;
 	diff = max_diff;
@@ -95,40 +67,74 @@ ReceiverOutput Calculate_Position::GetPosition()
 
 	while(diff > min_diff)
 	{
-		if (from_ephemeris)
+		i = 0;
+
+		satellites.clear();
+		original_distance.clear();
+		clockdiff.clear();
+		distance.clear();
+
+		modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - receiver_clockdiff / IS_GPS_200::C_velocity, current.GetLeapSecond());
+
+		std::map<int, PsudoRange>::iterator current_dist_it = originalpsudodistance.begin();
+		for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
 		{
-			GetCurrentSatellites(ans, type, receiver_clockdiff);
+			for (std::map<int, PsudoRange>::iterator dist_it = current_dist_it; dist_it != originalpsudodistance.end(); dist_it++)
+			{
+				if (dist_it->first == it->first)
+				{
+					original_distance.push_back(dist_it->second.GetData(type));
+
+					long double r = dist_it->second.GetData(type) - receiver_clockdiff;
+					long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
+					r = dist_it->second.GetData(type) - receiver_clockdiff + satellite_clock * IS_GPS_200::C_velocity;
+
+					dist_it->second.SetCalculateRange(r);
+
+					satellite_clock = (it->second).GetClock(modifiedCurrent, r);
+
+					ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
+					satellites.push_back(satellite_position);
+
+					dist_it->second.SetSatellitePosition(satellite_position);
+					psudodistance.insert(std::pair<int, PsudoRange>(dist_it->first, dist_it->second));
+
+					clockdiff.push_back(satellite_clock);
+					distance.push_back(satellite_position.Distance(position));
+					current_dist_it = dist_it;
+					i++;
+					break;
+				}
+				else
+				{
+					continue;
+				}
+			}
 		}
-		else
-		{
-			// Do nothing
-		}
+
+
+		number_of_satellites = i;
+		G.SetSize(number_of_satellites, 4);
+		dr.SetSize(number_of_satellites, 1);
 
 		// Create Observation matrix
 		for (i = 0; i < number_of_satellites; i++)
 		{
-			r = satellites[i].Distance(ans);
-			ENU_Frame enu(satellites[i], ans);
+			r = satellites[i].Distance(position);
+			ENU_Frame enu(satellites[i], position);
 			G.SetData(-enu.GetE()/r, i, 0);
 			G.SetData(-enu.GetN()/r, i, 1);
 			G.SetData(-enu.GetU()/r, i, 2);
 			G.SetData(1.0, i, 3);
 
-			if(from_ephemeris)
-			{
-				dr.SetData(original_distance[i] + clockdiff[i] * IS_GPS_200::C_velocity - r - receiver_clockdiff, i, 0);
-			}
-			else
-			{
-				dr.SetData((distance[i] - r), i, 0);
-			}
+			dr.SetData(original_distance[i] + clockdiff[i] * IS_GPS_200::C_velocity - r - receiver_clockdiff, i, 0);
 
-			if (j > 3 && from_ephemeris)
+			if (j > 3)
 			{
-				long double atomospheric_delay = TropoSphere::GetTropoSphereCollection(satellites[i], ans);
+				long double atomospheric_delay = TropoSphere::GetTropoSphereCollection(satellites[i], position);
 				if (ionosphere.IsValid())
 				{
-					atomospheric_delay += ionosphere.GetIonoSphereDelayCorrection(satellites[i], ans, current);
+					atomospheric_delay += ionosphere.GetIonoSphereDelayCorrection(satellites[i], position, current);
 				}
 				else
 				{
@@ -146,20 +152,10 @@ ReceiverOutput Calculate_Position::GetPosition()
 
 		cov = gauss.GetAnswer(GtG, Gtdr);
 
-		ans = ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(ans)).GetPosition();
+		position= ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(position)).GetPosition();
 
-//		std::cout << "x = " << std::fixed << ans.GetX() << std::endl;
-//		std::cout << "y = " << std::fixed << ans.GetY() << std::endl;
-//		std::cout << "z = " << std::fixed << ans.GetZ() << std::endl;
 
-		if(from_ephemeris)
-		{
-			receiver_clockdiff += Gtdr.GetData(3, 0);
-		}
-		else
-		{
-			// Do nothing
-		}
+		receiver_clockdiff += Gtdr.GetData(3, 0);
 
 		diff = ECEF_Frame(Gtdr).Distance(ECEF_Frame(0, 0, 0));
 
@@ -174,51 +170,6 @@ ReceiverOutput Calculate_Position::GetPosition()
 		j++;
 	}
 
-	ReceiverOutput ret = ReceiverOutput(modifiedCurrent, ans, psudodistance, cov);
+	ReceiverOutput ret = ReceiverOutput(modifiedCurrent, position, psudodistance, cov);
 	return ret;
-}
-
-void Calculate_Position::GetCurrentSatellites(ECEF_Frame position, PsudoRange::MeansType type, long double clock_diff)
-{
-	int i = 0;
-
-	satellites.clear();
-	original_distance.clear();
-	clockdiff.clear();
-	distance.clear();
-
-	modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - clock_diff / IS_GPS_200::C_velocity, current.GetLeapSecond());
-
-	std::map<int, PsudoRange>::iterator current_dist_it = psudodistance.begin();
-	for (std::map <int, Ephemeris>::iterator it = ephemeris.begin(); it != ephemeris.end(); it++)
-	{
-		for (std::map<int, PsudoRange>::iterator dist_it = current_dist_it; dist_it != psudodistance.end(); dist_it++)
-		{
-			if (dist_it->first == it->first)
-			{
-				original_distance.push_back(dist_it->second.GetData(type));
-				long double r = dist_it->second.GetData(type) - clock_diff;
-				long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
-				r = dist_it->second.GetData(type) - clock_diff + satellite_clock * IS_GPS_200::C_velocity;
-				dist_it->second.SetCalculateRange(r);
-				satellite_clock = (it->second).GetClock(modifiedCurrent, r);
-				ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
-				satellites.push_back(satellite_position);
-				dist_it->second.SetSatellitePosition(satellite_position);
-				clockdiff.push_back(satellite_clock);
-				distance.push_back(satellite_position.Distance(position));
-				current_dist_it = dist_it;
-				i++;
-				break;
-			}
-		}
-	}
-
-
-	number_of_satellites = i;
-
-	from_ephemeris = true;
-
-	valid = true;
-
 }

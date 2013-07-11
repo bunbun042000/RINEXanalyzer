@@ -30,6 +30,7 @@ public:
 	bool SetData(long double x, int row, int column);
 	bool SetLine(const long double *row_data, int row, int max_col);
 	bool SetColumn(const long double *column_data, int column, int max_lin);
+	bool SetSize(int row, int column);
 
 	bool SwapRow(int source, int dest);
 	void RowMultiplation(const long double x, const int row);

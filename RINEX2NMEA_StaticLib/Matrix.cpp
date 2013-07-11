@@ -158,6 +158,15 @@ bool Matrix::SetColumn(const long double *column, int col, int m_row)
 
 }
 
+bool Matrix::SetSize(int row, int col)
+{
+	data = 0;
+	column_index = 0;
+	row_index = 0;
+	DeleteHeap();
+	return InitHeap(row, col, 0, 0, 0);
+}
+
 bool Matrix::SwapRow(int source, int dest)
 {
 	if ((source < max_row) && (dest < max_row))
