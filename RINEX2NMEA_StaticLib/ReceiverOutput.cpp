@@ -72,5 +72,44 @@ std::map<int, ENU_Frame> ReceiverOutput::GetENUSatellites()
 	return ENUSats;
 }
 
+std::multimap<long double, long double> ReceiverOutput::GetElevationVsSatelliteDistanceDiff(ECEF_Frame &pos)
+{
+	std::multimap<long double, long double>elevationVsSatDistance;
+
+	ECEF_Frame origin;
+	if (pos.Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
+	{
+		origin = receiverPosition;
+	}
+	else
+	{
+		origin = pos;
+	}
+
+	for (std::map<int, PsudoRange>::iterator it = satellites.begin(); it != satellites.end(); it++)
+	{
+		long double elevation_deg = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), origin).GetElevation());
+		long double distance_diff = it->second.GetCalculateRange() - it->second.GetSatellitePosition().Distance(origin);
+		elevationVsSatDistance.insert(std::pair<long double, long double>(elevation_deg, distance_diff));
+
+	}
+
+	return elevationVsSatDistance;
+}
+
+std::multimap<long double, long double> ReceiverOutput::GetSkyPlot()
+{
+	std::multimap<long double, long double> skyplot;
 
 
+	for (std::map<int, PsudoRange>::iterator it = satellites.begin(); it != satellites.end(); it++)
+	{
+		long double elevation_deg = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), receiverPosition).GetElevation());
+		long double azimuth_deg = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), receiverPosition).GetAzimuth());
+		skyplot.insert(std::pair<long double, long double>(elevation_deg, azimuth_deg));
+
+	}
+
+	return skyplot;
+
+}

@@ -41,6 +41,9 @@ public:
 	long double GetVDOP();
 	std::map<int, ENU_Frame> GetENUSatellites();
 
+	std::multimap<long double, long double> GetElevationVsSatelliteDistanceDiff(ECEF_Frame &pos);
+	std::multimap<long double, long double> GetSkyPlot();
+
 private:
 	GPS_Time currentTime;
 	ECEF_Frame receiverPosition;

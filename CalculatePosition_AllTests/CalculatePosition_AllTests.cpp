@@ -391,33 +391,6 @@ TEST(Gaussian_Elimination, GetAnswer)
 
 }
 
-TEST(Calculate_Position, TEST1)
-{
-
-
-	std::vector<ECEF_Frame> sat;
-	std::vector<long double> range;
-	sat.push_back(ECEF_Frame(-13897607.6294L, -10930188.6233L, 19676689.6804L));
-	sat.push_back(ECEF_Frame(-17800899.1998L, 15689920.8120L, 11943543.3888L));
-	sat.push_back(ECEF_Frame(-1510958.2282L, 26280096.7818L, -3117646.1949L));
-	sat.push_back(ECEF_Frame(-12210758.3517L, 20413597.0201L, -11649499.5474L));
-	sat.push_back(ECEF_Frame(-170032.6981L, 17261822.6784L, 20555984.4061L));
-
-
-	range.push_back(23634878.5219L);
-	range.push_back(20292688.3557L);
-	range.push_back(24032055.0372L);
-	range.push_back(24383229.3740L);
-	range.push_back(22170992.8178L);
-
-	Calculate_Position cal(sat, range, 5);
-
-	ReceiverOutput position = cal.GetPosition();
-	ASSERT_DOUBLE_EQ(-3947762.4862546385, position.GetPosition().GetX());
-	ASSERT_DOUBLE_EQ(3364401.3024154068, position.GetPosition().GetY());
-	ASSERT_DOUBLE_EQ(3699431.9924437893, position.GetPosition().GetZ());
-
-}
 
 TEST(RINEX_NavigationMessage, Read)
 {
@@ -698,7 +671,6 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 			ASSERT_DOUBLE_EQ(-3814969.60410609, position.GetPosition().GetX());
 			ASSERT_DOUBLE_EQ(2699236.3398733628, position.GetPosition().GetY());
 			ASSERT_DOUBLE_EQ(4326126.7209189935, position.GetPosition().GetZ());
-			std::cout << "HDOP = " << std::fixed << position.GetHDOP() << std::endl;
 		}
 
 		it = r_it.second;
@@ -755,9 +727,29 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 			ASSERT_DOUBLE_EQ(-3814970.2604134339, position.GetPosition().GetX());
 			ASSERT_DOUBLE_EQ(2699236.998314104, position.GetPosition().GetY());
 			ASSERT_DOUBLE_EQ(4326126.8061326146, position.GetPosition().GetZ());
-			std::cout << "HDOP = " << std::fixed << position.GetHDOP() << std::endl;
 		}
 
+		ECEF_Frame origin(-3814967.959L, 2699234.446L, 4326121.682L);
+
+		// plot satellite elevation versus distance error
+/*		std::multimap <long double, long double> elVsDisDiff = position.GetElevationVsSatelliteDistanceDiff(origin);
+		for (std::multimap <long double, long double>::iterator el = elVsDisDiff.begin(); el != elVsDisDiff.end(); el++)
+		{
+			std::cout << std::fixed << el->first << " " << std::fixed << el->second << std::endl;
+		}
+*/
+		// plot ENU position
+/*		ENU_Frame enu_pos(position.GetPosition(), origin);
+		std::cout << std::fixed << enu_pos.GetE() << " ";
+		std::cout << std::fixed << enu_pos.GetN() << std::endl;
+*/
+/*		// sky plot
+		std::multimap <long double, long double> skyplot = position.GetSkyPlot();
+		for (std::multimap <long double, long double>::iterator el = skyplot.begin(); el != skyplot.end(); el++)
+		{
+			std::cout << std::fixed << el->first << " " << std::fixed << el->second << std::endl;
+		}
+*/
 		it = r_it.second;
 		if (it != psuRange.end())
 		{

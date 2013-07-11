@@ -88,11 +88,15 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 		for (std::multimap<int, Ephemeris>::iterator its = range.first; its != range.second; its++)
 		{
 
-			if (((its->second).GetTot() >= (candidator->second).GetTot()) && (current_gpst >= (its->second).GetTot()))
+			if(!use_qzss && candidator->first > RINEX::QZSS_PRN_Offset)
+			{
+				continue;
+			}
+			else if (((its->second).GetTot() >= (candidator->second).GetTot()) && (current_gpst >= (its->second).GetTot()))
 			{
 				long double freshness = its->second.GetData(Ephemeris::FIT) * GPS_Time::Seconds_in_Hour / 2.0;
 
-				if (freshness < 1.0e-10 || freshness < Ephemeris_Default_Freshness)
+				if (freshness < Ephemeris_Default_Freshness)
 				{
 					freshness = Ephemeris_Default_Freshness;
 				}
@@ -118,22 +122,19 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 							// Do nothing
 						}
 					}
+					else
+					{
+						// Do nothing
+					}
 
 					// Health check
 					if (((its->first) <= RINEX::QZSS_PRN_Offset) && ((its->second).GetData(Ephemeris::health) != 0.0L))
 					{
 						continue;
 					}
-					else if ((its->first) > RINEX::QZSS_PRN_Offset)
+					else if ((its->first) > RINEX::QZSS_PRN_Offset && ((its->second).GetData(Ephemeris::health) > 1.0L))
 					{
-						if(use_qzss && ((its->second).GetData(Ephemeris::health) <= 1.0L))
-						{
-							// QZSS is now health = 1.0L
-						}
-						else
-						{
-							continue;
-						}
+						continue;
 					}
 					else
 					{
