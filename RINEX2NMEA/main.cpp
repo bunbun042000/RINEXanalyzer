@@ -100,7 +100,8 @@ int main(int argc, char **argv)
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_sec << " ";
 
       std::cout << std::fixed << enu_pos.GetE() << " ";
-      std::cout << std::fixed << enu_pos.GetN() << std::endl;
+      std::cout << std::fixed << enu_pos.GetN() << " ";
+      std::cout << std::fixed << enu_pos.GetU() << std::endl;
 
     }
 
