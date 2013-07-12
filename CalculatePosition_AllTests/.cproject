@@ -25,7 +25,7 @@
 								<option id="gnu.cpp.compiler.cygwin.exe.debug.option.optimization.level.1433116095" name="Optimization Level" superClass="gnu.cpp.compiler.cygwin.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.cygwin.exe.debug.option.debugging.level.142902136" name="Debug Level" superClass="gnu.cpp.compiler.cygwin.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.295935695" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RINEX2NMEA_StaticLib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RINEX}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.70806228" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.1508135405" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin"/>
@@ -39,12 +39,12 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug.2096845850" name="Cygwin C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug">
 								<option id="gnu.cpp.link.option.libs.814945441" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="gtest"/>
-									<listOptionValue builtIn="false" value="RINEX2NMEA_StaticLib"/>
+									<listOptionValue builtIn="false" value="RINEX"/>
 									<listOptionValue builtIn="false" value="gtest_main"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1889771010" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;C:\cygwin\usr\local\lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RINEX2NMEA_StaticLib/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RINEX/Debug}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.460928375" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

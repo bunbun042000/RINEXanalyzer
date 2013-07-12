@@ -46,3 +46,31 @@ long double ECEF_Frame::Distance(const ECEF_Frame &origin)
 	return sqrt((x - origin.x) * (x - origin.x) + (y - origin.y) * (y - origin.y) + (z - origin.z) * (z - origin.z));
 }
 
+ECEF_Frame &ECEF_Frame::operator*(const long double r)
+{
+	x *= r;
+	y *= r;
+	z *= r;
+	return *this;
+}
+ECEF_Frame ECEF_Frame::operator+(const ECEF_Frame &pos)
+{
+	ECEF_Frame posA;
+	posA.x = x + pos.x;
+	posA.y = y + pos.y;
+	posA.z = z + pos.z;
+	return posA;
+}
+
+ECEF_Frame &ECEF_Frame::operator+=(const ECEF_Frame &pos)
+{
+	x += pos.x;
+	y += pos.y;
+	z += pos.z;
+	return *this;
+}
+
+ECEF_Frame operator*(long double r, ECEF_Frame &pos)
+{
+	return pos * r;
+}

@@ -1,30 +1,22 @@
 /*
  * RINEX.h
  *
- *  Created on: 2013/07/07
+ *  Created on: 2013/07/12
  *      Author: bun
  */
 
 #ifndef RINEX_H_
 #define RINEX_H_
 
-namespace RINEX
-{
-	static const int QZSS_PRN_Offset = 192;
+#include "Calculate_Position.h"
+#include "Matrix.h"
+#include "Gaussian_Elimination.h"
+#include "ECEF_Frame.h"
+#include "RINEX_NavigationMessage.h"
+#include "IonoSphere.h"
+#include "RINEX_ObservationData.h"
+#include "ReceiverOutput.h"
 
-	enum _Version
-	{
-		Ver2,
-		Ver210,
-		Ver211,
-		Ver212,
-		Ver300,
-		Ver301,
-		Ver302
-	};
-
-
-}
 
 
 #endif /* RINEX_H_ */

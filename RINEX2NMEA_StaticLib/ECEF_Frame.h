@@ -19,6 +19,7 @@ public:
 	ECEF_Frame(Matrix &m);
 	virtual ~ECEF_Frame();
 
+	friend ECEF_Frame operator*(long double r, ECEF_Frame &pos);
 	ECEF_Frame &operator=(const ECEF_Frame &orig)
 	{
 		x = orig.x;
@@ -26,6 +27,10 @@ public:
 		z = orig.z;
 		return *this;
 	};
+
+	ECEF_Frame &operator*(const long double r);
+	ECEF_Frame operator+(const ECEF_Frame &pos);
+	ECEF_Frame &operator+=(const ECEF_Frame &pos);
 
 	long double Distance(const ECEF_Frame &origin);
 	long double GetX()

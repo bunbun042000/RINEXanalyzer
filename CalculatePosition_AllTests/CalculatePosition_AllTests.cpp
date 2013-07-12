@@ -11,14 +11,7 @@
 #include <vector>
 #include <iomanip>
 
-#include "Calculate_Position.h"
-#include "Matrix.h"
-#include "Gaussian_Elimination.h"
-#include "ECEF_Frame.h"
-#include "RINEX_NavigationMessage.h"
-#include "IonoSphere.h"
-#include "RINEX_ObservationData.h"
-#include "ReceiverOutput.h"
+#include "RINEX.h"
 
 TEST(GPS_Time_Test, ToDate)
 {

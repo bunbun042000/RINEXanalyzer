@@ -16,7 +16,7 @@
 
 #include "Ephemeris.h"
 #include "IonoSphere.h"
-#include "RINEX.h"
+#include "RINEX_constant.h"
 
 class RINEX_NavigationMessage
 {
