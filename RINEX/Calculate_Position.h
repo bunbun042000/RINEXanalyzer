@@ -21,6 +21,12 @@
 #include "PsudoRange.h"
 #include "ReceiverOutput.h"
 
+namespace calc_pos
+{
+	const static long double max_diff = 1.0e8;
+	const static long double min_diff = 1.0e-5;
+	const static int max_loop = 10;
+}
 
 class Calculate_Position
 {
@@ -41,9 +47,6 @@ private:
 	IonoSphere ionosphere;
 	PsudoRange::MeansType type;
 
-	const static long double max_diff = 1.0e8;
-	const static long double min_diff = 1.0e-5;
-	const static int max_loop = 10;
 };
 
 

@@ -61,11 +61,11 @@ ReceiverOutput Calculate_Position::GetPosition()
 	std::vector<long double> clockdiff;
 
 	long double diff;
-	diff = max_diff;
+	diff = calc_pos::max_diff;
 
 	long double receiver_clockdiff = 0.0L;
 
-	while(diff > min_diff)
+	while(diff > calc_pos::min_diff)
 	{
 		i = 0;
 
@@ -159,7 +159,7 @@ ReceiverOutput Calculate_Position::GetPosition()
 
 		diff = ECEF_Frame(Gtdr).Distance(ECEF_Frame(0, 0, 0));
 
-		if (j > max_loop)
+		if (j > calc_pos::max_loop)
 		{
 			break;
 		}

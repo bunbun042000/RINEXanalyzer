@@ -5,6 +5,8 @@
  *      Author: bun
  */
 
+#include "stdafx.h"
+
 #include <string>
 #include <cmath>
 #include <iostream>
@@ -91,7 +93,7 @@ int main(int argc, char **argv)
   for(std::map<GPS_Time, ReceiverOutput>::iterator it = outdata.begin(); it != outdata.end(); it++)
     {
       ENU_Frame enu_pos(it->second.GetPosition(), pos);
-      tm tmbuf = it->first.ToDate();
+      tm tmbuf = (it->first).ToDate();
       std::cout << std::fixed << std::setw(4) << std::setfill('0') << tmbuf.tm_year + 1900 << "-";
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_mon + 1 << "-";
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_mday << " ";
@@ -99,9 +101,9 @@ int main(int argc, char **argv)
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_min << ":";
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_sec << " ";
 
-      std::cout << std::fixed << enu_pos.GetE() << " ";
-      std::cout << std::fixed << enu_pos.GetN() << " ";
-      std::cout << std::fixed << enu_pos.GetU() << std::endl;
+			std::cout << std::fixed << it->second.GetPosition().GetX() << " ";
+			std::cout << std::fixed << it->second.GetPosition().GetY() << " ";
+			std::cout << std::fixed << it->second.GetPosition().GetZ() << std::endl;
 
     }
 

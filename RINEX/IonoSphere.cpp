@@ -84,9 +84,9 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 			// Do nothing
 		}
 
-		if (per < PER_Min)
+		if (per < Ion::PER_Min)
 		{
-			per = PER_Min;
+			per = Ion::PER_Min;
 		}
 		else
 		{
@@ -96,7 +96,7 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 		long double x = 0.53 - elevation;
 		long double f = 1.0 + 16.0 * x * x * x;
 
-		x = 2.0 * IS_GPS_200::GPS_Pi * (lt - MAX_Delay_time) / per;
+		x = 2.0 * IS_GPS_200::GPS_Pi * (lt - Ion::MAX_Delay_time) / per;
 		while (x > IS_GPS_200::GPS_Pi)
 		{
 			x -= 2.0 * IS_GPS_200::GPS_Pi;
@@ -116,7 +116,7 @@ long double IonoSphere::GetIonoSphereDelayCorrection(ECEF_Frame satellitePositio
 			y = 0.0;
 		}
 
-		return -f * (Night_Delay + y) * IS_GPS_200::C_velocity;
+		return -f * (Ion::Night_Delay + y) * IS_GPS_200::C_velocity;
 	}
 	else
 	{

@@ -5,6 +5,8 @@
  *      Author: bun
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "RINEX_ObservationData.h"
 #include <iostream>
 
@@ -346,7 +348,7 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 		int hour = atoi(buf.substr(9, 3).c_str());
 		int min = atoi(buf.substr(12, 3).c_str());
 		long double sec;
-		sscanf(buf.substr(15, 11).c_str(), "%LF", &sec);
+		sscanf(buf.substr(15, 11).c_str(), "%Lf", &sec);
 		if ((month >= 0) && (day > 0))
 		{
 			currentTime = GPS_Time(year, month, day, hour, min, sec, leapsec);
@@ -507,7 +509,7 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 					Psr.SetPRN(PRN_list[i]);
 					long double temp;
 					sscanf(buf.substr(observationData_column_length * (j % MAX_observs_Line), observationData_length).c_str(),
-							"%LF", &temp);
+							"%Lf", &temp);
 					Psr.SetData(temp, columnOrder[j]);
 				}
 				else

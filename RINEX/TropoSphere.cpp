@@ -17,16 +17,16 @@ long double TropoSphere::GetTropoSphereCollection(ECEF_Frame satellitePosition, 
 	{
 		d = 1.0;
 	}
-	else if (userpos.GetG_Height() > Tropo_Scale_Height)
+	else if (userpos.GetG_Height() > Tropo::Tropo_Scale_Height)
 	{
 		d = 0.0;
 	}
 	else
 	{
-		d = 1.0 - userpos.GetG_Height() / Tropo_Scale_Height;
+		d = 1.0 - userpos.GetG_Height() / Tropo::Tropo_Scale_Height;
 	}
 
-	return -1.0 * Tropo_Delay_Zenith * d * d * d * d * d
+	return -1.0 * Tropo::Tropo_Delay_Zenith * d * d * d * d * d
 			/ (sin(ENU_Frame(satellitePosition, userPosition).GetElevation()) + 0.0121);
 }
 

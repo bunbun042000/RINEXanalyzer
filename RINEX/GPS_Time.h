@@ -14,6 +14,14 @@
 #include <cmath>
 #include <iostream>
 
+namespace GPS_Time_const
+{
+	static const int Time_t_Base_Year = 1970;
+  static const int GPS_Week_Origin = 315964800L;
+  static const long double GPS_Epoch_JD = 2444244.5;
+  static const long int Days_in_Week = 7L;
+  static const long int Seconds_in_Minute = 60L;
+}
 
 class GPS_Time {
 public:
@@ -59,11 +67,6 @@ private:
   long double second;
   int leap_second;
 
-  static const int Time_t_Base_Year = 1970;
-  static const int GPS_Week_Origin = 315964800L;
-  static const long double GPS_Epoch_JD = 2444244.5;
-  static const long int Days_in_Week = 7L;
-  static const long int Seconds_in_Minute = 60L;
 
   long double GetJulianDay(int year, int month, int day);
   int CalculateLeapSecond();

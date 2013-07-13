@@ -55,7 +55,7 @@ void Ephemeris::SetData(const long double dat, Ephemeris_column col)
 	{
 		long double t = (time_of_clock.GetWeek() - dat) * GPS_Time::Seconds_in_week;
 		t += time_of_clock.GetSecond();
-		time_of_clock = GPS_Time(dat, t, time_of_clock.GetLeapSecond());
+		time_of_clock = GPS_Time((int)dat, t, time_of_clock.GetLeapSecond());
 	}
 	else if (col == NONE1 || col == NONE2)
 	{

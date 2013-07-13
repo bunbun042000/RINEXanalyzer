@@ -14,6 +14,13 @@
 #include "ENU_Frame.h"
 #include "GPS_Time.h"
 
+namespace Ion
+{
+	static const long double PER_Min = 72000.0L;
+	static const long double Night_Delay = 5.0e-9;
+	static const long double MAX_Delay_time = 50400.0L;
+}
+
 class IonoSphere
 {
 public:
@@ -53,9 +60,6 @@ private:
 	std::map <ION, long double> Ionosphere_parameter;
 
 
-	static const long double PER_Min = 72000.0L;
-	static const long double Night_Delay = 5.0e-9;
-	static const long double MAX_Delay_time = 50400.0L;
 
 
 };

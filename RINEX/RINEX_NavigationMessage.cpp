@@ -5,6 +5,8 @@
  *      Author: bun
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "RINEX_NavigationMessage.h"
 #include <iostream>
 #include <ctime>
@@ -175,8 +177,8 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 
 long double RINEX_NavigationMessage::GetLongDouble(std::string str)
 {
-	unsigned int posD = str.find("D");
-	unsigned int posd = str.find("d");
+	size_t posD = str.find("D");
+	size_t posd = str.find("d");
 	if (posD != std::string::npos)
 	{
 		str.replace(posD, 1, "E");
@@ -187,7 +189,7 @@ long double RINEX_NavigationMessage::GetLongDouble(std::string str)
 	}
 
 	long double temp;
-	sscanf(str.c_str(), "%LF", &temp);
+	sscanf(str.c_str(), "%Lf", &temp);
 	return temp;
 
 }

@@ -10,6 +10,12 @@
 
 #include "ENU_Frame.h"
 
+namespace Tropo
+{
+	static const long double Tropo_Delay_Zenith = 2.47;
+	static const long double Tropo_Scale_Height = 1.0 / 2.3e-5;
+}
+
 class TropoSphere
 {
 public:
@@ -20,8 +26,6 @@ public:
 	static long double GetTropoSphereCollection(ECEF_Frame satellitePosition, ECEF_Frame userPosition);
 
 private:
-	static const long double Tropo_Delay_Zenith = 2.47;
-	static const long double Tropo_Scale_Height = 1.0 / 2.3e-5;
 
 };
 

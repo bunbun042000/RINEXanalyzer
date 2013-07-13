@@ -4,6 +4,9 @@
  *  Created on: 2013/06/07
  *      Author: bun
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "GPS_Time.h"
 #include <ctime>
 #include <cmath>
@@ -35,10 +38,10 @@ GPS_Time::GPS_Time(int year, int month, int day, int hour, int min, long double 
 {
 	long double days;
 
-	days = GetJulianDay(year, month, day) - GPS_Epoch_JD;
-	week = (int)(days / Days_in_Week);
-	second = (days - week * Days_in_Week) * Seconds_in_Day + hour * Seconds_in_Hour +
-     min * Seconds_in_Minute + sec;
+	days = GetJulianDay(year, month, day) - GPS_Time_const::GPS_Epoch_JD;
+	week = (int)(days / GPS_Time_const::Days_in_Week);
+	second = (days - week * GPS_Time_const::Days_in_Week) * Seconds_in_Day + hour * Seconds_in_Hour +
+     min * GPS_Time_const::Seconds_in_Minute + sec;
 
 	if (leapsec < 0)
 	{
@@ -67,8 +70,8 @@ tm GPS_Time::ToDate() const
 {
   time_t t;
 
-  t = (long) week * Days_in_Week * Seconds_in_Day + GPS_Week_Origin
-     +(long)((second>0.0)?second+0.5:second-0.5) - leap_second;
+  t = (time_t) week * GPS_Time_const::Days_in_Week * Seconds_in_Day + GPS_Time_const::GPS_Week_Origin
+     +(time_t)((second>0.0)?second+0.5:second-0.5) - leap_second;
   return *gmtime(&t);
 }
 
@@ -76,7 +79,7 @@ tm GPS_Time::ToDate() const
 
 long double GPS_Time::operator-(const GPS_Time &gpst) const
 {
-	return (week - gpst.week) * Days_in_Week * Seconds_in_Day + second - gpst.second;
+	return (week - gpst.week) * GPS_Time_const::Days_in_Week * Seconds_in_Day + second - gpst.second;
 }
 
 GPS_Time &GPS_Time::operator=(const GPS_Time gpst)
@@ -89,7 +92,7 @@ GPS_Time &GPS_Time::operator=(const GPS_Time gpst)
 
 bool GPS_Time::operator>(const GPS_Time &gpst) const
 {
-	return ((week - gpst.week) * Days_in_Week * Seconds_in_Day + second - gpst.second) > 0.0L;
+	return ((week - gpst.week) * GPS_Time_const::Days_in_Week * Seconds_in_Day + second - gpst.second) > 0.0L;
 }
 
 bool GPS_Time::operator<(const GPS_Time &gpst) const
