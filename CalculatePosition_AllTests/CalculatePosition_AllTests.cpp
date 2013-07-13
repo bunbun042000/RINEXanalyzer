@@ -566,7 +566,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	ASSERT_DOUBLE_EQ(-3947765.2127858549, position.GetPosition().GetX());
 	ASSERT_DOUBLE_EQ(3364401.930418036, position.GetPosition().GetY());
-	ASSERT_DOUBLE_EQ(3699431.3939317954, position.GetPosition().GetZ());
+	ASSERT_DOUBLE_EQ(3699431.393931793, position.GetPosition().GetZ());
 
 }
 
@@ -717,7 +717,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 
 		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
 		{
-			ASSERT_DOUBLE_EQ(-3814970.2604134339, position.GetPosition().GetX());
+			ASSERT_DOUBLE_EQ(-3814970.2604134316, position.GetPosition().GetX());
 			ASSERT_DOUBLE_EQ(2699236.998314104, position.GetPosition().GetY());
 			ASSERT_DOUBLE_EQ(4326126.8061326146, position.GetPosition().GetZ());
 		}

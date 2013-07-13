@@ -44,7 +44,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.paths.1889771010" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;C:\cygwin\usr\local\lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RINEX/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/RINEX/Default}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.460928375" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
