@@ -3,6 +3,7 @@
 	<name>RINEXanalyzer</name>
 	<comment></comment>
 	<projects>
+		<project>RINEX</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -16,7 +16,7 @@
 #include "IonoSphere.h"
 #include "RINEX_ObservationData.h"
 #include "ReceiverOutput.h"
-
+#include "NMEA0183.h"
 
 
 #endif /* RINEX_H_ */

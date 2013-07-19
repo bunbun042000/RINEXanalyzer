@@ -358,7 +358,7 @@ Matrix Matrix::Tranposed()
 
 int Matrix::Pivot(const int from_row)
 {
-	int i, m_row;
+
 	long double temp = 0.0L;
 
 	if (!(from_row < max_column))
@@ -370,7 +370,8 @@ int Matrix::Pivot(const int from_row)
 		// Do nothing
 	}
 
-	for (i = from_row; i < max_row; i++)
+	int m_row = from_row;
+	for (int i = from_row; i < max_row; i++)
 	{
 		m_row = i;
 		if (temp > fabs(GetData(i, from_row)))

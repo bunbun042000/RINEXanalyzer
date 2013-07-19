@@ -101,11 +101,19 @@ int main(int argc, char **argv)
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_min << ":";
       std::cout << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_sec << " ";
 
-	  std::cout << std::fixed << enu_pos.GetE() << " ";
-	  std::cout << std::fixed << enu_pos.GetN() << " ";
-	  std::cout << std::fixed << enu_pos.GetU() << std::endl;
+      std::cout << std::fixed << enu_pos.GetE() << " ";
+      std::cout << std::fixed << enu_pos.GetN() << " ";
+      std::cout << std::fixed << enu_pos.GetU() << std::endl;
 
     }
+  NMEA0183 getnmea;
+  std::multimap<GPS_Time, std::string> nmea0183 = getnmea.OutputNMEA0183(outdata);
+  for(std::multimap<GPS_Time, std::string>::iterator it = nmea0183.begin(); it != nmea0183.end(); it++)
+  {
+	  std::cout << it->second;
+
+  }
+
 
   return 0;
 }

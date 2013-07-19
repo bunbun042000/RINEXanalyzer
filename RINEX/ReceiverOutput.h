@@ -43,6 +43,10 @@ public:
 
 	std::multimap<long double, long double> GetElevationVsSatelliteDistanceDiff(ECEF_Frame &pos);
 	std::multimap<long double, long double> GetSkyPlot();
+	int GetNumberOfSatellites()
+	{
+		return satellites.size();
+	}
 
 private:
 	GPS_Time currentTime;
