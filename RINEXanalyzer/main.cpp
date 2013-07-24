@@ -13,10 +13,17 @@
 #include <vector>
 #include <iomanip>
 
+// Need for GetPot
+#include <cstring>
+// From http://getpot.sourceforge.net/
+#include <GetPot>
 #include "RINEX.h"
 
 int main(int argc, char **argv)
 {
+
+	GetPot cl(argc, argv);
+
   if (argc == 0)
     {
       return 0;
