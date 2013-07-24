@@ -97,16 +97,27 @@ std::multimap<long double, long double> ReceiverOutput::GetElevationVsSatelliteD
 	return elevationVsSatDistance;
 }
 
-std::multimap<long double, long double> ReceiverOutput::GetSkyPlot()
+std::map<int, SatellitesInView> ReceiverOutput::GetSkyPlot()
 {
-	std::multimap<long double, long double> skyplot;
+	std::map<int, SatellitesInView> skyplot;
 
 
 	for (std::map<int, PsudoRange>::iterator it = satellites.begin(); it != satellites.end(); it++)
 	{
-		long double elevation_deg = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), receiverPosition).GetElevation());
-		long double azimuth_deg = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), receiverPosition).GetAzimuth());
-		skyplot.insert(std::pair<long double, long double>(elevation_deg, azimuth_deg));
+		SatellitesInView sat;
+		sat.elevation = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), receiverPosition).GetElevation());
+		sat.azimuth = WGS84_Frame::Rad2Deg(ENU_Frame(it->second.GetSatellitePosition(), receiverPosition).GetAzimuth());
+		if (sat.azimuth < 0.0)
+		{
+			sat.azimuth += 360.0L;
+		}
+		else
+		{
+			// Do nothing
+		}
+		sat.PRN = it->first;
+		sat.SNR = it->second.GetData(PsudoRange::SA);
+		skyplot.insert(std::pair<int, SatellitesInView>(sat.PRN, sat));
 
 	}
 

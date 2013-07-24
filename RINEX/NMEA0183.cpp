@@ -24,6 +24,8 @@ std::multimap<GPS_Time, std::string> NMEA0183::OutputNMEA0183(std::map<GPS_Time,
 	for (std::map<GPS_Time, ReceiverOutput>::iterator it = calculatedData.begin(); it != calculatedData.end(); it++)
 	{
 		out.insert(std::pair<GPS_Time, std::string>(it->first, CreateGPGGA(it->second)));
+		out.insert(std::pair<GPS_Time, std::string>(it->first, CreateGPGSV(it->second)));
+		out.insert(std::pair<GPS_Time, std::string>(it->first, CreateGPZDA(it->second)));
 	}
 
 	return out;
@@ -79,60 +81,16 @@ std::string NMEA0183::CreateGPGGA(ReceiverOutput data)
 	stream << "$GPGGA,";
 
 	// UTC
-	tm tmbuf = data.GetTime().ToDate();
-	stream << std::setw(2) << std::setfill('0');
-	stream << tmbuf.tm_hour;
-	stream << std::setw(2) << std::setfill('0');
-	stream << tmbuf.tm_min;
-	stream << std::setw(6) << std::setfill('0') << std::fixed;
-	stream << std::setprecision(3);
-	double temp1 = (double)(data.GetTime().GetSecond() - data.GetTime().GetLeapSecond());
-	double sec = fmod(temp1, 60);
-	stream << sec;
-	stream << ",";
+	stream << CreateUTCtime(data);
+	stream << ',';
 
 	// Latitude
-	WGS84_Frame pos = data.GetPosition();
-	long double lat = pos.GetLat();
-	lat = WGS84_Frame::Rad2Deg(lat);
-	long double temp = fabs(lat);
-	int lat_deg = (int)temp;
-	long double lat_sec = (temp - lat_deg) * 60;
-	stream << std::setw(2) << std::setfill('0');
-	stream << lat_deg;
-	stream << std::setw(7) << std::setfill('0');
-	stream << std::setprecision(4) << std::fixed;
-	stream << lat_sec;
-	stream << ",";
-	if (lat > 0)
-	{
-		stream << "N,";
-	}
-	else
-	{
-		stream << "S,";
-	}
+	stream << CreateLatitude(data);
+	stream << ',';
 
 	// Longitude
-	long double longi = pos.GetLongi();
-	longi = WGS84_Frame::Rad2Deg(longi);
-	temp = fabs(longi);
-	int longi_deg = (int)temp;
-	long double longi_sec = (temp - longi_deg) * 60;
-	stream << std::setw(3) << std::setfill('0');
-	stream << longi_deg;
-	stream << std::setw(7) << std::setfill('0');
-	stream << std::setprecision(4);
-	stream << longi_sec;
-	stream << ",";
-	if (longi > 0)
-	{
-		stream << "E,";
-	}
-	else
-	{
-		stream << "W,";
-	}
+	stream << CreateLongitude(data);
+	stream << ',';
 
 	// GPS Quality
 	stream << "1,";
@@ -157,6 +115,8 @@ std::string NMEA0183::CreateGPGGA(ReceiverOutput data)
 	stream << ",";
 
 	// Altitude
+	WGS84_Frame pos = data.GetPosition();
+
 	stream << std::setprecision(3) << std::fixed << std::setfill('0');
 	stream << pos.GetG_Height();
 	stream << ",M,";
@@ -167,7 +127,6 @@ std::string NMEA0183::CreateGPGGA(ReceiverOutput data)
 	stream << ",M,";
 
 	// Age of Differential GPS data
-	stream << "0.0";
 	stream <<",";
 
 	// Differential reference station ID
@@ -179,6 +138,180 @@ std::string NMEA0183::CreateGPGGA(ReceiverOutput data)
 	return out;
 }
 
-//	std::string CreateGPGSV();
+std::string NMEA0183::CreateGPGSV(ReceiverOutput data)
+{
+	std::string createGSV;
+	createGSV.clear();
 
+	std::map<int, SatellitesInView> skyplot = data.GetSkyPlot();
+	int total_number_of_lines = (int)(data.GetNumberOfSatellites()
+			/ GSV_Max_number_of_satellites_per_line);
 
+	if (data.GetNumberOfSatellites() % GSV_Max_number_of_satellites_per_line != 0)
+	{
+		total_number_of_lines++;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	int sats = 0;
+	std::ostringstream stream;
+
+	for (std::map<int, SatellitesInView>::iterator it = skyplot.begin(); it != skyplot.end(); it++)
+	{
+
+		if (sats == 0 || (sats % GSV_Max_number_of_satellites_per_line) == 0)
+		{
+			stream << "$GPGSV,";
+			stream << total_number_of_lines<< ',';
+			stream << (int)(sats / GSV_Max_number_of_satellites_per_line) + 1 << ',';
+			stream << std::setw(2) << std::setfill('0');
+			stream << data.GetNumberOfSatellites();
+
+		}
+		else
+		{
+			// Do nothing
+		}
+
+		stream << ',';
+		stream << std::setw(3) << std::setfill('0') << it->first << ',';
+		stream << std::setw(2) << std::setfill('0') << (int) it->second.elevation << ',';
+		stream << std::setw(3) << std::setfill('0') << (int) it->second.azimuth << ',';
+		stream << std::setw(2) << std::setfill('0') << (int) it->second.SNR;
+
+		sats++;
+		if (((sats % GSV_Max_number_of_satellites_per_line)	== 0) ||
+				(sats == data.GetNumberOfSatellites()))
+		{
+			if (((sats % GSV_Max_number_of_satellites_per_line)	!= 0) &&
+					(sats == data.GetNumberOfSatellites()))
+			{
+				stream << ',';
+			}
+			else
+			{
+				// Do nothing
+			}
+			std::string out = CreateCheckSum(stream.str());
+			out += "\r\n";
+			createGSV += out;
+			stream.str("");
+			stream.clear(std::ostringstream::goodbit);
+		}
+		else
+		{
+			// Do nothing
+		}
+
+	}
+
+	return createGSV;
+
+}
+
+std::string NMEA0183::CreateGPZDA(ReceiverOutput data)
+{
+	std::ostringstream stream;
+
+	stream << "$GPZDA,";
+
+	// UTC
+	stream << CreateUTCtime(data);
+	stream << ",";
+
+	tm tmbuf = data.GetTime().ToDate();
+	stream << std::setw(2) << std::setfill('0') << tmbuf.tm_mday << ',';
+	stream << std::setw(2) << std::setfill('0') << tmbuf.tm_mon + 1 << ',';
+	stream << std::setw(4) << std::setfill('0') << tmbuf.tm_year + 1900;
+
+	// local time zone hours
+	stream << ',';
+
+	// local time zone minutes
+	stream << ',';
+
+	std::string out = CreateCheckSum(stream.str());
+
+	out += "\r\n";
+	return out;
+
+}
+
+std::string NMEA0183::CreateUTCtime(ReceiverOutput data)
+{
+	std::ostringstream stream;
+
+	tm tmbuf = data.GetTime().ToDate();
+	stream << std::setw(2) << std::setfill('0');
+	stream << tmbuf.tm_hour;
+	stream << std::setw(2) << std::setfill('0');
+	stream << tmbuf.tm_min;
+	stream << std::setw(6) << std::setfill('0') << std::fixed;
+	stream << std::setprecision(3);
+	double temp1 = (double)(data.GetTime().GetSecond() - data.GetTime().GetLeapSecond());
+	double sec = fmod(temp1, 60);
+	stream << sec;
+
+	return stream.str();
+}
+
+std::string NMEA0183::CreateLatitude(ReceiverOutput data)
+{
+	std::ostringstream stream;
+
+	WGS84_Frame pos = data.GetPosition();
+	long double lat = pos.GetLat();
+	lat = WGS84_Frame::Rad2Deg(lat);
+	long double temp = fabs(lat);
+	int lat_deg = (int)temp;
+	long double lat_sec = (temp - lat_deg) * 60;
+	stream << std::setw(2) << std::setfill('0');
+	stream << lat_deg;
+	stream << std::setw(7) << std::setfill('0');
+	stream << std::setprecision(4) << std::fixed;
+	stream << lat_sec;
+	stream << ",";
+	if (lat > 0)
+	{
+		stream << "N";
+	}
+	else
+	{
+		stream << "S";
+	}
+
+	return stream.str();
+
+}
+
+std::string NMEA0183::CreateLongitude(ReceiverOutput data)
+{
+	std::ostringstream stream;
+
+	WGS84_Frame pos = data.GetPosition();
+	long double longi = pos.GetLongi();
+	longi = WGS84_Frame::Rad2Deg(longi);
+	long double temp = fabs(longi);
+	int longi_deg = (int)temp;
+	long double longi_sec = (temp - longi_deg) * 60;
+	stream << std::setw(3) << std::setfill('0');
+	stream << longi_deg;
+	stream << std::setw(7) << std::setfill('0');
+	stream << std::setprecision(4) << std::fixed;
+	stream << longi_sec;
+	stream << ",";
+	if (longi > 0)
+	{
+		stream << 'E';
+	}
+	else
+	{
+		stream << 'W';
+	}
+
+	return stream.str();
+
+}

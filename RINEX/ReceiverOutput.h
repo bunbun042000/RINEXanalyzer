@@ -15,6 +15,14 @@
 #include "Matrix.h"
 #include "PsudoRange.h"
 
+struct SatellitesInView
+{
+	int PRN;
+	long double azimuth;
+	long double elevation;
+	long double SNR;
+};
+
 class ReceiverOutput
 {
 public:
@@ -42,7 +50,8 @@ public:
 	std::map<int, ENU_Frame> GetENUSatellites();
 
 	std::multimap<long double, long double> GetElevationVsSatelliteDistanceDiff(ECEF_Frame &pos);
-	std::multimap<long double, long double> GetSkyPlot();
+	std::map<int, SatellitesInView> GetSkyPlot();
+
 	int GetNumberOfSatellites()
 	{
 		return satellites.size();

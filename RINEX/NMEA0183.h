@@ -25,7 +25,14 @@ private:
 	std::string CreateCheckSum(std::string str);
 	std::string CreateGPGGA(ReceiverOutput data);
 	std::string CreateGPGSV(ReceiverOutput data);
+	std::string CreateGPZDA(ReceiverOutput data);
 
+	std::string CreateUTCtime(ReceiverOutput data);
+	std::string CreateLatitude(ReceiverOutput data);
+	std::string CreateLongitude(ReceiverOutput data);
+
+	static const int GSV_Max_number_of_satellites_per_line = 4;
+	static const int GSV_Max_number_of_lines = 9;
 };
 
 #endif /* NMEA0183_H_ */
