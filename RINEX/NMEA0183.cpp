@@ -91,7 +91,7 @@ std::string NMEA0183::CreateGPGGA(ReceiverOutput data)
 	stream << "$GPGGA,";
 
 	// UTC
-	stream << CreateUTCtime(data);
+	stream << data.GetTime().nmea_time_str();
 	stream << ',';
 
 	// Latitude
@@ -153,7 +153,7 @@ std::string NMEA0183::CreateGPGSV(ReceiverOutput data)
 	std::string createGSV;
 	createGSV.clear();
 
-	std::map<int, SatellitesInView> skyplot = data.GetSkyPlot();
+	std::map<int, SatellitesInView> skyplot = data.GetSkyPlot(ECEF_Frame(0.0L, 0.0L, 0.0L));
 	int total_number_of_lines = (int)(data.GetNumberOfSatellites()
 			/ GSV_Max_number_of_satellites_per_line);
 
@@ -229,7 +229,7 @@ std::string NMEA0183::CreateGPZDA(ReceiverOutput data)
 	stream << "$GPZDA,";
 
 	// UTC
-	stream << CreateUTCtime(data);
+	stream << data.GetTime().nmea_time_str();
 	stream << ",";
 
 	tm tmbuf = data.GetTime().ToDate();
@@ -248,24 +248,6 @@ std::string NMEA0183::CreateGPZDA(ReceiverOutput data)
 	out += "\r\n";
 	return out;
 
-}
-
-std::string NMEA0183::CreateUTCtime(ReceiverOutput data)
-{
-	std::ostringstream stream;
-
-	tm tmbuf = data.GetTime().ToDate();
-	stream << std::setw(2) << std::setfill('0');
-	stream << tmbuf.tm_hour;
-	stream << std::setw(2) << std::setfill('0');
-	stream << tmbuf.tm_min;
-	stream << std::setw(6) << std::setfill('0') << std::fixed;
-	stream << std::setprecision(3);
-	double temp1 = (double)(data.GetTime().GetSecond() - data.GetTime().GetLeapSecond());
-	double sec = fmod(temp1, 60);
-	stream << sec;
-
-	return stream.str();
 }
 
 std::string NMEA0183::CreateLatitude(ReceiverOutput data)

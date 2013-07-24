@@ -37,7 +37,6 @@ private:
 	std::string CreateGPGSV(ReceiverOutput data);
 	std::string CreateGPZDA(ReceiverOutput data);
 
-	std::string CreateUTCtime(ReceiverOutput data);
 	std::string CreateLatitude(ReceiverOutput data);
 	std::string CreateLongitude(ReceiverOutput data);
 

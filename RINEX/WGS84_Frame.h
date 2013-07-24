@@ -31,10 +31,6 @@ namespace WGS84
 
 class WGS84_Frame : public ECEF_Frame
 {
-	friend WGS84_Frame ECEF2WGS84(const ECEF_Frame &ecef_f);
-	friend WGS84_Frame ECEF2WGS84(const long double x0, const long double y0, const long double z0);
-	friend ECEF_Frame WGS842ECEF(const WGS84_Frame &wgs84_f);
-	friend ECEF_Frame WGS842ECEF(const long double Lat, const long double Longi, const long double G_Height);
 
 public:
 	WGS84_Frame();

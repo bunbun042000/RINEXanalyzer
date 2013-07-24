@@ -130,6 +130,48 @@ bool GPS_Time::operator!=(const GPS_Time &gpst) const
 	return !((*this) == gpst);
 }
 
+std::string GPS_Time::nmea_time_str() const
+{
+	std::ostringstream stream;
+
+	tm tmbuf = ToDate();
+	stream << std::setw(2) << std::setfill('0');
+	stream << tmbuf.tm_hour;
+	stream << std::setw(2) << std::setfill('0');
+	stream << tmbuf.tm_min;
+	stream << std::setw(6) << std::setfill('0') << std::fixed;
+	stream << std::setprecision(3);
+	double temp1 = (double)(second - leap_second);
+	double sec = fmod(temp1, 60);
+	stream << sec;
+
+	return stream.str();
+
+}
+std::string GPS_Time::ISO8601_day() const
+{
+	std::ostringstream stream;
+	tm tmbuf = ToDate();
+	stream << std::fixed << std::setw(4) << std::setfill('0') << tmbuf.tm_year + 1900 << '-';
+	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_mon + 1 << '-';
+	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_mday;
+
+	return stream.str();
+
+}
+std::string GPS_Time::ISO8601_time() const
+{
+	std::ostringstream stream;
+	tm tmbuf = ToDate();
+	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_hour << ':';
+	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_min << ':';
+	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_sec;
+
+	return stream.str();
+
+}
+
+
 long double GPS_Time::GetJulianDay(int year, int month, int day)
 {
   int64_t y, m, a, b;

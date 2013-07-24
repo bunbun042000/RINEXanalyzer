@@ -558,7 +558,6 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 		if (fabs(it->first - GPS_Time(1349, 88320.0, 0)) < 1.0e-5)
 		{
 			range.insert(std::pair<int, PsudoRange>((it->second).GetPRN(), it->second));
-			tm tmbuf = (it->first).ToDate();
 			cur = it->first;
 		}
 		else

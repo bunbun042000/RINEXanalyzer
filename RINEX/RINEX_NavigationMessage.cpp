@@ -335,9 +335,10 @@ bool RINEX_NavigationMessage::ReadHeader(std::ifstream &ifs, int &leap_sec)
 		}
 	}
 
-	return (success_ver && success_end);
+	return (success_ver && success_end && success_type);
 
 }
+
 bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 {
 	bool success = false;
