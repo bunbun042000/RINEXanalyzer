@@ -46,7 +46,7 @@ public:
 	Calculate_Position(std::map<int, Ephemeris> ephemeris, std::map<int, PsudoRange> range, PsudoRange::MeansType _type, GPS_Time currentTime, IonoSphere ion);
 	virtual ~Calculate_Position();
 
-	ReceiverOutput GetPosition();
+	ReceiverOutput GetPosition(const long double elevation_mask);
 
 
 private:

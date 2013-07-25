@@ -30,6 +30,7 @@ const static std::string ver = "0.01";
 int main(int argc, char **argv)
 {
 
+
 	GetPot cl(argc, argv);
 
 	if(cl.size() == 1)
@@ -44,6 +45,9 @@ int main(int argc, char **argv)
 	{
 		// Do nothing
 	}
+
+	// elevation mask
+	const long double elevation_mask_rad = WGS84_Frame::Deg2Rad(cl("-m", 0.0));
 
 	// parse filename
 	std::vector<std::string> filenames = cl.nominus_vector();
@@ -76,6 +80,12 @@ int main(int argc, char **argv)
 
 	}
 
+	if (cl.search("-r") && cl.search("-d"))
+	{
+		std::cerr << "option \"-r\" and \"-d\" is exclusive!" << std::endl;
+		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
+		exit(0);
+	}
 
 	std::map<GPS_Time, ReceiverOutput> outdata;
 
@@ -110,7 +120,7 @@ int main(int argc, char **argv)
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
 		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
-		ReceiverOutput position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition(elevation_mask_rad);
 
 		outdata.insert(std::pair<GPS_Time, ReceiverOutput>(position.GetTime(), position));
 
@@ -188,6 +198,10 @@ int main(int argc, char **argv)
 		{
 			OutputSatellitePsudodiff(std::cout, outdata, origin);
 		}
+	}
+	else
+	{
+		//Do nothing
 	}
 
 
@@ -313,7 +327,7 @@ void print_help(const std::string targetname)
 	std::cout << "    [outfile] can be blank which means stdout." << std::endl;
 	std::cout << std::endl;
 	std::cout << "OPTIONS:" << std::endl;
-	std::cout << "    -n                                  output NMEA0183 GPGGA, GPGSV";
+	std::cout << "    -n                                  output NMEA0183 GPGGA, GPGSV" << std::endl;
 	std::cout << "                                        and GPZDA sentences." << std::endl;
 	std::cout << "                                        (default)" << std::endl;
 	std::cerr << "    -r [--origin='<lat> <long> <hgt>']  output difference from average" << std::endl;
@@ -334,11 +348,12 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <hgt> should be meter." << std::endl;
 	std::cout << "                                        <lat> from -90.0000 to 90.0000." << std::endl;
 	std::cout << "                                        <long> from -180.0000 to 180.0000." << std::endl;
-	std::cout << "    -m <mask>                           elevation mask in calculation." << std::endl;
+	std::cout << "    -m=<mask>                           elevation mask in calculation." << std::endl;
 	std::cout << "                                        <mask> should be degree." << std::endl;
 	std::cout << "                                        <mask> from 0.0000 to 90.0000." << std::endl;
 	std::cout << "    -w                                  using elevation weight in calculation." << std::endl;
 	std::cout << "                                        -m and -w are exclusive." << std::endl;
+	std::cout << "                                        (This option isn't currently implemented.)" << std::endl;
 
 	exit(0);
 

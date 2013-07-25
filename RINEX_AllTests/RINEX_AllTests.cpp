@@ -8,7 +8,7 @@
 //Contributors:
 //    Yamagata Fumihiro - initial API and implementation
 //----------------------------------------------------------------------
-// RINEX_AllTests.cpp : ƒRƒ“ƒ\[ƒ‹ ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ ƒ|ƒCƒ“ƒg‚ğ’è‹`‚µ‚Ü‚·B
+// RINEX_AllTests.cpp : ï¿½Rï¿½ï¿½ï¿½\ï¿½[ï¿½ï¿½ ï¿½Aï¿½vï¿½ï¿½ï¿½Pï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½ÌƒGï¿½ï¿½ï¿½gï¿½ï¿½ ï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½ï¿½ï¿½`ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½B
 //
 
 //#include "stdafx.h"
@@ -542,7 +542,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	Calculate_Position cal(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
 
-	ReceiverOutput position = cal.GetPosition();
+	ReceiverOutput position = cal.GetPosition(0.0L);
 
 // relative effect collection
 	ASSERT_NEAR(-3947762.6273452728, position.GetPosition().GetX(), 1.0e-8);
@@ -571,7 +571,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	cal = Calculate_Position(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
 
-	position = cal.GetPosition();
+	position = cal.GetPosition(0.0L);
 
 	ASSERT_NEAR(-3947765.2127858549, position.GetPosition().GetX(), 1.0e-8);
 	ASSERT_NEAR(3364401.930418036, position.GetPosition().GetY(), 1.0e-8);
@@ -612,7 +612,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 		ephem_map = nav_message.GetEphemeris(cur, -1, false);
 		cal = Calculate_Position(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
 
-		ReceiverOutput position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition(0.0L);
 
 
 		it = r_it.second;
@@ -666,7 +666,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
 		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
-		ReceiverOutput position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition(0.0L);
 
 		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
 		{
@@ -722,7 +722,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
 		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
-		ReceiverOutput position = cal.GetPosition();
+		ReceiverOutput position = cal.GetPosition(WGS84_Frame::Deg2Rad(00.0L));
 
 		if (fabs(cur - GPS_Time(1745, 388230.0, 16)) < 1.0e-5)
 		{
@@ -731,27 +731,6 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 			ASSERT_NEAR(4326126.8061326146, position.GetPosition().GetZ(), 1.0e-7);
 		}
 
-		ECEF_Frame origin(-3814967.959L, 2699234.446L, 4326121.682L);
-
-		// plot satellite elevation versus distance error
-/*		std::multimap <long double, long double> elVsDisDiff = position.GetElevationVsSatelliteDistanceDiff(origin);
-		for (std::multimap <long double, long double>::iterator el = elVsDisDiff.begin(); el != elVsDisDiff.end(); el++)
-		{
-			std::cout << std::fixed << el->first << " " << std::fixed << el->second << std::endl;
-		}
-*/
-		// plot ENU position
-/*		ENU_Frame enu_pos(position.GetPosition(), origin);
-		std::cout << std::fixed << enu_pos.GetE() << " ";
-		std::cout << std::fixed << enu_pos.GetN() << std::endl;
-*/
-/*		// sky plot
-		std::multimap <long double, long double> skyplot = position.GetSkyPlot();
-		for (std::multimap <long double, long double>::iterator el = skyplot.begin(); el != skyplot.end(); el++)
-		{
-			std::cout << std::fixed << el->first << " " << std::fixed << el->second << std::endl;
-		}
-*/
 		it = r_it.second;
 		if (it != psuRange.end())
 		{

@@ -50,13 +50,13 @@ Calculate_Position::~Calculate_Position()
 
 }
 
-ReceiverOutput Calculate_Position::GetPosition()
+ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask)
 {
 
 	ECEF_Frame position = ECEF_Frame(0.0L, 0.0L, 0.0L);
-	Matrix G; //= Matrix(number_of_satellites, 4);
-	Matrix dr; //= Matrix(number_of_satellites, 1);
-	int i;
+	Matrix G;
+	Matrix dr;
+	Matrix W;
 	int j = 0;
 	long double r;
 	Matrix cov;
@@ -69,6 +69,7 @@ ReceiverOutput Calculate_Position::GetPosition()
 	std::vector<long double> original_distance;
 	std::vector<long double> distance;
 	std::vector<long double> clockdiff;
+	std::vector<long double> sat_weight;
 
 	long double diff;
 	diff = calc_pos::max_diff;
@@ -77,12 +78,14 @@ ReceiverOutput Calculate_Position::GetPosition()
 
 	while(diff > calc_pos::min_diff)
 	{
-		i = 0;
+		int i = 0;
 
 		satellites.clear();
 		original_distance.clear();
 		clockdiff.clear();
 		distance.clear();
+		sat_weight.clear();
+		psudodistance.clear();
 
 		modifiedCurrent = GPS_Time(current.GetWeek(), current.GetSecond() - receiver_clockdiff / IS_GPS_200::C_velocity, current.GetLeapSecond());
 
@@ -93,7 +96,7 @@ ReceiverOutput Calculate_Position::GetPosition()
 			{
 				if (dist_it->first == it->first)
 				{
-					original_distance.push_back(dist_it->second.GetData(type));
+
 
 					long double r = dist_it->second.GetData(type) - receiver_clockdiff;
 					long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
@@ -104,6 +107,17 @@ ReceiverOutput Calculate_Position::GetPosition()
 					satellite_clock = (it->second).GetClock(modifiedCurrent, r);
 
 					ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
+					//
+					if (j < 3 || (ENU_Frame(satellite_position, position).GetElevation() > elevation_mask))
+					{
+						sat_weight.push_back(1.0L);
+					}
+					else
+					{
+						continue;
+					}
+
+					original_distance.push_back(dist_it->second.GetData(type));
 					satellites.push_back(satellite_position);
 
 					dist_it->second.SetSatellitePosition(satellite_position);
@@ -126,7 +140,15 @@ ReceiverOutput Calculate_Position::GetPosition()
 		number_of_satellites = i;
 		G.SetSize(number_of_satellites, 4);
 		dr.SetSize(number_of_satellites, 1);
+		W.SetSize(number_of_satellites, number_of_satellites);
 
+		for (int k = 0; k < number_of_satellites; k++)
+		{
+			for (int l = 0; l < number_of_satellites; l++)
+			{
+				W.SetData(0.0L, l, k);
+			}
+		}
 		// Create Observation matrix
 		for (i = 0; i < number_of_satellites; i++)
 		{
@@ -138,6 +160,8 @@ ReceiverOutput Calculate_Position::GetPosition()
 			G.SetData(1.0, i, 3);
 
 			dr.SetData(original_distance[i] + clockdiff[i] * IS_GPS_200::C_velocity - r - receiver_clockdiff, i, 0);
+
+			W.SetData(sat_weight[i], i, i);
 
 			if (j > 3)
 			{
@@ -155,12 +179,20 @@ ReceiverOutput Calculate_Position::GetPosition()
 		}
 
 		Matrix Gt = G.Tranposed();
-		Matrix GtG = Gt * G;
 		Matrix Gtdr = Gt * dr;
 
 		Gaussian_Elimination gauss;
 
-		cov = gauss.GetAnswer(GtG, Gtdr);
+		if (j > 3)
+		{
+			Matrix GtG = Gt * W * G;
+			gauss.GetAnswer(GtG, Gtdr);
+		}
+		else
+		{
+			Matrix GtG = Gt * G;
+			cov = gauss.GetAnswer(GtG, Gtdr);
+		}
 
 		position= ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(position)).GetPosition();
 
