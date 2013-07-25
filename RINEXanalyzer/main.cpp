@@ -288,14 +288,26 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 
 ECEF_Frame GetAveragePosition(std::map<GPS_Time, ReceiverOutput> &outdata)
 {
-	int i = 0;
+	long int i = 0;
 	ECEF_Frame pos(0.0L, 0.0L, 0.0L);
 	for(std::map<GPS_Time, ReceiverOutput>::iterator it = outdata.begin(); it != outdata.end(); it++)
     {
-		i++;
 		ECEF_Frame posA = it->second.GetPosition();
-		pos = (i - 1.0L) / i * pos + 1.0L / i * posA;
+
+		if (posA.IsValid())
+		{
+			i++;
+			pos = ((i - 1.0L) / i) * pos + (1.0L / i) * posA;
+		}
+		else
+		{
+			// Do nothing
+		}
+
     }
+	std::cout << "average x = " << std::fixed << pos.GetX() << std::endl;
+	std::cout << "average y = " << std::fixed << pos.GetY() << std::endl;
+	std::cout << "average z = " << std::fixed << pos.GetZ() << std::endl;
 
 	return pos;
 

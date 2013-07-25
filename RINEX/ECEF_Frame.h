@@ -19,6 +19,7 @@
 #define ECEF_FRAME_H_
 
 #include "Matrix.h"
+#include <cmath>
 
 class ECEF_Frame
 {
@@ -41,6 +42,12 @@ public:
 	ECEF_Frame &operator*(const long double r);
 	ECEF_Frame operator+(const ECEF_Frame &pos);
 	ECEF_Frame &operator+=(const ECEF_Frame &pos);
+
+	bool IsValid()
+	{
+		return (!(std::isnan(x)) && !(std::isnan(y)) && !(std::isnan(z)))
+				&& (!(std::isinf(x)) && !(std::isinf(y)) && !(std::isinf(z)));
+	}
 
 	long double Distance(const ECEF_Frame &origin);
 	long double GetX()
