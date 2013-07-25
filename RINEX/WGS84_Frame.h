@@ -34,7 +34,7 @@ class WGS84_Frame : public ECEF_Frame
 
 public:
 	WGS84_Frame();
-	WGS84_Frame(long double Lat, long double Longi, long double G_Height);
+	WGS84_Frame(long double Lat, long double Longi, long double E_Height);
 	WGS84_Frame(const WGS84_Frame & wgs84_f);
 	WGS84_Frame(const ECEF_Frame &ecef_f);
 	virtual ~WGS84_Frame();
@@ -50,9 +50,9 @@ public:
 		return Longitude;
 	};
 
-	long double GetG_Height()
+	long double GetE_Height()
 	{
-		return Geoidal_Height;
+		return Elipisoidal_Height;
 	}
 
 	static long double Rad2Deg(long double rad)
@@ -78,9 +78,9 @@ public:
 protected:
 	long double Latitude;
 	long double Longitude;
-	long double Geoidal_Height;
+	long double Elipisoidal_Height;
 
-	void Set(long double Lat, long double Longi, long double G_Height);
+	void Set(long double Lat, long double Longi, long double E_Height);
 
 };
 

@@ -128,7 +128,7 @@ std::string NMEA0183::CreateGPGGA(ReceiverOutput data)
 	WGS84_Frame pos = data.GetPosition();
 
 	stream << std::setprecision(3) << std::fixed << std::setfill('0');
-	stream << pos.GetG_Height();
+	stream << pos.GetE_Height();
 	stream << ",M,";
 
 	// Geoidal Separation
