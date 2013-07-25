@@ -36,9 +36,9 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v100</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -96,6 +96,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,6 +127,7 @@
     <ClCompile Include="GPS_Time.cpp" />
     <ClCompile Include="IonoSphere.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="NMEA0183.cpp" />
     <ClCompile Include="PsudoRange.cpp" />
     <ClCompile Include="ReceiverOutput.cpp" />
     <ClCompile Include="RINEX_NavigationMessage.cpp" />
@@ -143,6 +145,7 @@
     <ClInclude Include="IonoSphere.h" />
     <ClInclude Include="IS-GPS-200.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="NMEA0183.h" />
     <ClInclude Include="PsudoRange.h" />
     <ClInclude Include="ReceiverOutput.h" />
     <ClInclude Include="RINEX.h" />

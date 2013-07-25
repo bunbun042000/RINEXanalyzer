@@ -8,7 +8,7 @@
 //Contributors:
 //    Yamagata Fumihiro - initial API and implementation
 //----------------------------------------------------------------------
-// RINEX_AllTests.cpp : �R���\�[�� �A�v���P�[�V�����̃G���g�� �|�C���g���`���܂��B
+// RINEX_AllTests.cpp
 //
 
 //#include "stdafx.h"

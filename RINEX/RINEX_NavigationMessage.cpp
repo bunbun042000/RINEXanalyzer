@@ -95,7 +95,7 @@ std::map<int, Ephemeris> RINEX_NavigationMessage::GetEphemeris(GPS_Time current_
 	{
 		Ephemeris current_Ephem;
 		bool exist = false;
-		std::map<int, Ephemeris>::iterator candidator = range.first;
+		std::multimap<int, Ephemeris>::iterator candidator = range.first;
 
 		for (std::multimap<int, Ephemeris>::iterator its = range.first; its != range.second; its++)
 		{
@@ -404,7 +404,7 @@ bool RINEX_NavigationMessage::ReadBody(std::ifstream &ifs, int leap_sec)
 					int hour = atoi(buf.substr(Epoch_offset + 9, 3).c_str());
 					int minute = atoi(buf.substr(Epoch_offset + 12, 3).c_str());
 					long double sec;
-					sscanf(buf.substr(Epoch_offset + 15, 5).c_str(), "%LF", &sec);
+					sscanf(buf.substr(Epoch_offset + 15, 5).c_str(), "%Lf", &sec);
 					ephem.SetToc(GPS_Time(year, month, day, hour, minute, sec, leap_sec));
 					success = true;
 				}

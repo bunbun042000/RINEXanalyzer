@@ -183,16 +183,9 @@ ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask)
 
 		Gaussian_Elimination gauss;
 
-		if (j > 3)
-		{
-			Matrix GtG = Gt * W * G;
-			gauss.GetAnswer(GtG, Gtdr);
-		}
-		else
-		{
-			Matrix GtG = Gt * G;
-			cov = gauss.GetAnswer(GtG, Gtdr);
-		}
+		Matrix GtGd = Gt * W;
+		Matrix GtG = GtGd * G;
+		cov = gauss.GetAnswer(GtG, Gtdr);
 
 		position= ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(position)).GetPosition();
 
