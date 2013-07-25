@@ -276,7 +276,8 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 			out << std::fixed << sats->second.azimuth  << ',';
 			out << std::fixed << sats->second.psudodistance << ',';
 			out << std::fixed << sats->second.truedistance << ',';
-			out << std::fixed << sats->second.distancediff << std::endl;
+			out << std::fixed << sats->second.distancediff << ',';
+			out << std::fixed << sats->second.SNR << std::endl;
 
 		}
 
