@@ -46,6 +46,18 @@ int main(int argc, char **argv)
 		// Do nothing
 	}
 
+	// QZSS use
+	bool use_qzs = false;
+
+	if(cl.search("--with-qzs"))
+	{
+		use_qzs = true;
+	}
+	else
+	{
+		// Do nothing
+	}
+
 	// elevation mask and weight
 	const std::string elevation_mask_str = cl.follow("0.0", 2, "-m", "--mask");
 	long double elevation_mask;
@@ -179,7 +191,7 @@ int main(int argc, char **argv)
 			cur = its->first;
 
 		}
-		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
+		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, use_qzs);
 		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
 		ReceiverOutput position = cal.GetPosition(elevation_mask_rad, weight);
@@ -458,6 +470,7 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <weight meghot> 1 : weight" << std::endl;
 	std::cout << "       --header                         output header line." << std::endl;
 	std::cout << "                                        This option has effect in \"-r\" \"-d\" only." << std::endl;
+	std::cout << "       --with-qzs                       Use QZS in position calculation if it is enable." << std::endl;
 
 	exit(0);
 
