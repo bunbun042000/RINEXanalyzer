@@ -50,7 +50,7 @@ Calculate_Position::~Calculate_Position()
 
 }
 
-ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask)
+ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask, int weight_method)
 {
 
 	ECEF_Frame position = ECEF_Frame(0.0L, 0.0L, 0.0L);
@@ -108,13 +108,38 @@ ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask)
 
 					ECEF_Frame satellite_position = (it->second).GetPosition(modifiedCurrent, r);
 					//
-					if (j < 3 || (ENU_Frame(satellite_position, position).GetElevation() > elevation_mask))
+					if (weight_method == 1)
 					{
-						sat_weight.push_back(1.0L);
+						if (j < 1)
+						{
+							sat_weight.push_back(1.0L);
+						}
+						else
+						{
+							long double elevation = ENU_Frame(satellite_position, position).GetElevation();
+							long double sin_e = sin(elevation);
+							long double weight = sin_e * sin_e / calc_pos::VAR_ZENITH;
+							if (weight < calc_pos::MIN_WEIGHT)
+							{
+								weight = calc_pos::MIN_WEIGHT;
+							}
+							else
+							{
+								// Do nothing
+							}
+						}
 					}
 					else
 					{
-						continue;
+						if (j < 3 || (ENU_Frame(satellite_position, position).GetElevation() > elevation_mask))
+						{
+							sat_weight.push_back(1.0L);
+						}
+						else
+						{
+							continue;
+						}
+
 					}
 
 					original_distance.push_back(dist_it->second.GetData(type));
@@ -183,9 +208,26 @@ ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask)
 
 		Gaussian_Elimination gauss;
 
-		Matrix GtGd = Gt * W;
+		Matrix GtGd;
+
+		if (j == 1)
+		{
+			GtGd = Gt;
+		}
+		else
+		{
+			GtGd = Gt * W;
+		}
+
 		Matrix GtG = GtGd * G;
-		cov = gauss.GetAnswer(GtG, Gtdr);
+		if (j == 1)
+		{
+			cov = gauss.GetAnswer(GtG, Gtdr);
+		}
+		else
+		{
+			gauss.GetAnswer(GtG, Gtdr);
+		}
 
 		position= ENU_Frame(Gtdr.GetData(0, 0), Gtdr.GetData(1, 0), Gtdr.GetData(2, 0), WGS84_Frame(position)).GetPosition();
 

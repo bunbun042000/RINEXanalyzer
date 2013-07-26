@@ -29,7 +29,9 @@
 #ifndef __include_guard_GETPOT_H__
 #define __include_guard_GETPOT_H__
 
+#ifdef _WIN32
 #pragma warning( disable: 4996 )
+#endif
 #if defined(WIN32) || defined(SOLARIS_RAW) || (__GNUC__ == 2) || defined(__HP_aCC)
 #define strtok_r(a, b, c) strtok(a, b)
 #endif // WINDOWS or SOLARIS or gcc 2.* or HP aCC

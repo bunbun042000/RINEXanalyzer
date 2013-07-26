@@ -46,14 +46,67 @@ int main(int argc, char **argv)
 		// Do nothing
 	}
 
-	// elevation mask
-	const long double elevation_mask_rad = WGS84_Frame::Deg2Rad(cl("-m", 0.0));
+	// elevation mask and weight
+	const std::string elevation_mask_str = cl.follow("0.0", 2, "-m", "--mask");
+	long double elevation_mask;
+	sscanf(elevation_mask_str.c_str(), "%Lf", &elevation_mask);
+	const long double elevation_mask_rad = WGS84_Frame::Deg2Rad(elevation_mask);
+
+	if (elevation_mask_rad < WGS84_Frame::Deg2Rad(0.0L) ||
+			elevation_mask_rad > WGS84_Frame::Deg2Rad(90.0L))
+	{
+		std::cerr << "<mask> is valid from 0.0 to 90.0 degree." << std::endl;
+		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
+		exit(0);
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	// weight method
+	const std::string weight_str = cl.follow("0", "-w");
+	const int weight = atoi(weight_str.c_str());
+
+	if (weight != 0 && weight != 1)
+	{
+		std::cerr << "<weight method> should be \"0\" or \"1\"." << std::endl;
+		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
+		exit(0);
+	}
+
+	if (cl.search("-w") && cl.search(2, "-m", "--mask"))
+	{
+		std::cerr << "option \"--mask\" and \"-w\" is exclusive!" << std::endl;
+		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
+		exit(0);
+	}
+	else
+	{
+		// Do nothing
+	}
 
 	// parse filename
+	std::string output_filename = cl.follow(output_dummy_filename.c_str(), 2, "-o", "--output");
+
 	std::vector<std::string> filenames = cl.nominus_vector();
 
 	std::string input_filename;
-	std::ofstream out;
+
+	for (unsigned int i = 0; i < filenames.size(); ++i)
+	{
+		if (filenames[i] != elevation_mask_str && filenames[i] != weight_str
+				&& filenames[i] != output_filename)
+		{
+			input_filename = filenames[i];
+			break;
+		}
+		else
+		{
+			continue;
+		}
+	}
+
 
 	if (filenames.empty() || filenames.size() > 2)
 	{
@@ -64,9 +117,10 @@ int main(int argc, char **argv)
 		input_filename = filenames[0];
 	}
 
-	if (filenames.size() > 1)
+	std::ofstream out;
+
+	if (output_filename != output_dummy_filename)
 	{
-		std::string output_filename = filenames[1];
 		out.open(output_filename.c_str());
 		if (out.good())
 		{
@@ -77,14 +131,22 @@ int main(int argc, char **argv)
 			std::cerr << "Can't open " << output_filename << "for writing." << std::endl;
 			exit(0);
 		}
-
+	}
+	else
+	{
+		// Do nothing
 	}
 
-	if (cl.search("-r") && cl.search("-d"))
+
+	if (cl.search("-r") && cl.search(2, "-s", "--skyplot"))
 	{
-		std::cerr << "option \"-r\" and \"-d\" is exclusive!" << std::endl;
+		std::cerr << "option \"-r\" and \"-s\" is exclusive!" << std::endl;
 		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
 		exit(0);
+	}
+	else
+	{
+		// Do nothing
 	}
 
 	std::map<GPS_Time, ReceiverOutput> outdata;
@@ -166,7 +228,6 @@ int main(int argc, char **argv)
 
 	}
 
-	if (cl.search("-n") || (!(cl.search("-r")) && !(cl.search("-d"))))
 	{
 		if (out.is_open())
 		{
@@ -188,7 +249,7 @@ int main(int argc, char **argv)
 			OutputDifference(std::cout, outdata, origin);
 		}
 	}
-	else if (cl.search("-d"))
+	else if (cl.search(2, "-s", "--skyplot"))
 	{
 		if (out.is_open())
 		{
@@ -305,9 +366,6 @@ ECEF_Frame GetAveragePosition(std::map<GPS_Time, ReceiverOutput> &outdata)
 		}
 
     }
-	std::cout << "average x = " << std::fixed << pos.GetX() << std::endl;
-	std::cout << "average y = " << std::fixed << pos.GetY() << std::endl;
-	std::cout << "average z = " << std::fixed << pos.GetZ() << std::endl;
 
 	return pos;
 
@@ -335,15 +393,16 @@ void print_help(const std::string targetname)
 
 	std::cout << "RINEXanalyzer version " << ver << std::endl;
 	std::cout << std::endl;
-	std::cout << "usage: " << targetname << "[options] <infile> [outfile]" << std::endl;
-	std::cout << std::endl;
-	std::cout << "    [outfile] can be blank which means stdout." << std::endl;
+	std::cout << "usage: " << targetname << "[options] <infile>" << std::endl;
 	std::cout << std::endl;
 	std::cout << "OPTIONS:" << std::endl;
-	std::cout << "    -n                                  output NMEA0183 GPGGA, GPGSV" << std::endl;
+	std::cout << "   -o, --output <outfile>               outputfile. If outfile is blank," << std::endl;
+	std::cout << "                                        which means stdout." << std::endl;
+	std::cout << std::endl;
+	std::cout << "   -n                                   output NMEA0183 GPGGA, GPGSV" << std::endl;
 	std::cout << "                                        and GPZDA sentences." << std::endl;
 	std::cout << "                                        (default)" << std::endl;
-	std::cerr << "    -r [--origin='<lat> <long> <hgt>']  output difference from average" << std::endl;
+	std::cerr << "   -r  [--origin='<lat> <long> <hgt>']  output difference from average" << std::endl;
 	std::cerr << "                                        position or '<lat> <long> <hgt>'." << std::endl;
 	std::cout << "                                        The output is UTC and difference" << std::endl;
 	std::cout << "                                        in ENU Frame." << std::endl;
@@ -352,7 +411,7 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <hgt> should be meter." << std::endl;
 	std::cout << "                                        <lat> from -90.0000 to 90.0000." << std::endl;
 	std::cout << "                                        <long> from -180.0000 to 180.0000." << std::endl;
-	std::cerr << "    -d [--origin='<lat> <long> <hgt>']  output satellites distance from average" << std::endl;
+	std::cerr << "   -s, --skyplot  [--origin='<lat> <long> <hgt>']  output satellites distance from average" << std::endl;
 	std::cerr << "                                        position or '<lat> <long> <hgt>'." << std::endl;
 	std::cout << "                                        The output is UTC, PRN, psudo distance," << std::endl;
 	std::cout << "                                        true distance and true - psudo diff." << std::endl;
@@ -361,12 +420,13 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <hgt> should be meter." << std::endl;
 	std::cout << "                                        <lat> from -90.0000 to 90.0000." << std::endl;
 	std::cout << "                                        <long> from -180.0000 to 180.0000." << std::endl;
-	std::cout << "    -m=<mask>                           elevation mask in calculation." << std::endl;
+	std::cout << "   -m, --mask <mask>                    elevation mask in calculation." << std::endl;
 	std::cout << "                                        <mask> should be degree." << std::endl;
 	std::cout << "                                        <mask> from 0.0000 to 90.0000." << std::endl;
-	std::cout << "    -w                                  using elevation weight in calculation." << std::endl;
+	std::cout << "   -w  [<weight method>]                using elevation weight in calculation." << std::endl;
 	std::cout << "                                        -m and -w are exclusive." << std::endl;
-	std::cout << "                                        (This option isn't currently implemented.)" << std::endl;
+	std::cout << "                                        <weight method> 0 : Not weight (default)" << std::endl;
+	std::cout << "                                        <weight meghot> 1 : weight" << std::endl;
 
 	exit(0);
 

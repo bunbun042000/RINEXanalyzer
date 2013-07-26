@@ -14,6 +14,8 @@
 
 #include <ostream>
 
+const static std::string output_dummy_filename = "dummy.csv";
+
 void print_simplehelp(const std::string targetname);
 void print_help(const std::string targetname);
 void OutputNMEA0183(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata);

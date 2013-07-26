@@ -52,8 +52,7 @@ public:
 #ifdef _WIN32
 		return  _finite(x) && _finite(y) && _finite(z);
 #else
-		return (!(std::isnan(x)) && !(std::isnan(y)) && !(std::isnan(z)))
-				&& (!(std::isinf(x)) && !(std::isinf(y)) && !(std::isinf(z)));
+		return std::isfinite(x) && std::isfinite(y) && std::isfinite(z);
 #endif
 	}
 	
