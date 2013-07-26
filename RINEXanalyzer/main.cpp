@@ -182,7 +182,7 @@ int main(int argc, char **argv)
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
 		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
 
-		ReceiverOutput position = cal.GetPosition(elevation_mask_rad);
+		ReceiverOutput position = cal.GetPosition(elevation_mask_rad, weight);
 
 		outdata.insert(std::pair<GPS_Time, ReceiverOutput>(position.GetTime(), position));
 
@@ -228,6 +228,17 @@ int main(int argc, char **argv)
 
 	}
 
+	bool outputheader;
+	if (cl.search("--header"))
+	{
+		outputheader = true;
+	}
+	else
+	{
+		outputheader = false;
+	}
+
+	if (cl.search("-n") || (!(cl.search("-r")) && !(cl.search(2, "-s", "--skyplot"))))
 	{
 		if (out.is_open())
 		{
@@ -242,22 +253,22 @@ int main(int argc, char **argv)
 	{
 		if (out.is_open())
 		{
-			OutputDifference(out, outdata, origin);
+			OutputDifference(out, outdata, origin, outputheader);
 		}
 		else
 		{
-			OutputDifference(std::cout, outdata, origin);
+			OutputDifference(std::cout, outdata, origin, outputheader);
 		}
 	}
 	else if (cl.search(2, "-s", "--skyplot"))
 	{
 		if (out.is_open())
 		{
-			OutputSatellitePsudodiff(out, outdata, origin);
+			OutputSatellitePsudodiff(out, outdata, origin, outputheader);
 		}
 		else
 		{
-			OutputSatellitePsudodiff(std::cout, outdata, origin);
+			OutputSatellitePsudodiff(std::cout, outdata, origin, outputheader);
 		}
 	}
 	else
@@ -269,13 +280,22 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void OutputDifference(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata, ECEF_Frame origin)
+void OutputDifference(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata, ECEF_Frame origin, bool header)
 {
 	ECEF_Frame pos = origin;
 
 	if (pos.Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
 	{
 		pos = GetAveragePosition(outdata);
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (header)
+	{
+		out << "UTC Date,UTC Time,E error,N error,U error" << std::endl;
 	}
 	else
 	{
@@ -308,7 +328,7 @@ void OutputNMEA0183(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdat
 
 }
 
-void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata, ECEF_Frame origin)
+void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata, ECEF_Frame origin, bool header)
 {
 	// plot satellite elevation versus distance error
 	ECEF_Frame pos = origin;
@@ -316,6 +336,15 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 	if (pos.Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
 	{
 		pos = GetAveragePosition(outdata);
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (header)
+	{
+		out << "UTC Date,UTC Time,PRN,elevation,azimuth,psudo distance,true distance,diff(=psudo - true),SNR" << std::endl;
 	}
 	else
 	{
@@ -427,6 +456,8 @@ void print_help(const std::string targetname)
 	std::cout << "                                        -m and -w are exclusive." << std::endl;
 	std::cout << "                                        <weight method> 0 : Not weight (default)" << std::endl;
 	std::cout << "                                        <weight meghot> 1 : weight" << std::endl;
+	std::cout << "       --header                         output header line." << std::endl;
+	std::cout << "                                        This option has effect in \"-r\" \"-d\" only." << std::endl;
 
 	exit(0);
 
