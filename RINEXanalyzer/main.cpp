@@ -495,7 +495,7 @@ void print_help(const std::string targetname)
 	std::cerr << "   -s, --skyplot  [--origin='<lat> <long> <hgt>']  output satellites distance from average" << std::endl;
 	std::cerr << "                                        position or '<lat> <long> <hgt>'." << std::endl;
 	std::cout << "                                        The output is UTC, PRN, psudo distance," << std::endl;
-	std::cout << "                                        true distance and true - psudo diff." << std::endl;
+	std::cout << "                                        true distance, true - psudo diff and SNR." << std::endl;
 	std::cout << "                                        -n, -r and -d are exclusive." << std::endl;
 	std::cout << "                                        <lat> and <long> should be degree. " << std::endl;
 	std::cout << "                                        <hgt> should be meter." << std::endl;
