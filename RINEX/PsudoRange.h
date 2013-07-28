@@ -22,6 +22,16 @@
 #ifndef PSUDORANGE_H_
 #define PSUDORANGE_H_
 
+namespace signalType
+{
+	enum Type
+	{
+		L1,
+		L2,
+		L5
+	};
+};
+
 class PsudoRange
 {
 
