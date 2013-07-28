@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 	}
 
 	// weight method
-	const std::string weight_str = cl.follow("0", "-w");
+	const std::string weight_str = cl.follow("0", 2, "-w", "--weight");
 	const int weight = atoi(weight_str.c_str());
 
 	if (weight != 0 && weight != 1)
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
-	if (cl.search("-w") && cl.search(2, "-m", "--mask"))
+	if (cl.search(2, "-w", "--weight") && cl.search(2, "-m", "--mask"))
 	{
 		std::cerr << "option \"--mask\" and \"-w\" is exclusive!" << std::endl;
 		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
@@ -462,9 +462,10 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <lat> from -90.0000 to 90.0000." << std::endl;
 	std::cout << "                                        <long> from -180.0000 to 180.0000." << std::endl;
 	std::cout << "   -m, --mask <mask>                    elevation mask in calculation." << std::endl;
+	std::cout << "                                        -m and -w are exclusive." << std::endl;
 	std::cout << "                                        <mask> should be degree." << std::endl;
 	std::cout << "                                        <mask> from 0.0000 to 90.0000." << std::endl;
-	std::cout << "   -w  [<weight method>]                using elevation weight in calculation." << std::endl;
+	std::cout << "   -w, --weight [<weight method>]       using elevation weight in calculation." << std::endl;
 	std::cout << "                                        -m and -w are exclusive." << std::endl;
 	std::cout << "                                        <weight method> 0 : Not weight (default)" << std::endl;
 	std::cout << "                                        <weight meghot> 1 : weight" << std::endl;
