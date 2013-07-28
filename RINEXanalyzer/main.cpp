@@ -250,7 +250,7 @@ int main(int argc, char **argv)
 		outputheader = false;
 	}
 
-	if (cl.search("-n") || (!(cl.search(2, "-e", "--error")) && !(cl.search(2, "-s", "--skyplot"))))
+	if (cl.search(2, "-n", "--nmea") || (!(cl.search(2, "-e", "--error")) && !(cl.search(2, "-s", "--skyplot"))))
 	{
 		if (out.is_open())
 		{
@@ -440,7 +440,7 @@ void print_help(const std::string targetname)
 	std::cout << "   -o, --output <outfile>               outputfile. If outfile is blank," << std::endl;
 	std::cout << "                                        which means stdout." << std::endl;
 	std::cout << std::endl;
-	std::cout << "   -n                                   output NMEA0183 GPGGA, GPGSV" << std::endl;
+	std::cout << "   -n, --nmea                           output NMEA0183 GPGGA, GPGSV" << std::endl;
 	std::cout << "                                        and GPZDA sentences." << std::endl;
 	std::cout << "                                        (default)" << std::endl;
 	std::cerr << "   -e, --error  [--origin='<lat> <long> <hgt>']  output difference from average" << std::endl;
