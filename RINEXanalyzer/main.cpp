@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			std::cerr << "Can't open " << output_filename << "for writing." << std::endl;
+			std::cerr << "Can't open " << output_filename << " for writing." << std::endl;
 			exit(0);
 		}
 	}
@@ -161,31 +161,37 @@ int main(int argc, char **argv)
 		// Do nothing
 	}
 
-	std::map<GPS_Time, ReceiverOutput> outdata;
-
-	outdata.clear();
-
 	RINEX_NavigationMessage nav_message(input_filename);
-
 	nav_message.Read();
 
 	RINEX_ObservationData obs_data(input_filename);
-
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
 	std::map<int, PsudoRange> range;
 	GPS_Time cur;
 
-	std::multimap<GPS_Time, PsudoRange>::iterator it = psuRange.begin();
-	std::pair<std::multimap<GPS_Time, PsudoRange>::iterator,
-	std::multimap<GPS_Time, PsudoRange>::iterator> r_it = psuRange.equal_range(it->first);
+	// count observation time
+	int number_of_observation = 0;
 
-	do
+	for (std::multimap<GPS_Time, PsudoRange>::iterator iter = psuRange.begin(); iter != psuRange.end(); iter = psuRange.upper_bound(iter->first))
+	{
+		++number_of_observation;
+	}
+
+	std::cout << "number_of_observation = " << number_of_observation << std::endl;
+
+	std::map<GPS_Time, ReceiverOutput> outdata;
+	outdata.clear();
+
+	int count = 0;
+	int error_count = 0;
+
+	for (std::multimap<GPS_Time, PsudoRange>::iterator r_it = psuRange.begin(); r_it != psuRange.end(); r_it = psuRange.upper_bound(r_it->first))
 	{
 		range.clear();
 
-		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it.first; its != r_it.second; its++)
+		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it; its != psuRange.upper_bound(r_it->first); its++)
 		{
 			range.insert(std::pair<int, PsudoRange>((its->second).GetPRN(), its->second));
 			cur = its->first;
@@ -196,21 +202,25 @@ int main(int argc, char **argv)
 
 		ReceiverOutput position = cal.GetPosition(elevation_mask_rad, weight);
 
+		++count;
+		std::cout << std::setw(6) << count << " / " << std::setw(6) << number_of_observation << " is calculated.\r" << std::flush;
+
+		if (!position.GetPosition().IsValid())
+		{
+			++error_count;
+		}
+		else
+		{
+			// Do nothing
+		}
+
 		outdata.insert(std::pair<GPS_Time, ReceiverOutput>(position.GetTime(), position));
 
 		ECEF_Frame origin(position.GetPosition());
 
-		it = r_it.second;
-		if (it != psuRange.end())
-		{
-			r_it = psuRange.equal_range(it->first);
-		}
-		else
-		{
-			break;
-		}
+	}
 
-	} while (it != psuRange.end());
+	std::cout << std::endl;
 
 	ECEF_Frame origin(0.0L, 0.0L, 0.0L);
 
@@ -218,7 +228,7 @@ int main(int argc, char **argv)
 	{
 		long double latitude = cl("--origin", 0., 0);
 		long double longitude = cl("--origin", 0., 1);
-		long double geoidal_height = cl("--origin", 0., 2);
+		long double elipisoidal_height = cl("--origin", 0., 2);
 		if (latitude >= 90.0 || latitude <= -90.0)
 		{
 			std::cerr << "latitude is not valid!" << std::endl;
@@ -229,7 +239,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			origin = ECEF_Frame(WGS84_Frame(WGS84_Frame::Deg2Rad(latitude), WGS84_Frame::Deg2Rad(longitude), geoidal_height));
+			origin = WGS84_Frame(WGS84_Frame::Deg2Rad(latitude), WGS84_Frame::Deg2Rad(longitude), elipisoidal_height);
 
 		}
 	}
