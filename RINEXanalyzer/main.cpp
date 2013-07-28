@@ -306,17 +306,23 @@ void OutputDifference(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outd
 {
 	ECEF_Frame pos = origin;
 
-	if (pos.Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
-	{
-		pos = GetAveragePosition(outdata);
-	}
-	else
-	{
-		// Do nothing
-	}
+	bool isSpecifiedOrigin = GetAveragePosition(outdata, pos);
 
 	if (header)
 	{
+		if (isSpecifiedOrigin)
+		{
+			out << "Specified Origin(BLH)" << std::endl;
+		}
+		else
+		{
+			out << "Average Origin(BLH)" << std::endl;
+		}
+
+		WGS84_Frame pos_wgs84 = WGS84_Frame(pos);
+		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLat()) << ',';
+		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLongi()) << ',';
+		out << std::fixed << pos_wgs84.GetE_Height() << std::endl;
 		out << "UTC Date,UTC Time,E error,N error,U error" << std::endl;
 	}
 	else
@@ -355,17 +361,23 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 	// plot satellite elevation versus distance error
 	ECEF_Frame pos = origin;
 
-	if (pos.Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
-	{
-		pos = GetAveragePosition(outdata);
-	}
-	else
-	{
-		// Do nothing
-	}
+	bool isSpecifiedOrigin = GetAveragePosition(outdata, pos);
 
 	if (header)
 	{
+		if (isSpecifiedOrigin)
+		{
+			out << "Specified Origin(BLH)" << std::endl;
+		}
+		else
+		{
+			out << "Average Origin(BLH)" << std::endl;
+		}
+
+		WGS84_Frame pos_wgs84 = WGS84_Frame(pos);
+		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLat()) << ',';
+		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLongi()) << ',';
+		out << std::fixed << pos_wgs84.GetE_Height() << std::endl;
 		out << "UTC Date,UTC Time,PRN,elevation,azimuth,psudo distance,true distance,diff(=psudo - true),SNR" << std::endl;
 	}
 	else
@@ -398,27 +410,35 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 
 }
 
-ECEF_Frame GetAveragePosition(std::map<GPS_Time, ReceiverOutput> &outdata)
+bool GetAveragePosition(std::map<GPS_Time, ReceiverOutput> &outdata, ECEF_Frame &origin)
 {
 	long int i = 0;
-	ECEF_Frame pos(0.0L, 0.0L, 0.0L);
-	for(std::map<GPS_Time, ReceiverOutput>::iterator it = outdata.begin(); it != outdata.end(); it++)
-    {
-		ECEF_Frame posA = it->second.GetPosition();
+	bool isSpecifiedOrigin = false;
 
-		if (posA.IsValid())
-		{
-			i++;
-			pos = ((i - 1.0L) / i) * pos + (1.0L / i) * posA;
-		}
-		else
-		{
-			// Do nothing
-		}
+	if (origin.Distance(ECEF_Frame(0.0L, 0.0L, 0.0L)) < 1.0e-10)
+	{
+		for(std::map<GPS_Time, ReceiverOutput>::iterator it = outdata.begin(); it != outdata.end(); it++)
+	    {
+			ECEF_Frame posA = it->second.GetPosition();
 
-    }
+			if (posA.IsValid())
+			{
+				i++;
+				origin = ((i - 1.0L) / i) * origin + (1.0L / i) * posA;
+			}
+			else
+			{
+				// Do nothing
+			}
 
-	return pos;
+	    }
+	}
+	else
+	{
+		isSpecifiedOrigin = true;
+	}
+
+	return isSpecifiedOrigin;
 
 }
 

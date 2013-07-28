@@ -22,6 +22,6 @@ void OutputNMEA0183(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdat
 void OutputDifference(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata, ECEF_Frame origin, bool header);
 void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outdata, ECEF_Frame origin, bool header);
 
-ECEF_Frame GetAveragePosition(std::map<GPS_Time, ReceiverOutput> &outdata);
+bool GetAveragePosition(std::map<GPS_Time, ReceiverOutput> &outdata, ECEF_Frame &origin);
 
 #endif /* RINEXANALYZER_H_ */
