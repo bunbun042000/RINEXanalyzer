@@ -179,8 +179,6 @@ int main(int argc, char **argv)
 		++number_of_observation;
 	}
 
-	std::cout << "number_of_observation = " << number_of_observation << std::endl;
-
 	std::map<GPS_Time, ReceiverOutput> outdata;
 	outdata.clear();
 
@@ -203,7 +201,7 @@ int main(int argc, char **argv)
 		ReceiverOutput position = cal.GetPosition(elevation_mask_rad, weight);
 
 		++count;
-		std::cout << std::setw(6) << count << " / " << std::setw(6) << number_of_observation << " is calculated.\r" << std::flush;
+		std::cerr << std::setw(6) << count << " / " << std::setw(6) << number_of_observation << " is calculated.\r" << std::flush;
 
 		if (!position.GetPosition().IsValid())
 		{
@@ -220,7 +218,7 @@ int main(int argc, char **argv)
 
 	}
 
-	std::cout << std::endl;
+	std::cerr << std::endl;
 
 	ECEF_Frame origin(0.0L, 0.0L, 0.0L);
 
@@ -258,6 +256,18 @@ int main(int argc, char **argv)
 	else
 	{
 		outputheader = false;
+	}
+
+
+	if (out.is_open())
+	{
+		out << "total,error,valid" << std::endl;
+		out << count << ',' << error_count << ',' << count - error_count << std::endl;
+	}
+	else
+	{
+		std::cout << "total,error,valid" << std::endl;
+		std::cout << count << ',' << error_count << ',' << count - error_count << std::endl;
 	}
 
 	if (cl.search(2, "-n", "--nmea") || (!(cl.search(2, "-e", "--error")) && !(cl.search(2, "-s", "--skyplot"))))
@@ -320,9 +330,9 @@ void OutputDifference(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outd
 		}
 
 		WGS84_Frame pos_wgs84 = WGS84_Frame(pos);
-		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLat()) << ',';
-		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLongi()) << ',';
-		out << std::fixed << pos_wgs84.GetE_Height() << std::endl;
+		out << std::fixed << std::setw(22) << std::setprecision(15) << WGS84_Frame::Rad2Deg(pos_wgs84.GetLat()) << ',';
+		out << std::fixed << std::setw(22) << std::setprecision(15) << WGS84_Frame::Rad2Deg(pos_wgs84.GetLongi()) << ',';
+		out << std::fixed << std::setw(22) << std::setprecision(15) << pos_wgs84.GetE_Height() << std::endl;
 		out << "UTC Date,UTC Time,E error,N error,U error" << std::endl;
 	}
 	else
@@ -336,9 +346,9 @@ void OutputDifference(std::ostream &out, std::map<GPS_Time, ReceiverOutput> outd
 		out << it->second.GetTime().ISO8601_day() << ',';
 		out << it->second.GetTime().ISO8601_time() << ',';
 
-		out << std::fixed << enu_pos.GetE() << ',';
-		out << std::fixed << enu_pos.GetN() << ',';
-		out << std::fixed << enu_pos.GetU() << std::endl;
+		out << std::fixed << std::setw(22) << std::setprecision(15) << enu_pos.GetE() << ',';
+		out << std::fixed << std::setw(22) << std::setprecision(15) << enu_pos.GetN() << ',';
+		out << std::fixed << std::setw(22) << std::setprecision(15) << enu_pos.GetU() << std::endl;
 
     }
 
@@ -375,9 +385,9 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 		}
 
 		WGS84_Frame pos_wgs84 = WGS84_Frame(pos);
-		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLat()) << ',';
-		out << std::fixed << WGS84_Frame::Rad2Deg(pos_wgs84.GetLongi()) << ',';
-		out << std::fixed << pos_wgs84.GetE_Height() << std::endl;
+		out << std::fixed << std::setw(22) << std::setprecision(15) << WGS84_Frame::Rad2Deg(pos_wgs84.GetLat()) << ',';
+		out << std::fixed << std::setw(22) << std::setprecision(15) << WGS84_Frame::Rad2Deg(pos_wgs84.GetLongi()) << ',';
+		out << std::fixed << std::setw(22) << std::setprecision(15) << pos_wgs84.GetE_Height() << std::endl;
 		out << "UTC Date,UTC Time,PRN,elevation,azimuth,psudo distance,true distance,diff(=psudo - true),SNR" << std::endl;
 	}
 	else
@@ -396,12 +406,12 @@ void OutputSatellitePsudodiff(std::ostream &out, std::map<GPS_Time, ReceiverOutp
 
 
 			out << sats->second.PRN << ',';
-			out << std::fixed << sats->second.elevation << ',';
-			out << std::fixed << sats->second.azimuth  << ',';
-			out << std::fixed << sats->second.psudodistance << ',';
-			out << std::fixed << sats->second.truedistance << ',';
-			out << std::fixed << sats->second.distancediff << ',';
-			out << std::fixed << sats->second.SNR << std::endl;
+			out << std::fixed << std::setw(22) << std::setprecision(15) << sats->second.elevation << ',';
+			out << std::fixed << std::setw(22) << std::setprecision(15) << sats->second.azimuth  << ',';
+			out << std::fixed << std::setw(23) << std::setprecision(15) << sats->second.psudodistance << ',';
+			out << std::fixed << std::setw(23) << std::setprecision(15) << sats->second.truedistance << ',';
+			out << std::fixed << std::setw(22) << std::setprecision(15) << sats->second.distancediff << ',';
+			out << std::fixed << std::setw(7) << std::setprecision(5) << sats->second.SNR << std::endl;
 
 		}
 
