@@ -150,9 +150,9 @@ int main(int argc, char **argv)
 	}
 
 
-	if (cl.search("-r") && cl.search(2, "-s", "--skyplot"))
+	if (cl.search(2, "-e", "--error") && cl.search(2, "-s", "--skyplot"))
 	{
-		std::cerr << "option \"-r\" and \"-s\" is exclusive!" << std::endl;
+		std::cerr << "option \"-e\" and \"-s\" is exclusive!" << std::endl;
 		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
 		exit(0);
 	}
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
 		outputheader = false;
 	}
 
-	if (cl.search("-n") || (!(cl.search("-r")) && !(cl.search(2, "-s", "--skyplot"))))
+	if (cl.search("-n") || (!(cl.search(2, "-e", "--error")) && !(cl.search(2, "-s", "--skyplot"))))
 	{
 		if (out.is_open())
 		{
@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 			OutputNMEA0183(std::cout, outdata);
 		}
 	}
-	else if (cl.search("-r"))
+	else if (cl.search(2, "-e", "--error"))
 	{
 		if (out.is_open())
 		{
@@ -443,11 +443,11 @@ void print_help(const std::string targetname)
 	std::cout << "   -n                                   output NMEA0183 GPGGA, GPGSV" << std::endl;
 	std::cout << "                                        and GPZDA sentences." << std::endl;
 	std::cout << "                                        (default)" << std::endl;
-	std::cerr << "   -r  [--origin='<lat> <long> <hgt>']  output difference from average" << std::endl;
+	std::cerr << "   -e, --error  [--origin='<lat> <long> <hgt>']  output difference from average" << std::endl;
 	std::cerr << "                                        position or '<lat> <long> <hgt>'." << std::endl;
 	std::cout << "                                        The output is UTC and difference" << std::endl;
 	std::cout << "                                        in ENU Frame." << std::endl;
-	std::cout << "                                        -n, -r and -d are exclusive." << std::endl;
+	std::cout << "                                        -n, -e and -s are exclusive." << std::endl;
 	std::cout << "                                        <lat> and <long> should be degree. " << std::endl;
 	std::cout << "                                        <hgt> should be meter." << std::endl;
 	std::cout << "                                        <lat> from -90.0000 to 90.0000." << std::endl;
