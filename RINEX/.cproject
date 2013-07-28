@@ -52,18 +52,25 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/RINEX_AllTests"/>
+			<resource resourceType="FOLDER" workspacePath="/RINEXanalyzer/.settings"/>
 			<resource resourceType="PROJECT" workspacePath="/RINEX"/>
+			<resource resourceType="PROJECT" workspacePath="/RINEXanalyzer"/>
+			<resource resourceType="PROJECT" workspacePath="/RemoteSystemsTempFiles"/>
+			<resource resourceType="FOLDER" workspacePath="/RINEXanalyzer/Default"/>
+			<resource resourceType="FOLDER" workspacePath="/RINEX_AllTests/.settings"/>
+			<resource resourceType="FOLDER" workspacePath="/RINEXanalyzer/include"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cygwin.base.1117009460;cdt.managedbuild.toolchain.gnu.cygwin.base.1117009460.1635353312;cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.base.2072620577;cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.365860577">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cygwin.base.1117009460;cdt.managedbuild.toolchain.gnu.cygwin.base.1117009460.1635353312;cdt.managedbuild.tool.gnu.c.compiler.cygwin.base.1152694758;cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.1594524971">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cygwin.base.1117009460;cdt.managedbuild.toolchain.gnu.cygwin.base.1117009460.1635353312;cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.base.2072620577;cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.365860577">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>
