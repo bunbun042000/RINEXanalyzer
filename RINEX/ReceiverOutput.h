@@ -41,11 +41,11 @@ class ReceiverOutput
 {
 public:
 	ReceiverOutput();
-	ReceiverOutput(GPS_Time &cur, ECEF_Frame &pos, std::map<int, PsudoRange> &sats, Matrix &cov);
+	ReceiverOutput(GPS_Time &cur, ECEF_Frame &pos, std::map<int, PsudoRange> &sats, Matrix &cov, signalType::Type _type);
 	ReceiverOutput(const ReceiverOutput &recOut);
 	virtual ~ReceiverOutput();
 
-	void Set(GPS_Time cur, ECEF_Frame pos, std::map<int, PsudoRange> sats, Matrix cov);
+	void Set(GPS_Time cur, ECEF_Frame pos, std::map<int, PsudoRange> sats, Matrix cov, signalType::Type _type);
 
 	ECEF_Frame GetPosition()
 	{
@@ -75,6 +75,7 @@ private:
 	ECEF_Frame receiverPosition;
 	std::map<int, PsudoRange> satellites;
 	Matrix covariant;
+	signalType::Type type;
 
 };
 

@@ -45,7 +45,7 @@ class Calculate_Position
 public:
 	Calculate_Position();
 	Calculate_Position(std::vector<ECEF_Frame> sats, std::vector<long double> dist, const int n_sats);
-	Calculate_Position(std::map<int, Ephemeris> ephemeris, std::map<int, PsudoRange> range, PsudoRange::MeansType _type, GPS_Time currentTime, IonoSphere ion);
+	Calculate_Position(std::map<int, Ephemeris> ephemeris, std::map<int, PsudoRange> range, signalType::Type _type, GPS_Time currentTime, IonoSphere ion);
 	virtual ~Calculate_Position();
 
 	ReceiverOutput GetPosition(const long double elevation_mask, int weight_method = 0);
@@ -57,7 +57,7 @@ private:
 
 	GPS_Time current;
 	IonoSphere ionosphere;
-	PsudoRange::MeansType type;
+	signalType::Type type;
 
 };
 

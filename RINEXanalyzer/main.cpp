@@ -89,13 +89,27 @@ int main(int argc, char **argv)
 
 	if (cl.search(2, "-w", "--weight") && cl.search(2, "-m", "--mask"))
 	{
-		std::cerr << "option \"--mask\" and \"-w\" is exclusive!" << std::endl;
+		std::cerr << "option \"--mask\" and \"--weight\" is exclusive!" << std::endl;
 		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
 		exit(0);
 	}
 	else
 	{
 		// Do nothing
+	}
+
+	// signal type
+	const std::string signalType_str = cl.follow("L1CA", 2, "-t", "--type");
+	signalType::Type sig;
+	if (signalType_str == "L1CA")
+	{
+		sig = signalType::L1CA;
+	}
+	else
+	{
+		std::cerr << "option \"-t\" or \"--type\" should follow valid signal type!" << std::endl;
+		std::cerr << "Refer \"" << cl[0] << " --help\" or \"" << cl[0] << " -h\"" << std::endl;
+		exit(0);
 	}
 
 	// parse filename
@@ -108,7 +122,7 @@ int main(int argc, char **argv)
 	for (unsigned int i = 0; i < filenames.size(); ++i)
 	{
 		if (filenames[i] != elevation_mask_str && filenames[i] != weight_str
-				&& filenames[i] != output_filename)
+				&& filenames[i] != output_filename && filenames[i] != signalType_str)
 		{
 			input_filename = filenames[i];
 			break;
@@ -196,7 +210,7 @@ int main(int argc, char **argv)
 
 		}
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, use_qzs);
-		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
+		Calculate_Position cal(ephem_map, range, sig, cur, nav_message.GetIon());
 
 		ReceiverOutput position = cal.GetPosition(elevation_mask_rad, weight);
 
@@ -501,6 +515,8 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <hgt> should be meter." << std::endl;
 	std::cout << "                                        <lat> from -90.0000 to 90.0000." << std::endl;
 	std::cout << "                                        <long> from -180.0000 to 180.0000." << std::endl;
+	std::cout << "   -t, --type <signal type>             set signal type (like L1 C/A, L2, L5 etc...)" << std::endl;
+	std::cout << "                                        currently effective value is L1CA only. (default)" << std::endl;
 	std::cout << "   -m, --mask <mask>                    elevation mask in calculation." << std::endl;
 	std::cout << "                                        -m and -w are exclusive." << std::endl;
 	std::cout << "                                        <mask> should be degree." << std::endl;

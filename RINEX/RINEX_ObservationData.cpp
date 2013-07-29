@@ -182,7 +182,7 @@ bool RINEX_ObservationData::ReadHeader(std::ifstream &ifs, int &leapsec)
 				}
 				else if (column.find("P2") != std::string::npos)
 				{
-					columnOrder.push_back(PsudoRange::P2);
+					columnOrder.push_back(PsudoRange::C2);
 					currentpos += 6;
 					number_of_observationData++;
 				}
@@ -200,7 +200,7 @@ bool RINEX_ObservationData::ReadHeader(std::ifstream &ifs, int &leapsec)
 				}
 				else if (column.find("P1") != std::string::npos)
 				{
-					columnOrder.push_back(PsudoRange::P1);
+					columnOrder.push_back(PsudoRange::C1);
 					currentpos += 6;
 					number_of_observationData++;
 				}
@@ -520,7 +520,7 @@ bool RINEX_ObservationData::ReadBody(std::ifstream &ifs, int leapsec)
 					long double temp;
 					sscanf(buf.substr(observationData_column_length * (j % MAX_observs_Line), observationData_length).c_str(),
 							"%Lf", &temp);
-					Psr.SetData(temp, columnOrder[j]);
+					Psr.SetData(temp, columnOrder[j], ver);
 				}
 				else
 				{

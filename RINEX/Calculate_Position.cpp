@@ -20,12 +20,12 @@
 
 Calculate_Position::Calculate_Position()
 {
-	type = PsudoRange::C1;
+	type = signalType::L1CA;
 
 }
 
 
-Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<int, PsudoRange> range, PsudoRange::MeansType _type, GPS_Time currentTime, IonoSphere ion)
+Calculate_Position::Calculate_Position(std::map<int, Ephemeris> ephem, std::map<int, PsudoRange> range, signalType::Type _type, GPS_Time currentTime, IonoSphere ion)
 {
 
 	current = currentTime;
@@ -98,9 +98,9 @@ ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask,
 				{
 
 
-					long double r = dist_it->second.GetData(type) - receiver_clockdiff;
+					long double r = dist_it->second.GetPsudoRange(type) - receiver_clockdiff;
 					long double satellite_clock = (it->second).GetClock(modifiedCurrent, r);
-					r = dist_it->second.GetData(type) - receiver_clockdiff + satellite_clock * IS_GPS_200::C_velocity;
+					r = dist_it->second.GetPsudoRange(type) - receiver_clockdiff + satellite_clock * IS_GPS_200::C_velocity;
 
 					dist_it->second.SetCalculateRange(r);
 
@@ -142,7 +142,7 @@ ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask,
 
 					}
 
-					original_distance.push_back(dist_it->second.GetData(type));
+					original_distance.push_back(dist_it->second.GetPsudoRange(type));
 					satellites.push_back(satellite_position);
 
 					dist_it->second.SetSatellitePosition(satellite_position);
@@ -247,6 +247,6 @@ ReceiverOutput Calculate_Position::GetPosition(const long double elevation_mask,
 		j++;
 	}
 
-	ReceiverOutput ret = ReceiverOutput(modifiedCurrent, position, psudodistance, cov);
+	ReceiverOutput ret = ReceiverOutput(modifiedCurrent, position, psudodistance, cov, type);
 	return ret;
 }

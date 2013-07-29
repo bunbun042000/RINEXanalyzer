@@ -22,9 +22,9 @@ ReceiverOutput::ReceiverOutput()
 
 }
 
-ReceiverOutput::ReceiverOutput(GPS_Time &cur, ECEF_Frame &pos, std::map<int, PsudoRange> &sats, Matrix &cov)
+ReceiverOutput::ReceiverOutput(GPS_Time &cur, ECEF_Frame &pos, std::map<int, PsudoRange> &sats, Matrix &cov, signalType::Type _type)
 {
-	Set(cur, pos, sats, cov);
+	Set(cur, pos, sats, cov, _type);
 }
 
 ReceiverOutput::ReceiverOutput(const ReceiverOutput &recOut)
@@ -41,12 +41,13 @@ ReceiverOutput::~ReceiverOutput()
 	satellites.clear();
 }
 
-void ReceiverOutput::Set(GPS_Time cur, ECEF_Frame pos, std::map<int, PsudoRange> sats, Matrix cov)
+void ReceiverOutput::Set(GPS_Time cur, ECEF_Frame pos, std::map<int, PsudoRange> sats, Matrix cov, signalType::Type _type)
 {
 	currentTime = cur;
 	receiverPosition = pos;
 	satellites = sats;
 	covariant = cov;
+	type = _type;
 
 }
 
@@ -111,7 +112,7 @@ std::map<int, SatellitesInView> ReceiverOutput::GetSkyPlot(ECEF_Frame pos)
 			// Do nothing
 		}
 		sat.PRN = it->first;
-		sat.SNR = it->second.GetData(PsudoRange::SA);
+		sat.SNR = it->second.GetSNR(type);
 		sat.psudodistance = it->second.GetCalculateRange();
 		sat.truedistance = it->second.GetSatellitePosition().Distance(origin);
 		sat.distancediff = sat.psudodistance - sat.truedistance;

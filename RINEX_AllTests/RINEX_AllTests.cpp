@@ -540,7 +540,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
 
-	Calculate_Position cal(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
+	Calculate_Position cal(ephem_map, range, signalType::L1CA, cur, nav_message.GetIon());
 
 	ReceiverOutput position = cal.GetPosition(0.0L);
 
@@ -569,7 +569,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	ephem_map = nav_message.GetEphemeris(cur, -1, false);
 
-	cal = Calculate_Position(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
+	cal = Calculate_Position(ephem_map, range, signalType::L1CA, cur, nav_message.GetIon());
 
 	position = cal.GetPosition(0.0L);
 
@@ -610,7 +610,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 			range.insert(std::pair<int, PsudoRange>((its->second).GetPRN(), its->second));
 		}
 		ephem_map = nav_message.GetEphemeris(cur, -1, false);
-		cal = Calculate_Position(ephem_map, range, PsudoRange::C1, cur, nav_message.GetIon());
+		cal = Calculate_Position(ephem_map, range, signalType::L1CA, cur, nav_message.GetIon());
 
 		ReceiverOutput position = cal.GetPosition(0.0L);
 
@@ -664,7 +664,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 
 		}
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, false);
-		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
+		Calculate_Position cal(ephem_map, range, signalType::L1CA, cur, nav_message.GetIon());
 
 		ReceiverOutput position = cal.GetPosition(0.0L);
 
@@ -720,7 +720,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 
 		}
 		std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(cur, -1, true);
-		Calculate_Position cal(ephem_map, range, PsudoRange::CA, cur, nav_message.GetIon());
+		Calculate_Position cal(ephem_map, range, signalType::L1CA, cur, nav_message.GetIon());
 
 		ReceiverOutput position = cal.GetPosition(WGS84_Frame::Deg2Rad(00.0L));
 
