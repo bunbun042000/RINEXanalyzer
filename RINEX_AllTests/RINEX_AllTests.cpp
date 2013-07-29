@@ -404,7 +404,7 @@ TEST(RINEX_NavigationMessage, Read)
 	std::string filename = "05311710.13";
 	RINEX_NavigationMessage nav_message(filename);
 
-	nav_message.Read();
+	nav_message.Read(true);
 
 	std::map <int, Ephemeris> ephem_map = nav_message.GetEphemeris(GPS_Time(1745, 388800.0L, 0), -1, true); // 2013-06-20 12:00:00
 
@@ -513,7 +513,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 	std::string filename = "mtka3180.05";
 	RINEX_NavigationMessage nav_message(filename);
 
-	nav_message.Read();
+	nav_message.Read(false);
 
 	RINEX_ObservationData obs_data(filename);
 
@@ -584,7 +584,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 	std::string filename = "mtka3180.05";
 	RINEX_NavigationMessage nav_message(filename);
 
-	nav_message.Read();
+	nav_message.Read(false);
 
 	RINEX_ObservationData obs_data(filename);
 
@@ -638,7 +638,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 	std::string filename = "05311710.13";
 	RINEX_NavigationMessage nav_message(filename);
 
-	nav_message.Read();
+	nav_message.Read(false);
 
 	RINEX_ObservationData obs_data(filename);
 
@@ -694,7 +694,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 	std::string filename = "05311710.13";
 	RINEX_NavigationMessage nav_message(filename);
 
-	nav_message.Read();
+	nav_message.Read(true);
 
 	RINEX_ObservationData obs_data(filename);
 

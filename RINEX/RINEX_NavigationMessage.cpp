@@ -46,23 +46,56 @@ RINEX_NavigationMessage::~RINEX_NavigationMessage()
 
 }
 
-bool RINEX_NavigationMessage::Read()
+bool RINEX_NavigationMessage::Read(const bool withQZSS)
 {
 
 	std::ifstream ifs;
-	bool flag = false;
+	bool flag_gnss = false;
+	bool flag_qzss = false;
+	bool from_RTKconv = false;
 
 	std::string fname = filename + "n";
 	ifs.open(fname.c_str());
-	flag = _Read(ifs);
+	if (!ifs.is_open())
+	{
+		std::string fname = filename + ".nav";
+		ifs.open(fname.c_str());
+		if (!ifs.is_open())
+		{
+			return flag_gnss;
+		}
+		else
+		{
+			from_RTKconv = true;
+		}
+	}
+	else
+	{
+		// Do nothing
+	}
 
+	flag_gnss = _Read(ifs);
 	ifs.close();
 
-	fname = filename + "q";
-	ifs.open(fname.c_str());
-	flag = _Read(ifs);
+	if (!from_RTKconv && withQZSS)
+	{
+		fname = filename + "q";
+		ifs.open(fname.c_str());
+		if (!ifs.is_open())
+		{
+			return flag_gnss;
+		}
+		else
+		{
+			flag_qzss = _Read(ifs);
+		}
+	}
+	else
+	{
+		return flag_gnss;
+	}
 
-	return flag;
+	return (flag_gnss && flag_qzss);
 
 }
 

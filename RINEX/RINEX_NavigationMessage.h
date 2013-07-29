@@ -36,7 +36,7 @@ public:
 	RINEX_NavigationMessage(const RINEX_NavigationMessage &pRIN);
 	virtual ~RINEX_NavigationMessage();
 
-	bool Read();
+	bool Read(const bool withQZSS);
 	void SetFileName(std::string fname);
 	IonoSphere GetIon()
 	{

@@ -176,7 +176,7 @@ int main(int argc, char **argv)
 	}
 
 	RINEX_NavigationMessage nav_message(input_filename);
-	nav_message.Read();
+	nav_message.Read(use_qzs);
 
 	RINEX_ObservationData obs_data(input_filename);
 

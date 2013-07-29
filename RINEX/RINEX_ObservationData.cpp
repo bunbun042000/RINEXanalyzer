@@ -62,10 +62,21 @@ std::multimap<GPS_Time, PsudoRange> RINEX_ObservationData::GetPsudoRange()
 {
 
 	int leapsec;
+	std::string buf;
 
 	std::string fname = filename + "o";
 	std::ifstream ifs(fname.c_str());
-	std::string buf;
+
+	if (!ifs.is_open())
+	{
+		std::string fname2 = filename + ".obs";
+		ifs.open(fname2.c_str());
+	}
+	else
+	{
+		// Do nothing
+	}
+
 
 	if (ifs == 0)
 	{
