@@ -112,6 +112,11 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
+	// minimum satellits
+	const std::string minimumSatellites_str = cl.follow("4", "--minimum-satellites");
+	unsigned int number_of_satellits = atoi(minimumSatellites_str.c_str());
+
+
 	// parse filename
 	std::string output_filename = cl.follow(output_dummy_filename.c_str(), 2, "-o", "--output");
 
@@ -122,7 +127,8 @@ int main(int argc, char **argv)
 	for (unsigned int i = 0; i < filenames.size(); ++i)
 	{
 		if (filenames[i] != elevation_mask_str && filenames[i] != weight_str
-				&& filenames[i] != output_filename && filenames[i] != signalType_str)
+				&& filenames[i] != output_filename && filenames[i] != signalType_str
+				&& filenames[i] != minimumSatellites_str)
 		{
 			input_filename = filenames[i];
 			break;
@@ -134,13 +140,13 @@ int main(int argc, char **argv)
 	}
 
 
-	if (filenames.empty() || filenames.size() > 2)
+	if (filenames.empty())
 	{
 		print_simplehelp(cl[0]);
 	}
 	else
 	{
-		input_filename = filenames[0];
+		// Do nothing
 	}
 
 	std::ofstream out;
@@ -202,6 +208,15 @@ int main(int argc, char **argv)
 	for (std::multimap<GPS_Time, PsudoRange>::iterator r_it = psuRange.begin(); r_it != psuRange.end(); r_it = psuRange.upper_bound(r_it->first))
 	{
 		range.clear();
+		if (psuRange.count(r_it->first) < number_of_satellits)
+		{
+			++error_count;
+			continue;
+		}
+		else
+		{
+			// Do nothing
+		}
 
 		for (std::multimap<GPS_Time, PsudoRange>::iterator its = r_it; its != psuRange.upper_bound(r_it->first); its++)
 		{
@@ -517,6 +532,8 @@ void print_help(const std::string targetname)
 	std::cout << "                                        <long> from -180.0000 to 180.0000." << std::endl;
 	std::cout << "   -t, --type <signal type>             set signal type (like L1 C/A, L2, L5 etc...)" << std::endl;
 	std::cout << "                                        currently effective value is L1CA only. (default)" << std::endl;
+	std::cout << "       --minimum-satellites <sats>      calculate skips if observation satellits less than <sats>" << std::endl;
+	std::cout << "                                        default : 4" << std::endl;
 	std::cout << "   -m, --mask <mask>                    elevation mask in calculation." << std::endl;
 	std::cout << "                                        -m and -w are exclusive." << std::endl;
 	std::cout << "                                        <mask> should be degree." << std::endl;
