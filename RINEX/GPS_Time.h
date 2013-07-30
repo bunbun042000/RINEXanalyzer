@@ -29,17 +29,18 @@
 namespace GPS_Time_const
 {
 	static const int Time_t_Base_Year = 1970;
-	static const int GPS_Week_Origin = 315964800L;
+	static const long int GPS_Week_Origin = 315964800L;
 	static const long double GPS_Epoch_JD = 2444244.5;
 	static const long int Days_in_Week = 7L;
 	static const long int Seconds_in_Minute = 60L;
+	static const int leap_sec_base = 32767;
 }
 
 class GPS_Time {
 public:
 	GPS_Time();
-	GPS_Time(int w, long double sec, int leap_second = 0);
-	GPS_Time(int year, int month, int day, int hour, int min, long double sec, int leapsec = 0);
+	GPS_Time(int w, long double sec, int leap_second = GPS_Time_const::leap_sec_base);
+	GPS_Time(int year, int month, int day, int hour, int min, long double sec, int leapsec = GPS_Time_const::leap_sec_base);
 	GPS_Time(const GPS_Time &gpst);
 	virtual ~GPS_Time();
 

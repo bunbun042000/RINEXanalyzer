@@ -54,9 +54,9 @@
 		<configuration configurationName="Default">
 			<resource resourceType="PROJECT" workspacePath="/RINEX_AllTests"/>
 			<resource resourceType="FOLDER" workspacePath="/RINEXanalyzer/.settings"/>
-			<resource resourceType="PROJECT" workspacePath="/RINEX"/>
-			<resource resourceType="PROJECT" workspacePath="/RINEXanalyzer"/>
 			<resource resourceType="PROJECT" workspacePath="/RemoteSystemsTempFiles"/>
+			<resource resourceType="PROJECT" workspacePath="/RINEXanalyzer"/>
+			<resource resourceType="PROJECT" workspacePath="/RINEX"/>
 			<resource resourceType="FOLDER" workspacePath="/RINEXanalyzer/Default"/>
 			<resource resourceType="FOLDER" workspacePath="/RINEX_AllTests/.settings"/>
 			<resource resourceType="FOLDER" workspacePath="/RINEXanalyzer/include"/>

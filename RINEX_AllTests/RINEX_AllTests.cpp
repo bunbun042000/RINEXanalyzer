@@ -31,7 +31,7 @@ TEST(GPS_Time_Test, ToDate)
 {
   GPS_Time gpstime;
   struct tm tbuf;
-  gpstime = GPS_Time(1350, 100.0, -1);
+  gpstime = GPS_Time(1350, 100.0, GPS_Time_const::leap_sec_base);
 
   tbuf = gpstime.ToDate();
   ASSERT_EQ(2005, tbuf.tm_year+1900);
@@ -63,6 +63,95 @@ TEST(GPS_Time_Test, ToGPSTime2)
 
 	ASSERT_EQ(0, gpstime.GetWeek());
 	ASSERT_DOUBLE_EQ(0.0, gpstime.GetSecond());
+}
+
+TEST(GPS_Time_Test, LeapSec)
+{
+	GPS_Time gpstime;
+	gpstime = GPS_Time(1980, 1, 6, 0, 0, 0.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(0, gpstime.GetLeapSecond());
+	// 1st
+	gpstime = GPS_Time(1981, 6, 30, 23, 59, 59.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(0, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1981, 7, 1, 0, 0, 0.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(1, gpstime.GetLeapSecond());
+	// 2nd
+	gpstime = GPS_Time(1982, 7, 1, 0, 0, 0.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(1, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1982, 7, 1, 0, 0, 1.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(2, gpstime.GetLeapSecond());
+	// 3rd
+	gpstime = GPS_Time(1983, 7, 1, 0, 0, 1.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(2, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1983, 7, 1, 0, 0, 2.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(3, gpstime.GetLeapSecond());
+	// 4th
+	gpstime = GPS_Time(1985, 7, 1, 0, 0, 2.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(3, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1985, 7, 1, 0, 0, 3.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(4, gpstime.GetLeapSecond());
+	// 5th
+	gpstime = GPS_Time(1988, 1, 1, 0, 0, 3.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(4, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1988, 1, 1, 0, 0, 4.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(5, gpstime.GetLeapSecond());
+	// 6th
+	gpstime = GPS_Time(1990, 1, 1, 0, 0, 4.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(5, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1990, 1, 1, 0, 0, 5.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(6, gpstime.GetLeapSecond());
+	// 7th
+	gpstime = GPS_Time(1991, 1, 1, 0, 0, 5.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(6, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1991, 1, 1, 0, 0, 6.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(7, gpstime.GetLeapSecond());
+	// 8th
+	gpstime = GPS_Time(1992, 7, 1, 0, 0, 6.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(7, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1992, 7, 1, 0, 0, 7.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(8, gpstime.GetLeapSecond());
+	// 9th
+	gpstime = GPS_Time(1993, 7, 1, 0, 0, 7.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(8, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1993, 7, 1, 0, 0, 8.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(9, gpstime.GetLeapSecond());
+	// 10th
+	gpstime = GPS_Time(1994, 7, 1, 0, 0, 8.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(9, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1994, 7, 1, 0, 0, 9.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(10, gpstime.GetLeapSecond());
+	// 11th
+	gpstime = GPS_Time(1996, 1, 1, 0, 0, 9.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(10, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1996, 1, 1, 0, 0, 10.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(11, gpstime.GetLeapSecond());
+	// 12th
+	gpstime = GPS_Time(1997, 7, 1, 0, 0, 10.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(11, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1997, 7, 1, 0, 0, 11.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(12, gpstime.GetLeapSecond());
+	// 13th
+	gpstime = GPS_Time(1999, 1, 1, 0, 0, 11.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(12, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(1999, 1, 1, 0, 0, 12.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(13, gpstime.GetLeapSecond());
+	// 14th
+	gpstime = GPS_Time(2006, 1, 1, 0, 0, 12.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(13, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(2006, 1, 1, 0, 0, 13.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(14, gpstime.GetLeapSecond());
+	// 15th
+	gpstime = GPS_Time(2009, 1, 1, 0, 0, 13.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(14, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(2009, 1, 1, 0, 0, 14.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(15, gpstime.GetLeapSecond());
+	// 16th
+	gpstime = GPS_Time(2012, 7, 1, 0, 0, 14.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(15, gpstime.GetLeapSecond());
+	gpstime = GPS_Time(2012, 7, 1, 0, 0, 15.0L, GPS_Time_const::leap_sec_base);
+	ASSERT_EQ(16, gpstime.GetLeapSecond());
+
+
 }
 
 TEST(ECEF_Frame_Test, ECEF_Frame_Basic)
