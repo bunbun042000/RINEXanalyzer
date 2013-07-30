@@ -27,7 +27,7 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(std::string fname = "")
 
 	ver = RINEX::Ver2;
 	type = GPS_Navigation;
-	leapSecond = 0;
+	leapSecond = GPS_Time_const::leap_sec_base;
 }
 
 RINEX_NavigationMessage::RINEX_NavigationMessage(const RINEX_NavigationMessage &nRIN)
@@ -241,8 +241,6 @@ long double RINEX_NavigationMessage::GetLongDouble(std::string str)
 
 bool RINEX_NavigationMessage::_Read(std::ifstream &ifs)
 {
-	int leap_second = 0;
-
 	std::string buf;
 
 	if (ifs == 0)
@@ -254,7 +252,7 @@ bool RINEX_NavigationMessage::_Read(std::ifstream &ifs)
 		// Do nothing
 	}
 
-	if (false == ReadHeader(ifs, leap_second))
+	if (false == ReadHeader(ifs, leapSecond))
 	{
 		return false;
 	}
@@ -263,9 +261,7 @@ bool RINEX_NavigationMessage::_Read(std::ifstream &ifs)
 		// Do nothing
 	}
 
-	leapSecond = leap_second;
-
-	if (false == ReadBody(ifs, leap_second))
+	if (false == ReadBody(ifs, leapSecond))
 	{
 		return false;
 	}

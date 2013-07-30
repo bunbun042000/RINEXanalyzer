@@ -25,7 +25,7 @@ RINEX_ObservationData::RINEX_ObservationData()
 	PsudoRangeMap.clear();
 	number_of_observationData = 0;
 	ver = RINEX::Ver2;
-	leapSecond = 0;
+	leapSecond = GPS_Time_const::leap_sec_base;
 
 }
 
@@ -64,7 +64,6 @@ void RINEX_ObservationData::SetFileName(std::string fname)
 std::multimap<GPS_Time, PsudoRange> RINEX_ObservationData::GetPsudoRange()
 {
 
-	int leapsec = 0;
 	std::string buf;
 
 	std::string fname = filename + "o";
@@ -90,7 +89,7 @@ std::multimap<GPS_Time, PsudoRange> RINEX_ObservationData::GetPsudoRange()
 		// Do nothing
 	}
 
-	if (false == ReadHeader(ifs, leapsec))
+	if (false == ReadHeader(ifs, leapSecond))
 	{
 		return PsudoRangeMap;
 	}
@@ -99,16 +98,8 @@ std::multimap<GPS_Time, PsudoRange> RINEX_ObservationData::GetPsudoRange()
 		// Do nothing
 	}
 
-	if (leapsec != leapSecond)
-	{
-		leapsec = leapSecond;
-	}
-	else
-	{
-		// Do nothing
-	}
 
-	if (false == ReadBody(ifs, leapsec))
+	if (false == ReadBody(ifs, leapSecond))
 	{
 		return PsudoRangeMap;
 	}

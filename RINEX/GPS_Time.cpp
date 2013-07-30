@@ -165,7 +165,9 @@ std::string GPS_Time::ISO8601_time() const
 	tm tmbuf = ToDate();
 	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_hour << ':';
 	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_min << ':';
-	stream << std::fixed << std::setw(2) << std::setfill('0') << tmbuf.tm_sec;
+	double temp1 = (double)(second - leap_second);
+	double sec = fmod(temp1, 60);
+	stream << std::fixed << std::setw(7) << std::setprecision(5) << std::setfill('0') << sec;
 
 	return stream.str();
 
