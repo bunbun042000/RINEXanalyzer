@@ -290,12 +290,12 @@ int main(int argc, char **argv)
 
 	if (out.is_open() && outputheader)
 	{
-		out << "total = " << count << " error = " << error_count << " valid = " << count - error_count << std::endl;
+		out << "total,error,valid" << std::endl;
+		out << count << ',' << error_count << ',' << count - error_count << std::endl;
 	}
 	else
 	{
-		std::cout << "total,error,valid" << std::endl;
-		std::cout << count << ',' << error_count << ',' << count - error_count << std::endl;
+		std::cout << "total = " << count << " error = " << error_count << " valid = " << count - error_count << std::endl;
 	}
 
 	if (cl.search(2, "-n", "--nmea") || (!(cl.search(2, "-e", "--error")) && !(cl.search(2, "-s", "--skyplot"))))
