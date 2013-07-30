@@ -43,6 +43,11 @@ public:
 		return ion;
 	}
 
+	int GetLeapSecond()
+	{
+		return leapSecond;
+	}
+
 	std::map<int, Ephemeris> GetEphemeris(GPS_Time current_gpst, const int IODE, const bool use_qzss);
 	std::map<int, long double> GetIonoDelayCorrection(ECEF_Frame userPosition, GPS_Time currentTime, const int IODE);
 
@@ -73,6 +78,7 @@ private:
 
 	RINEX::_Version ver;
 	_FileType type;
+	int leapSecond;
 
 };
 

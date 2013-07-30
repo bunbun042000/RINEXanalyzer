@@ -33,7 +33,7 @@ class RINEX_ObservationData
 {
 public:
 	RINEX_ObservationData();
-	RINEX_ObservationData(const std::string fname);
+	RINEX_ObservationData(const std::string fname, const int leapsec);
 	RINEX_ObservationData(const RINEX_ObservationData &RIN_obs);
 	virtual ~RINEX_ObservationData();
 
@@ -47,6 +47,7 @@ private:
 	std::vector<PsudoRange::MeansType> columnOrder;
 	int number_of_observationData;
 	RINEX::_Version ver;
+	int leapSecond;
 
 
 	bool ReadHeader(std::ifstream &ifs, int &leapSecond);

@@ -27,6 +27,7 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(std::string fname = "")
 
 	ver = RINEX::Ver2;
 	type = GPS_Navigation;
+	leapSecond = 0;
 }
 
 RINEX_NavigationMessage::RINEX_NavigationMessage(const RINEX_NavigationMessage &nRIN)
@@ -36,6 +37,7 @@ RINEX_NavigationMessage::RINEX_NavigationMessage(const RINEX_NavigationMessage &
 	ion = nRIN.ion;
 	ver = nRIN.ver;
 	type = nRIN.type;
+	leapSecond = nRIN.leapSecond;
 
 }
 
@@ -260,6 +262,8 @@ bool RINEX_NavigationMessage::_Read(std::ifstream &ifs)
 	{
 		// Do nothing
 	}
+
+	leapSecond = leap_second;
 
 	if (false == ReadBody(ifs, leap_second))
 	{

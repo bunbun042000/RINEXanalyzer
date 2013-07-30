@@ -515,7 +515,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition2)
 
 	nav_message.Read(false);
 
-	RINEX_ObservationData obs_data(filename);
+	RINEX_ObservationData obs_data(filename, nav_message.GetLeapSecond());
 
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
@@ -586,7 +586,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition21)
 
 	nav_message.Read(false);
 
-	RINEX_ObservationData obs_data(filename);
+	RINEX_ObservationData obs_data(filename, nav_message.GetLeapSecond());
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
@@ -640,7 +640,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withoutQZSS)
 
 	nav_message.Read(false);
 
-	RINEX_ObservationData obs_data(filename);
+	RINEX_ObservationData obs_data(filename, nav_message.GetLeapSecond());
 
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
@@ -696,7 +696,7 @@ TEST(RINEX_NavigationMessage, CalculatePosition212withQZSS)
 
 	nav_message.Read(true);
 
-	RINEX_ObservationData obs_data(filename);
+	RINEX_ObservationData obs_data(filename, nav_message.GetLeapSecond());
 
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();

@@ -178,7 +178,7 @@ int main(int argc, char **argv)
 	RINEX_NavigationMessage nav_message(input_filename);
 	nav_message.Read(use_qzs);
 
-	RINEX_ObservationData obs_data(input_filename);
+	RINEX_ObservationData obs_data(input_filename, nav_message.GetLeapSecond());
 
 	std::multimap<GPS_Time, PsudoRange> psuRange = obs_data.GetPsudoRange();
 
