@@ -25,14 +25,14 @@ GPS_Time::GPS_Time()
 {
   week = 0;
   second = 0.0L;
-  leap_second = 0;
+  leap_second = GPS_Time_const::leap_sec_base;
 }
 
 GPS_Time::GPS_Time(int w, long double sec, int leapsec)
 {
   week = w;
   second = sec;
-	if (leapsec < 0)
+	if (leapsec == GPS_Time_const::leap_sec_base)
 	{
 		leap_second = CalculateLeapSecond();
 	}
@@ -53,7 +53,7 @@ GPS_Time::GPS_Time(int year, int month, int day, int hour, int min, long double 
 	second = (days - week * GPS_Time_const::Days_in_Week) * Seconds_in_Day + hour * Seconds_in_Hour +
      min * GPS_Time_const::Seconds_in_Minute + sec;
 
-	if (leapsec < 0)
+	if (leapsec == GPS_Time_const::leap_sec_base)
 	{
 		leap_second = CalculateLeapSecond();
 	}
@@ -198,7 +198,7 @@ int GPS_Time::CalculateLeapSecond()
 {
 	int leapsec = 0;
 
-	if(*this < GPS_Time(1981, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1981, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -207,7 +207,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1982, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1982, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -216,7 +216,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1983, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1983, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -225,7 +225,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1985, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1985, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -234,7 +234,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1988, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1988, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -243,7 +243,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1990, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1990, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -252,7 +252,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1991, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1991, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -261,7 +261,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1992, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1992, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -270,7 +270,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1993, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1993, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -279,7 +279,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1994, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1994, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -288,7 +288,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1996, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1996, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -297,7 +297,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1997, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1997, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -306,7 +306,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(1999, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(1999, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -315,7 +315,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(2006, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(2006, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -324,7 +324,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(2009, 1, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(2009, 1, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
@@ -333,7 +333,7 @@ int GPS_Time::CalculateLeapSecond()
 		leapsec++;
 	}
 
-	if(*this < GPS_Time(2012, 7, 1, 0, 0, leapsec, leapsec))
+	if(*this < GPS_Time(2012, 7, 1, 0, 0, 0.0L + leapsec, leapsec))
 	{
 		return leapsec;
 	}
