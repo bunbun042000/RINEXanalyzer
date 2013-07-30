@@ -288,10 +288,9 @@ int main(int argc, char **argv)
 	}
 
 
-	if (out.is_open())
+	if (out.is_open() && outputheader)
 	{
-		out << "total,error,valid" << std::endl;
-		out << count << ',' << error_count << ',' << count - error_count << std::endl;
+		out << "total = " << count << " error = " << error_count << " valid = " << count - error_count << std::endl;
 	}
 	else
 	{
